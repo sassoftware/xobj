@@ -10,7 +10,9 @@ class AbstractSchemaMember(object):
 
 class SchemaType(AbstractSchemaMember):
 
-    pass
+    @staticmethod
+    def fromString(x):
+        return x
 
 class EmptyType(SchemaType):
 
@@ -22,9 +24,18 @@ class StringType(SchemaType):
 
 class IntegerType(SchemaType):
 
-    pass
+    @staticmethod
+    def fromString(x):
+        return int(x)
 
 class SequenceType(AbstractSchemaMember):
+
+    def findElement(self, name):
+        for x in self.elements:
+            if x.name == name:
+                return x
+
+        return None
 
     def __init__(self, xobjSeq):
         self.elements = [ SchemaElement(x)
@@ -32,11 +43,20 @@ class SequenceType(AbstractSchemaMember):
 
 class Attribute(AbstractSchemaMember):
 
+    def getType(self):
+        return self.xtype
+
     def __init__(self, name, xtype):
         self.name = name
         self.xtype = xtype
 
 class SchemaElement(AbstractSchemaMember):
+
+    def getType(self):
+        return self.xtype
+
+    def findAttribute(self, name):
+        return self.attributes.get(name, None)
 
     def __init__(self, xobjElement):
 
@@ -73,15 +93,13 @@ class SchemaElement(AbstractSchemaMember):
                                         attr.name, findSimpleType(attr.type))
 
 
-class Schema(object):
+class Schema(SequenceType):
 
     def __init__(self, xobjSchema):
         # xobjSchema is a schema; it's children are global
 
         # XXX parse global types
         # XXX parse global attributes
-        self.elements = []
-        for element in smiter(xobjSchema.xsd_element):
-            self.elements.append(SchemaElement(element))
+        SequenceType.__init__(self, xobjSchema)
 
 
