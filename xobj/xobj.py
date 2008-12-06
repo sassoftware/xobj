@@ -48,7 +48,10 @@ def parse(xml, schemaXml = None):
         if not element.items() and not element.getchildren():
             return element.text
 
-        xobj = XObject()
+        # create a subclass for this type
+        NewClass = type(element.tag + '_XObj_Type', (XObject,), {})
+        xobj = NewClass()
+
         for (key, val) in element.items():
             if xsdElement:
                 xsdAttribute = None
