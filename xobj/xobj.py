@@ -8,6 +8,7 @@ class XObjParseException(Exception):
 
     pass
 
+
 def smiter(item):
     if hasattr(item, '__iter__'):
         return item
@@ -49,7 +50,7 @@ def parse(xml, schemaXml = None):
             return element.text
 
         # create a subclass for this type
-        NewClass = type(element.tag + '_XObj_Type', (XObject,), {})
+        NewClass = type(nsmap(element.tag) + '_XObj_Type', (XObject,), {})
         xobj = NewClass()
 
         for (key, val) in element.items():
