@@ -1,13 +1,23 @@
 from lxml import etree
 import xmlschema
+import types
 
 class XObject(object):
 
-    pass
+    def _setElement(self, key, val):
+        expectedType = getattr(self.__class__, key, None)
 
-class XClass(object):
-
-    pass
+        current = getattr(self, key, None)
+        if current is None:
+            setattr(self, key, val)
+        elif current == int:
+            setattr(self, key, int(val))
+        elif current == expectedType:
+            setattr(self, key, val)
+        elif type(current) == list:
+            current.append(val)
+        else:
+            setattr(self, key, [ current, val ])
 
 class XObjParseException(Exception):
 
@@ -19,7 +29,7 @@ def smiter(item):
     else:
         return [ item ]
 
-def parse(xml, schema = None, nameSpaceMap = {}):
+def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
     def nsmap(s):
         for key, val in nameSpaceMap.iteritems():
@@ -28,57 +38,45 @@ def parse(xml, schema = None, nameSpaceMap = {}):
 
         return s
 
-    def parseElement(element, schema = None):
-        schemaElement = None
-        schemaType = None
-        if schema:
-            schemaElement = schema.findElement(element.tag)
-
-            if not schemaElement:
-                raise XObjParseException('element %s not found' %
-                                            element.tag)
-
-            schemaType = schemaElement.getType()
-
+    def parseElement(element, xClass = None):
         if not element.items() and not element.getchildren():
             return element.text
 
         # create a subclass for this type
-        NewClass = type(nsmap(element.tag) + '_XObj_Type', (XObject,), {})
-        xobj = NewClass()
+        if xClass:
+            xobj = xClass()
+        else:
+            localTag = nsmap(element.tag)
+            NewClass = type(localTag + '_XObj_Type', (XObject,), {})
+            xobj = NewClass()
 
         for (key, val) in element.items():
-            if schemaElement:
-                schemaAttribute = schemaElement.findAttribute(key)
-
-                if not schemaAttribute:
-                    raise XObjParseException('attribute %s for element %s not '
-                                             'found' % (key, element.tag))
-
-                val = schemaAttribute.getType().fromString(val)
-
             key = nsmap(key)
-            xobj.__setattr__(key, val)
+            xobj._setElement(key, val)
 
         for childElement in element.getchildren():
+            if types.BuiltinFunctionType == type(childElement.tag):
+                # this catches comments. this is ugly.
+                continue
+
             tag = nsmap(childElement.tag)
+            childType = getattr(xClass, tag, None)
+            child = parseElement(childElement, xClass = childType)
+            xobj._setElement(tag, child)
 
-            child = parseElement(childElement, schemaType)
-
-            if hasattr(xobj, tag):
-                cur = xobj.__getattribute__(tag)
-                if type(cur) == list:
-                    cur.append(child)
-                else:
-                    xobj.__setattr__(tag, [ cur, child ])
-            else:
-                xobj.__setattr__(tag, child)
+        # anything which is the same as in the class wasn't set in XML, so
+        # set it to None
+        for key, val in xobj.__class__.__dict__.items():
+            if key[0] == '_': continue
+            if getattr(xobj, key) == val:
+                setattr(xobj, key, None)
 
         return xobj
 
-    return parseElement(xml.getroot(), schema)
+    return parseElement(xml.getroot(), xClass = rootXClass)
 
-def parsef(f, schemaf = None):
+def parsef(f, rootXClass = None, nameSpaceMap = {}):
+    schemaf = None
     if schemaf:
         schemaXml = etree.parse(schemaf)
         schemaXObj = parse(schemaXml, nameSpaceMap = 
@@ -91,4 +89,4 @@ def parsef(f, schemaf = None):
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
 
-    return parse(xml, schema = schema)
+    return parse(xml, rootXClass = rootXClass, nameSpaceMap = nameSpaceMap)
