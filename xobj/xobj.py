@@ -5,10 +5,13 @@ class XObject(object):
 
     pass
 
-class XObjParseException(Exception):
+class XClass(object):
 
     pass
 
+class XObjParseException(Exception):
+
+    pass
 
 def smiter(item):
     if hasattr(item, '__iter__'):
@@ -16,11 +19,10 @@ def smiter(item):
     else:
         return [ item ]
 
-def parse(xml, schema = None):
+def parse(xml, schema = None, nameSpaceMap = {}):
 
     def nsmap(s):
-        map = { '{http://www.w3.org/2001/XMLSchema}' : 'xsd_' }
-        for key, val in map.iteritems():
+        for key, val in nameSpaceMap.iteritems():
             if s.startswith(key):
                 s = s.replace(key, val)
 
@@ -79,7 +81,8 @@ def parse(xml, schema = None):
 def parsef(f, schemaf = None):
     if schemaf:
         schemaXml = etree.parse(schemaf)
-        schemaXObj = parse(schemaXml)
+        schemaXObj = parse(schemaXml, nameSpaceMap = 
+                           { '{http://www.w3.org/2001/XMLSchema}' : 'xsd_' })
         schema = xmlschema.Schema(schemaXObj)
         schemaObj = etree.XMLSchema(schemaXml)
     else:
