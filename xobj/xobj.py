@@ -2,17 +2,52 @@ from lxml import etree
 import xmlschema
 import types
 
+class UnknownXType(Exception):
+
+    pass
+
+class XType(object):
+
+    def __init__(self, pythonType, forceList = False):
+        self.pythonType = pythonType
+        self.forceList = forceList
+
+def XTypeFromXObjectType(xObjectType):
+
+    if (type(xObjectType) == type and
+            issubclass(xObjectType, XObject)):
+        return XType(xObjectType)
+    elif issubclass(xObjectType.__class__, XType):
+        return XType
+    elif xObjectType in (int, str):
+        return XType(xObjectType)
+    elif type(xObjectType) == list:
+        assert(len(xObjectType) == 1)
+        return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
+                     forceList = True)
+
+    raise UnknownXType
+
 class XObject(object):
 
     def _setElement(self, key, val):
         expectedType = getattr(self.__class__, key, None)
-
         current = getattr(self, key, None)
-        if current is None:
-            setattr(self, key, val)
-        elif current == int:
-            setattr(self, key, int(val))
-        elif current == expectedType:
+        if expectedType:
+            expectedXType = XTypeFromXObjectType(expectedType)
+
+            if expectedXType.forceList:
+                # force the item to be a list, and use the type inside of
+                # this list as the type of elements of the list
+                if id(current) == id(expectedType):
+                    current = []
+                    setattr(self, key, current)
+
+            if expectedXType.pythonType == int:
+                val = int(val)
+
+        if id(current) == id(expectedType):
+            # This has not yet been set in the instance.
             setattr(self, key, val)
         elif type(current) == list:
             current.append(val)
@@ -61,6 +96,9 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
             tag = nsmap(childElement.tag)
             childType = getattr(xClass, tag, None)
+            if childType:
+                import epdb;epdb.st()
+                childType = XTypeFromXObjectType(childType).pythonType
             child = parseElement(childElement, xClass = childType)
             xobj._setElement(tag, child)
 
