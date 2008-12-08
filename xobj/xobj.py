@@ -84,7 +84,7 @@ class XObject(object):
         attrs = {}
         elements = {}
         for key, val in self.__dict__.iteritems():
-            if isinstance(val, XObject):
+            if key[0] != '_':
                 if getattr(val, '_isattr', False):
                     attrs[key] = str(val)
                 else:
@@ -109,7 +109,12 @@ class XObject(object):
             element.text = self.text
 
         for key, val in orderedElements:
-            val.getElementTree(key, rootElement = element)
+            if val is not None:
+                if type(val) == list:
+                    for subval in val:
+                        subval.getElementTree(key, rootElement = element)
+                else:
+                    val.getElementTree(key, rootElement = element)
 
         return element
 
