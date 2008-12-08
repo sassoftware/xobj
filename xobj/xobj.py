@@ -32,6 +32,17 @@ def XTypeFromXObjectType(xObjectType):
 
 class XObject(object):
 
+    _elementOrder = None
+
+    def _isComplex(self):
+        complex = False
+        for key in xType.pythonType.__dict__.iterkeys():
+            if key[0] != '_':
+                complex = True
+                break
+
+        return False
+
     def _setAttribute(self, key, val):
         expectedType = getattr(self.__class__, key, None)
         if expectedType:
@@ -45,14 +56,12 @@ class XObject(object):
 
         self._setItem(key, val, expectedXType)
 
-    def _isComplex(self):
-        complex = False
-        for key in xType.pythonType.__dict__.iterkeys():
-            if key[0] != '_':
-                complex = True
-                break
-
-        return False
+    def _addElement(self, key, val, xType = None):
+        self._setItem(key, val, xType = xType)
+        if self._elementOrder is None:
+            self._elementOrder = [ key ]
+        elif key not in self._elementOrder:
+            self._elementOrder.append(key)
 
     def _setItem(self, key, val, xType = None):
         current = getattr(self, key, None)
@@ -79,7 +88,17 @@ class XObject(object):
                 if getattr(val, '_isattr', False):
                     attrs[key] = str(val)
                 else:
-                    elements[key] = val
+                    l = elements.setdefault(key, [])
+                    l.append(val)
+
+        orderedElements = []
+        if self._elementOrder:
+            for name in self._elementOrder:
+                for val in elements[name]:
+                    orderedElements.append((name, val))
+            for name in (set(elements) - set(self._elementOrder)):
+                for val in elements[name]:
+                    orderedElements.append((name, val))
 
         if rootElement is None:
             element = etree.Element(tag, attrs)
@@ -89,7 +108,7 @@ class XObject(object):
         if self.text is not None:
             element.text = self.text
 
-        for key, val in elements.iteritems():
+        for key, val in orderedElements:
             val.getElementTree(key, rootElement = element)
 
         return element
@@ -165,7 +184,7 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
                     childXType = XTypeFromXObjectType(childType)
 
             child = parseElement(childElement, xType = childXType)
-            xobj._setItem(tag, child, childXType)
+            xobj._addElement(tag, child, childXType)
 
         # handle attributes
         for (key, val) in element.items():
