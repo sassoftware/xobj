@@ -43,6 +43,15 @@ class XObject(object):
 
         self._setItem(key, val, expectedXType)
 
+    def _isComplex(self):
+        complex = False
+        for key in xType.pythonType.__dict__.iterkeys():
+            if key[0] != '_':
+                complex = True
+                break
+
+        return False
+
     def _setItem(self, key, val, xType = None):
         current = getattr(self, key, None)
         if xType and xType.forceList:
@@ -92,13 +101,25 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
     def parseElement(element, xType = None):
         # handle the text for this tag
+        if element.getchildren():
+            text = None
+        else:
+            text = element.text
+
         if xType:
-            xobj = xType.pythonType(element.text)
+            if text:
+                if xType.isComplex():
+                    text = None
+
+            xobj = xType.pythonType(text)
         else:
             localTag = nsmap(element.tag)
             # create a subclass for this type
-            NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
-            xobj = NewClass(element.text)
+            if text is None:
+                NewClass = type(localTag + '_XObj_Type', (XObject,), {})
+            else:
+                NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
+            xobj = NewClass(text)
 
         # handle children
         for childElement in element.getchildren():
