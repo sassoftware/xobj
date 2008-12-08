@@ -41,6 +41,8 @@ class XObject(object):
             expectedXType = None
             val = XObjectStr(val)
 
+        val._isattr = True
+
         self._setItem(key, val, expectedXType)
 
     def _isComplex(self):
@@ -68,6 +70,33 @@ class XObject(object):
             current.append(val)
         else:
             setattr(self, key, [ current, val ])
+
+    def getElementTree(self, tag, rootElement = None):
+        attrs = {}
+        elements = {}
+        for key, val in self.__dict__.iteritems():
+            if isinstance(val, XObject):
+                if getattr(val, '_isattr', False):
+                    attrs[key] = str(val)
+                else:
+                    elements[key] = val
+
+        if rootElement is None:
+            element = etree.Element(tag, attrs)
+        else:
+            element = etree.SubElement(rootElement, tag, attrs)
+
+        if self.text is not None:
+            element.text = self.text
+
+        for key, val in elements.iteritems():
+            val.getElementTree(key, rootElement = element)
+
+        return element
+
+    def tostring(self):
+        et = self.getElementTree('top')
+        return etree.tostring(et, pretty_print = True, encoding = 'UTF-8')
 
     def __init__(self, text):
         self.text = text
