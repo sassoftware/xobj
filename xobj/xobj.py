@@ -48,7 +48,7 @@ class XObject(object):
         if xType and xType.forceList:
             # force the item to be a list, and use the type inside of
             # this list as the type of elements of the list
-            if id(current) == id(xType):
+            if key not in self.__dict__:
                 current = []
                 setattr(self, key, current)
 
@@ -90,10 +90,10 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
         return s
 
-    def parseElement(element, xClass = None):
+    def parseElement(element, xType = None):
         # handle the text for this tag
-        if xClass:
-            xobj = xClass(element.text)
+        if xType:
+            xobj = xType.pythonType(element.text)
         else:
             localTag = nsmap(element.tag)
             # create a subclass for this type
@@ -107,14 +107,14 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
                 continue
 
             tag = nsmap(childElement.tag)
-            childType = getattr(xClass, tag, None)
-            if childType:
-                #import epdb;epdb.st()
-                childXType = XTypeFromXObjectType(childType)
-            else:
-                childXType = None
 
-            child = parseElement(childElement, xClass = childType)
+            childXType = None
+            if xType:
+                childType = getattr(xType.pythonType, tag, None)
+                if childType:
+                    childXType = XTypeFromXObjectType(childType)
+
+            child = parseElement(childElement, xType = childXType)
             xobj._setItem(tag, child, childXType)
 
         # handle attributes
@@ -131,7 +131,12 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
         return xobj
 
-    return parseElement(xml.getroot(), xClass = rootXClass)
+    if rootXClass:
+        rootXType = XTypeFromXObjectType(rootXClass)
+    else:
+        rootXType = None
+
+    return parseElement(xml.getroot(), xType = rootXType)
 
 def parsef(f, rootXClass = None, nameSpaceMap = {}):
     schemaf = None
