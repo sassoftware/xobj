@@ -19,8 +19,10 @@ def XTypeFromXObjectType(xObjectType):
         return XType(xObjectType)
     elif issubclass(xObjectType.__class__, XType):
         return XType
-    elif xObjectType in (int, str):
-        return XType(xObjectType)
+    elif xObjectType == int:
+        return XType(XObjectInt)
+    elif xObjectType == str:
+        return XType(str)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
@@ -30,29 +32,44 @@ def XTypeFromXObjectType(xObjectType):
 
 class XObject(object):
 
-    def _setElement(self, key, val):
+    def _setAttribute(self, key, val):
         expectedType = getattr(self.__class__, key, None)
-        current = getattr(self, key, None)
         if expectedType:
             expectedXType = XTypeFromXObjectType(expectedType)
+            val = expectedXType.pythonType(val)
+        else:
+            expectedXType = None
+            val = XObjectStr(val)
 
-            if expectedXType.forceList:
-                # force the item to be a list, and use the type inside of
-                # this list as the type of elements of the list
-                if id(current) == id(expectedType):
-                    current = []
-                    setattr(self, key, current)
+        self._setItem(key, val, expectedXType)
 
-            if expectedXType.pythonType == int:
-                val = int(val)
+    def _setItem(self, key, val, xType = None):
+        current = getattr(self, key, None)
+        if xType and xType.forceList:
+            # force the item to be a list, and use the type inside of
+            # this list as the type of elements of the list
+            if id(current) == id(xType):
+                current = []
+                setattr(self, key, current)
 
-        if id(current) == id(expectedType):
+        if key not in self.__dict__:
             # This has not yet been set in the instance.
             setattr(self, key, val)
         elif type(current) == list:
             current.append(val)
         else:
             setattr(self, key, [ current, val ])
+
+    def __init__(self, text):
+        self.text = text
+
+class XObjectInt(XObject, int):
+
+    pass
+
+class XObjectStr(XObject, str):
+
+    pass
 
 class XObjParseException(Exception):
 
@@ -74,21 +91,16 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
         return s
 
     def parseElement(element, xClass = None):
-        if not element.items() and not element.getchildren():
-            return element.text
-
-        # create a subclass for this type
+        # handle the text for this tag
         if xClass:
-            xobj = xClass()
+            xobj = xClass(element.text)
         else:
             localTag = nsmap(element.tag)
-            NewClass = type(localTag + '_XObj_Type', (XObject,), {})
-            xobj = NewClass()
+            # create a subclass for this type
+            NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
+            xobj = NewClass(element.text)
 
-        for (key, val) in element.items():
-            key = nsmap(key)
-            xobj._setElement(key, val)
-
+        # handle children
         for childElement in element.getchildren():
             if types.BuiltinFunctionType == type(childElement.tag):
                 # this catches comments. this is ugly.
@@ -97,10 +109,18 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
             tag = nsmap(childElement.tag)
             childType = getattr(xClass, tag, None)
             if childType:
-                import epdb;epdb.st()
-                childType = XTypeFromXObjectType(childType).pythonType
+                #import epdb;epdb.st()
+                childXType = XTypeFromXObjectType(childType)
+            else:
+                childXType = None
+
             child = parseElement(childElement, xClass = childType)
-            xobj._setElement(tag, child)
+            xobj._setItem(tag, child, childXType)
+
+        # handle attributes
+        for (key, val) in element.items():
+            key = nsmap(key)
+            xobj._setAttribute(key, val)
 
         # anything which is the same as in the class wasn't set in XML, so
         # set it to None
