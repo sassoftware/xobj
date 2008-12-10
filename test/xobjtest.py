@@ -56,12 +56,12 @@ class XobjTest(testhelp.TestCase):
         xmlString = ('<top xmlns="http://this" xmlns:other="http://other/other"'
                         ' xmlns:other2="http://other/other2">\n'
                      '  <local/>\n'
-                     '  <other:tag val="1"/>\n'
+                     '  <other:tag other:val="1"/>\n'
                      '  <other2:tag val="2"/>\n'
                      '</top>\n')
         xml = StringIO(xmlString)
         o = xobj.parsef(xml)
-        assert(o.top.other_tag.val == '1')
+        assert(o.top.other_tag.other_val == '1')
         assert(o.top.other2_tag.val == '2')
         assert(o.tostring() == xmlString)
 
@@ -69,7 +69,7 @@ class XobjTest(testhelp.TestCase):
             nameSpaceMap = { 'other3' : 'http://other/other2' }
 
         o = xobj.parsef(xml, rootXClass = Top)
-        assert(o.top.other_tag.val == '1')
+        assert(o.top.other_tag.other_val == '1')
         assert(o.top.other3_tag.val == '2')
         newXmlString = xmlString.replace("other2:", "other3:")
         newXmlString = newXmlString.replace(":other2", ":other3")

@@ -121,9 +121,11 @@ class XObject(object):
                 key = addns(key)
                 if type(val) == list:
                     for subval in val:
-                        subval.getElementTree(key, rootElement = element)
+                        subval.getElementTree(key, rootElement = element,
+                                              nsmap = nsmap)
                 else:
-                    val.getElementTree(key, rootElement = element)
+                    val.getElementTree(key, rootElement = element,
+                                       nsmap = nsmap)
 
         return element
 
