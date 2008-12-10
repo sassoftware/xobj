@@ -3,6 +3,7 @@
 import testsuite
 testsuite.setup()
 from testrunner import testhelp
+from lxml import etree
 
 from xobj import xobj
 from StringIO import StringIO
@@ -74,6 +75,40 @@ class XobjTest(testhelp.TestCase):
         newXmlString = xmlString.replace("other2:", "other3:")
         newXmlString = newXmlString.replace(":other2", ":other3")
         assert(o.tostring() == newXmlString)
+
+    def testSchemaValidation(self):
+        s = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">\n'
+            '   <xs:element name="top">\n'
+            '    <xs:complexType>\n'
+            '      <xs:sequence>\n'
+            '        <xs:element name="prop" type="xs:string"/>\n'
+            '        <xs:element name="subelement">\n'
+            '          <xs:complexType>\n'
+            '          <xs:attribute name="subattr" type="xs:integer"/>\n'
+            '          </xs:complexType>\n'
+            '        </xs:element>\n'
+            '      </xs:sequence>\n'
+            '      <xs:attribute name="attr" type="xs:string"/>\n'
+            '    </xs:complexType>\n'
+            '  </xs:element>\n'
+            '</xs:schema>\n')
+        schema = StringIO(s)
+
+        s = (
+            '<top attr="anattr">\n'
+            '  <prop>something</prop>\n'
+            '  <subelement subattr="2"/>\n'
+            '</top>\n')
+        xml = StringIO(s)
+        xobj.parsef(xml, schemaf = schema)
+
+        xml = StringIO(s.replace('prop', 'prop2'))
+        xobj.parsef(xml)
+        self.assertRaises(etree.XMLSyntaxError,
+                          xobj.parsef, xml, schemaf = schema)
+
 
 if __name__ == "__main__":
     testsuite.main()

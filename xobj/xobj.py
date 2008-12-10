@@ -1,6 +1,7 @@
 from lxml import etree
 import xmlschema
 import types
+from StringIO import StringIO
 
 class UnknownXType(Exception):
 
@@ -88,6 +89,8 @@ class XObject(object):
 
             return s
 
+        tag = addns(tag)
+
         attrs = {}
         elements = {}
         for key, val in self.__dict__.iteritems():
@@ -118,7 +121,6 @@ class XObject(object):
 
         for key, val in orderedElements:
             if val is not None:
-                key = addns(key)
                 if type(val) == list:
                     for subval in val:
                         subval.getElementTree(key, rootElement = element,
@@ -142,13 +144,16 @@ class RootXObject(XObject):
                 break
 
         et = val.getElementTree(key, nsmap = self._xmlNsMap)
-        return etree.tostring(et, pretty_print = prettyPrint,
-                              encoding = 'UTF-8')
+        xmlString = etree.tostring(et, pretty_print = prettyPrint,
+                                   encoding = 'UTF-8')
+
+        return xmlString
 
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {}):
 
         def nsmap(s):
             for short, long in self._xmlNsMap.iteritems():
+                if not short: continue
                 if s.startswith('{' + long + '}'):
                     if short:
                         s = short + '_' + s[len(long) + 2:]
@@ -247,16 +252,11 @@ class XObjParseException(Exception):
 
     pass
 
-def parsef(f, rootXClass = None):
-    schemaf = None
+def parsef(f, schemaf = None, rootXClass = None):
     if schemaf:
-        schemaXml = etree.parse(schemaf)
-        schemaXObj = parse(schemaXml, nameSpaceMap = 
-                           { '{http://www.w3.org/2001/XMLSchema}' : 'xsd_' })
-        schema = xmlschema.Schema(schemaXObj)
-        schemaObj = etree.XMLSchema(schemaXml)
+        schemaObj = etree.XMLSchema(etree.parse(schemaf))
     else:
-        schema = schemaXml = schemaXObj = schemaObj = None
+        schemaObj = None
 
     if rootXClass is None:
         rootXClass = RootXObject
