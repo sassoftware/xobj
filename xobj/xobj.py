@@ -8,6 +8,14 @@ class UnknownXType(Exception):
 
 class XType(object):
 
+    def _isComplex(self):
+        complex = False
+        for key in self.pythonType.__dict__.iterkeys():
+            if key[0] != '_':
+                return True
+
+        return False
+
     def __init__(self, pythonType, forceList = False):
         self.pythonType = pythonType
         self.forceList = forceList
@@ -33,15 +41,6 @@ def XTypeFromXObjectType(xObjectType):
 class XObject(object):
 
     _elementOrder = None
-
-    def _isComplex(self):
-        complex = False
-        for key in xType.pythonType.__dict__.iterkeys():
-            if key[0] != '_':
-                complex = True
-                break
-
-        return False
 
     def _setAttribute(self, key, val):
         expectedType = getattr(self.__class__, key, None)
@@ -94,8 +93,6 @@ class XObject(object):
         for key, val in self.__dict__.iteritems():
             if key[0] != '_':
                 if getattr(val, '_isattr', False):
-                    #if key.startswith('ovf_size'):
-                        #import epdb;epdb.st()
                     key = addns(key)
                     attrs[key] = str(val)
                 else:
@@ -148,6 +145,84 @@ class RootXObject(XObject):
                                  rewriteMap = nsmap)
         return etree.tostring(et, pretty_print = True, encoding = 'UTF-8')
 
+    def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {}):
+
+        def nsmap(s):
+            for key, val in nameSpaceMap.iteritems():
+                if s.startswith(key):
+                    s = s.replace(key, val + '_')
+
+            return s
+
+        def parseElement(element, parentXType = None, parentXObj = None):
+            # handle the text for this tag
+            if element.getchildren():
+                text = None
+            else:
+                text = element.text
+
+            tag = nsmap(element.tag)
+
+            if parentXObj is None:
+                parentXObj = self
+                parentXType = XTypeFromXObjectType(self.__class__)
+
+            thisXType = None
+            if parentXType:
+                thisPyType = getattr(parentXType.pythonType, tag, None)
+                if thisPyType:
+                    thisXType = XTypeFromXObjectType(thisPyType)
+
+            if element.getchildren():
+                # It's a complex type, so the text is meaningless.
+                text = None
+
+            if thisXType:
+                if text is not None and thisXType._isComplex():
+                    # This type has child elements, so it's complex, so
+                    # the text is meaningless.
+                    text = None
+
+                xobj = thisXType.pythonType(text)
+            else:
+                localTag = nsmap(element.tag)
+                # create a subclass for this type
+                if text is None:
+                    NewClass = type(localTag + '_XObj_Type', (XObject,), {})
+                else:
+                    NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
+                xobj = NewClass(text)
+
+            # handle children
+            for childElement in element.getchildren():
+                if types.BuiltinFunctionType == type(childElement.tag):
+                    # this catches comments. this is ugly.
+                    continue
+                child = parseElement(childElement, parentXType = thisXType,
+                                     parentXObj = xobj)
+
+            # handle attributes
+            for (key, val) in element.items():
+                key = nsmap(key)
+                xobj._setAttribute(key, val)
+
+            # anything which is the same as in the class wasn't set in XML, so
+            # set it to None
+            for key, val in xobj.__class__.__dict__.items():
+                if key[0] == '_': continue
+                if getattr(xobj, key) == val:
+                    setattr(xobj, key, None)
+
+            if parentXObj is not None:
+                parentXObj._addElement(tag, xobj, thisXType)
+
+            return xobj
+
+        rootElement = xml.getroot()
+
+        parseElement(rootElement)
+        self._nsmap = xml.getroot().nsmap
+
 class XObjectInt(XObject, int):
 
     pass
@@ -160,87 +235,6 @@ class XObjParseException(Exception):
 
     pass
 
-def parse(xml, rootXClass = None, nameSpaceMap = {}):
-
-    def nsmap(s):
-        for key, val in nameSpaceMap.iteritems():
-            if s.startswith(key):
-                s = s.replace(key, val + '_')
-
-        return s
-
-    def parseElement(element, parentXType = None, parentXObj = None):
-        # handle the text for this tag
-        if element.getchildren():
-            text = None
-        else:
-            text = element.text
-
-        tag = nsmap(element.tag)
-
-        thisXType = None
-        if isinstance(parentXObj, RootXObject):
-            # This handles the root element where the parentXType is
-            # really the XType for the root.
-            if parentXType:
-                thisPyType = parentXType.pythonType
-                thisXType = XTypeFromXObjectType(thisPyType)
-        elif parentXType:
-            thisPyType = getattr(parentXType.pythonType, tag, None)
-            if thisPyType:
-                thisXType = XTypeFromXObjectType(thisPyType)
-
-        if thisXType:
-            if text:
-                if thisXType.isComplex():
-                    text = None
-
-            xobj = thisXType.pythonType(text)
-        else:
-            localTag = nsmap(element.tag)
-            # create a subclass for this type
-            if text is None:
-                NewClass = type(localTag + '_XObj_Type', (XObject,), {})
-            else:
-                NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
-            xobj = NewClass(text)
-
-        # handle children
-        for childElement in element.getchildren():
-            if types.BuiltinFunctionType == type(childElement.tag):
-                # this catches comments. this is ugly.
-                continue
-            child = parseElement(childElement, parentXType = thisXType,
-                                 parentXObj = xobj)
-
-        # handle attributes
-        for (key, val) in element.items():
-            key = nsmap(key)
-            xobj._setAttribute(key, val)
-
-        # anything which is the same as in the class wasn't set in XML, so
-        # set it to None
-        for key, val in xobj.__class__.__dict__.items():
-            if key[0] == '_': continue
-            if getattr(xobj, key) == val:
-                setattr(xobj, key, None)
-
-        if parentXObj is not None:
-            parentXObj._addElement(tag, xobj, thisXType)
-
-        return xobj
-
-    if rootXClass:
-        rootXType = XTypeFromXObjectType(rootXClass)
-    else:
-        rootXType = None
-
-    topXObj = RootXObject()
-    parseElement(xml.getroot(), parentXType = rootXType,
-                 parentXObj = topXObj)
-    topXObj._nsmap = xml.getroot().nsmap
-    return topXObj
-
 def parsef(f, rootXClass = None, nameSpaceMap = {}):
     schemaf = None
     if schemaf:
@@ -252,7 +246,13 @@ def parsef(f, rootXClass = None, nameSpaceMap = {}):
     else:
         schema = schemaXml = schemaXObj = schemaObj = None
 
+    if rootXClass is None:
+        rootXClass = RootXObject
+
+    rootObj = rootXClass()
+
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
+    rootObj.fromElementTree(xml, nameSpaceMap = nameSpaceMap)
 
-    return parse(xml, rootXClass = rootXClass, nameSpaceMap = nameSpaceMap)
+    return rootObj

@@ -30,7 +30,10 @@ class XobjTest(testhelp.TestCase):
             subelement = SubelementClass
             unused = str
 
-        o = xobj.parsef(xml, rootXClass = TopClass)
+        class RootClass(xobj.RootXObject):
+            top = TopClass
+
+        o = xobj.parsef(xml, rootXClass = RootClass)
         self.assertEqual(o.top.subelement.subattr, 2)
         self.assertEqual(o.top.unused, None)
 
@@ -40,13 +43,13 @@ class XobjTest(testhelp.TestCase):
             subattr = [ int ]
         TopClass.subelement = SubelementClass
 
-        o = xobj.parsef(xml, rootXClass = TopClass)
+        o = xobj.parsef(xml, rootXClass = RootClass)
         self.assertEqual(o.top.subelement.subattr, [ 2 ] )
 
         # ---
 
         TopClass.subelement = [ SubelementClass ]
-        o = xobj.parsef(xml, rootXClass = TopClass)
+        o = xobj.parsef(xml, rootXClass = RootClass)
         self.assertEqual(o.top.subelement[0].subattr, [ 2] )
 
 
