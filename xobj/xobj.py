@@ -97,7 +97,6 @@ class XObject(object):
                     #if key.startswith('ovf_size'):
                         #import epdb;epdb.st()
                     key = addns(key)
-                    print key
                     attrs[key] = str(val)
                 else:
                     l = elements.setdefault(key, [])
@@ -133,16 +132,21 @@ class XObject(object):
 
         return element
 
+    def __init__(self, text = None):
+        self.text = text
+
+class RootXObject(XObject):
+
     def tostring(self, nsmap = {}):
         foo = dict(self._nsmap)
-        import epdb;epdb.st()
         foo['ovf'] = 'http://schemas.dmtf.org/ovf/envelope/1'
-        et = self.getElementTree('top', nsmap = foo,
+        for key, val in self.__dict__.iteritems():
+            if isinstance(val, XObject):
+                break
+
+        et = val.getElementTree(key, nsmap = foo,
                                  rewriteMap = nsmap)
         return etree.tostring(et, pretty_print = True, encoding = 'UTF-8')
-
-    def __init__(self, text):
-        self.text = text
 
 class XObjectInt(XObject, int):
 
@@ -165,19 +169,33 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
         return s
 
-    def parseElement(element, xType = None):
+    def parseElement(element, parentXType = None, parentXObj = None):
         # handle the text for this tag
         if element.getchildren():
             text = None
         else:
             text = element.text
 
-        if xType:
+        tag = nsmap(element.tag)
+
+        thisXType = None
+        if isinstance(parentXObj, RootXObject):
+            # This handles the root element where the parentXType is
+            # really the XType for the root.
+            if parentXType:
+                thisPyType = parentXType.pythonType
+                thisXType = XTypeFromXObjectType(thisPyType)
+        elif parentXType:
+            thisPyType = getattr(parentXType.pythonType, tag, None)
+            if thisPyType:
+                thisXType = XTypeFromXObjectType(thisPyType)
+
+        if thisXType:
             if text:
-                if xType.isComplex():
+                if thisXType.isComplex():
                     text = None
 
-            xobj = xType.pythonType(text)
+            xobj = thisXType.pythonType(text)
         else:
             localTag = nsmap(element.tag)
             # create a subclass for this type
@@ -192,17 +210,8 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
             if types.BuiltinFunctionType == type(childElement.tag):
                 # this catches comments. this is ugly.
                 continue
-
-            tag = nsmap(childElement.tag)
-
-            childXType = None
-            if xType:
-                childType = getattr(xType.pythonType, tag, None)
-                if childType:
-                    childXType = XTypeFromXObjectType(childType)
-
-            child = parseElement(childElement, xType = childXType)
-            xobj._addElement(tag, child, childXType)
+            child = parseElement(childElement, parentXType = thisXType,
+                                 parentXObj = xobj)
 
         # handle attributes
         for (key, val) in element.items():
@@ -216,6 +225,9 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
             if getattr(xobj, key) == val:
                 setattr(xobj, key, None)
 
+        if parentXObj is not None:
+            parentXObj._addElement(tag, xobj, thisXType)
+
         return xobj
 
     if rootXClass:
@@ -223,9 +235,11 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
     else:
         rootXType = None
 
-    topElement = parseElement(xml.getroot(), xType = rootXType)
-    topElement._nsmap = xml.getroot().nsmap
-    return topElement
+    topXObj = RootXObject()
+    parseElement(xml.getroot(), parentXType = rootXType,
+                 parentXObj = topXObj)
+    topXObj._nsmap = xml.getroot().nsmap
+    return topXObj
 
 def parsef(f, rootXClass = None, nameSpaceMap = {}):
     schemaf = None

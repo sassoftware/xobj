@@ -16,10 +16,10 @@ class XobjTest(testhelp.TestCase):
                        '    <subelement subattr="2"/>\n'
                        '    </top>\n')
         o = xobj.parsef(xml)
-        self.assertEqual(o.__class__.__name__, 'top_XObj_Type')
-        self.assertEqual(o.attr, 'anattr')
-        self.assertEqual(o.prop, 'something')
-        self.assertEqual(o.subelement.subattr, '2')
+        self.assertEqual(o.top.__class__.__name__, 'top_XObj_Type')
+        self.assertEqual(o.top.attr, 'anattr')
+        self.assertEqual(o.top.prop, 'something')
+        self.assertEqual(o.top.subelement.subattr, '2')
 
         # ---
 
@@ -31,8 +31,8 @@ class XobjTest(testhelp.TestCase):
             unused = str
 
         o = xobj.parsef(xml, rootXClass = TopClass)
-        self.assertEqual(o.subelement.subattr, 2)
-        self.assertEqual(o.unused, None)
+        self.assertEqual(o.top.subelement.subattr, 2)
+        self.assertEqual(o.top.unused, None)
 
         # ---
 
@@ -41,13 +41,13 @@ class XobjTest(testhelp.TestCase):
         TopClass.subelement = SubelementClass
 
         o = xobj.parsef(xml, rootXClass = TopClass)
-        self.assertEqual(o.subelement.subattr, [ 2 ] )
+        self.assertEqual(o.top.subelement.subattr, [ 2 ] )
 
         # ---
 
         TopClass.subelement = [ SubelementClass ]
         o = xobj.parsef(xml, rootXClass = TopClass)
-        self.assertEqual(o.subelement[0].subattr, [ 2] )
+        self.assertEqual(o.top.subelement[0].subattr, [ 2] )
 
 
 if __name__ == "__main__":
