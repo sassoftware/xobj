@@ -80,12 +80,24 @@ class XObject(object):
         else:
             setattr(self, key, [ current, val ])
 
-    def getElementTree(self, tag, rootElement = None):
+    def getElementTree(self, tag, rootElement = None, nsmap = {},
+                       rewriteMap = {}):
+        def addns(s):
+            for key, val in rewriteMap.iteritems():
+                if s.startswith(key + '_'):
+                    s = s.replace(key + '_', val)
+
+            return s
+
         attrs = {}
         elements = {}
         for key, val in self.__dict__.iteritems():
             if key[0] != '_':
                 if getattr(val, '_isattr', False):
+                    #if key.startswith('ovf_size'):
+                        #import epdb;epdb.st()
+                    key = addns(key)
+                    print key
                     attrs[key] = str(val)
                 else:
                     l = elements.setdefault(key, [])
@@ -101,7 +113,7 @@ class XObject(object):
                     orderedElements.append((name, val))
 
         if rootElement is None:
-            element = etree.Element(tag, attrs)
+            element = etree.Element(tag, attrs, nsmap = nsmap)
         else:
             element = etree.SubElement(rootElement, tag, attrs)
 
@@ -110,16 +122,23 @@ class XObject(object):
 
         for key, val in orderedElements:
             if val is not None:
+                key = addns(key)
                 if type(val) == list:
                     for subval in val:
-                        subval.getElementTree(key, rootElement = element)
+                        subval.getElementTree(key, rootElement = element,
+                                              rewriteMap = rewriteMap)
                 else:
-                    val.getElementTree(key, rootElement = element)
+                    val.getElementTree(key, rootElement = element,
+                                       rewriteMap = rewriteMap)
 
         return element
 
-    def tostring(self):
-        et = self.getElementTree('top')
+    def tostring(self, nsmap = {}):
+        foo = dict(self._nsmap)
+        import epdb;epdb.st()
+        foo['ovf'] = 'http://schemas.dmtf.org/ovf/envelope/1'
+        et = self.getElementTree('top', nsmap = foo,
+                                 rewriteMap = nsmap)
         return etree.tostring(et, pretty_print = True, encoding = 'UTF-8')
 
     def __init__(self, text):
@@ -137,18 +156,12 @@ class XObjParseException(Exception):
 
     pass
 
-def smiter(item):
-    if hasattr(item, '__iter__'):
-        return item
-    else:
-        return [ item ]
-
 def parse(xml, rootXClass = None, nameSpaceMap = {}):
 
     def nsmap(s):
         for key, val in nameSpaceMap.iteritems():
             if s.startswith(key):
-                s = s.replace(key, val)
+                s = s.replace(key, val + '_')
 
         return s
 
@@ -210,7 +223,9 @@ def parse(xml, rootXClass = None, nameSpaceMap = {}):
     else:
         rootXType = None
 
-    return parseElement(xml.getroot(), xType = rootXType)
+    topElement = parseElement(xml.getroot(), xType = rootXType)
+    topElement._nsmap = xml.getroot().nsmap
+    return topElement
 
 def parsef(f, rootXClass = None, nameSpaceMap = {}):
     schemaf = None
