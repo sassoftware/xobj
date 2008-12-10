@@ -79,12 +79,12 @@ class XObject(object):
         else:
             setattr(self, key, [ current, val ])
 
-    def getElementTree(self, tag, rootElement = None, nsmap = {},
-                       rewriteMap = {}):
+    def getElementTree(self, tag, rootElement = None, nsmap = {}):
+
         def addns(s):
-            for key, val in rewriteMap.iteritems():
-                if s.startswith(key + '_'):
-                    s = s.replace(key + '_', val)
+            for short, long in nsmap.iteritems():
+                if short and s.startswith(short + '_'):
+                    s = '{' + long + '}' + s[len(short) + 1:]
 
             return s
 
@@ -121,11 +121,9 @@ class XObject(object):
                 key = addns(key)
                 if type(val) == list:
                     for subval in val:
-                        subval.getElementTree(key, rootElement = element,
-                                              rewriteMap = rewriteMap)
+                        subval.getElementTree(key, rootElement = element)
                 else:
-                    val.getElementTree(key, rootElement = element,
-                                       rewriteMap = rewriteMap)
+                    val.getElementTree(key, rootElement = element)
 
         return element
 
@@ -134,23 +132,26 @@ class XObject(object):
 
 class RootXObject(XObject):
 
-    def tostring(self, nsmap = {}):
-        foo = dict(self._nsmap)
-        foo['ovf'] = 'http://schemas.dmtf.org/ovf/envelope/1'
+    nameSpaceMap = {}
+
+    def tostring(self, nsmap = {}, prettyPrint = True):
         for key, val in self.__dict__.iteritems():
             if isinstance(val, XObject):
                 break
 
-        et = val.getElementTree(key, nsmap = foo,
-                                 rewriteMap = nsmap)
-        return etree.tostring(et, pretty_print = True, encoding = 'UTF-8')
+        et = val.getElementTree(key, nsmap = self._xmlNsMap)
+        return etree.tostring(et, pretty_print = prettyPrint,
+                              encoding = 'UTF-8')
 
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {}):
 
         def nsmap(s):
-            for key, val in nameSpaceMap.iteritems():
-                if s.startswith(key):
-                    s = s.replace(key, val + '_')
+            for short, long in self._xmlNsMap.iteritems():
+                if s.startswith('{' + long + '}'):
+                    if short:
+                        s = short + '_' + s[len(long) + 2:]
+                    else:
+                        s = s[len(long) + 2:]
 
             return s
 
@@ -220,8 +221,17 @@ class RootXObject(XObject):
 
         rootElement = xml.getroot()
 
+        if not self.nameSpaceMap:
+            self._xmlNsMap = rootElement.nsmap
+        else:
+            fullNsMap = dict((y,x) for (x,y) in self.nameSpaceMap.iteritems())
+            for short, long in rootElement.nsmap.iteritems():
+                if long not in fullNsMap:
+                    fullNsMap[long] = short
+
+            self._xmlNsMap = dict((y,x) for (x,y) in fullNsMap.iteritems())
+
         parseElement(rootElement)
-        self._nsmap = xml.getroot().nsmap
 
 class XObjectInt(XObject, int):
 
@@ -235,7 +245,7 @@ class XObjParseException(Exception):
 
     pass
 
-def parsef(f, rootXClass = None, nameSpaceMap = {}):
+def parsef(f, rootXClass = None):
     schemaf = None
     if schemaf:
         schemaXml = etree.parse(schemaf)
@@ -253,6 +263,6 @@ def parsef(f, rootXClass = None, nameSpaceMap = {}):
 
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
-    rootObj.fromElementTree(xml, nameSpaceMap = nameSpaceMap)
+    rootObj.fromElementTree(xml)
 
     return rootObj
