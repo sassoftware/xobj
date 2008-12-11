@@ -147,11 +147,11 @@ class Document(XObject):
             if isinstance(val, XObject):
                 break
 
-        if self._explicitNamespaces:
-            map = self._xmlNsMap.copy()
+        if self.__explicitNamespaces:
+            map = self.__xmlNsMap.copy()
             del map[None]
         else:
-            map = self._xmlNsMap
+            map = self.__xmlNsMap
 
         et = val.getElementTree(key, nsmap = map)
         xmlString = etree.tostring(et, pretty_print = prettyPrint,
@@ -163,8 +163,8 @@ class Document(XObject):
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {}):
 
         def nsmap(s):
-            for short, long in self._xmlNsMap.iteritems():
-                if self._explicitNamespaces and short is None:
+            for short, long in self.__xmlNsMap.iteritems():
+                if self.__explicitNamespaces and short is None:
                     continue
 
                 if s.startswith('{' + long + '}'):
@@ -242,20 +242,20 @@ class Document(XObject):
         rootElement = xml.getroot()
 
         if not self.nameSpaceMap:
-            self._xmlNsMap = rootElement.nsmap
+            self.__xmlNsMap = rootElement.nsmap
         else:
             fullNsMap = dict((y,x) for (x,y) in self.nameSpaceMap.iteritems())
             for short, long in rootElement.nsmap.iteritems():
                 if long not in fullNsMap:
                     fullNsMap[long] = short
 
-            self._xmlNsMap = dict((y,x) for (x,y) in fullNsMap.iteritems())
+            self.__xmlNsMap = dict((y,x) for (x,y) in fullNsMap.iteritems())
 
-        self._explicitNamespaces = False
-        if None in self._xmlNsMap:
-            if [ y for (x, y) in self._xmlNsMap.iteritems()
-                    if x and y == self._xmlNsMap[None] ]:
-                self._explicitNamespaces = True
+        self.__explicitNamespaces = False
+        if None in self.__xmlNsMap:
+            if [ y for (x, y) in self.__xmlNsMap.iteritems()
+                    if x and y == self.__xmlNsMap[None] ]:
+                self.__explicitNamespaces = True
 
         parseElement(rootElement)
 
