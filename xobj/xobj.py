@@ -138,7 +138,7 @@ class XObject(object):
     def __init__(self, text = None):
         self.text = text
 
-class RootXObject(XObject):
+class Document(XObject):
 
     nameSpaceMap = {}
 
@@ -271,19 +271,19 @@ class XObjParseException(Exception):
 
     pass
 
-def parsef(f, schemaf = None, rootXClass = None):
+def parsef(f, schemaf = None, documentClass = None):
     if schemaf:
         schemaObj = etree.XMLSchema(etree.parse(schemaf))
     else:
         schemaObj = None
 
-    if rootXClass is None:
-        rootXClass = RootXObject
+    if documentClass is None:
+        documentClass = Document
 
-    rootObj = rootXClass()
+    document = documentClass()
 
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
-    rootObj.fromElementTree(xml)
+    document.fromElementTree(xml)
 
-    return rootObj
+    return document

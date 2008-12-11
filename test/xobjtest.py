@@ -34,10 +34,10 @@ class XobjTest(testhelp.TestCase):
             subelement = SubelementClass
             unused = str
 
-        class RootClass(xobj.RootXObject):
+        class DocumentClass(xobj.Document):
             top = TopClass
 
-        o = xobj.parsef(xml, rootXClass = RootClass)
+        o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement.subattr, 2)
         self.assertEqual(o.top.unused, None)
 
@@ -47,13 +47,13 @@ class XobjTest(testhelp.TestCase):
             subattr = [ int ]
         TopClass.subelement = SubelementClass
 
-        o = xobj.parsef(xml, rootXClass = RootClass)
+        o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement.subattr, [ 2 ] )
 
         # ---
 
         TopClass.subelement = [ SubelementClass ]
-        o = xobj.parsef(xml, rootXClass = RootClass)
+        o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement[0].subattr, [ 2] )
 
     def testNamespaces(self):
@@ -69,10 +69,10 @@ class XobjTest(testhelp.TestCase):
         assert(o.top.other2_tag.val == '2')
         assert(o.tostring(xml_declaration = False) == xmlString)
 
-        class Top(xobj.RootXObject):
+        class Top(xobj.Document):
             nameSpaceMap = { 'other3' : 'http://other/other2' }
 
-        o = xobj.parsef(xml, rootXClass = Top)
+        o = xobj.parsef(xml, documentClass = Top)
         assert(o.top.other_tag.other_val == '1')
         assert(o.top.other3_tag.val == '2')
         newXmlString = xmlString.replace("other2:", "other3:")
