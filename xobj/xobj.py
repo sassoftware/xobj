@@ -41,7 +41,8 @@ def XTypeFromXObjectType(xObjectType):
 
 class XObject(object):
 
-    _elementOrder = None
+    _elements = []
+    _attributes = set()
 
     def _setAttribute(self, key, val):
         expectedType = getattr(self.__class__, key, None)
@@ -52,16 +53,19 @@ class XObject(object):
             expectedXType = None
             val = XObjectStr(val)
 
-        val._isattr = True
+        if not self._attributes:
+            self._attributes = set([key])
+        elif key not in self._attributes:
+            self._attributes.add(key)
 
         self._setItem(key, val, expectedXType)
 
     def _addElement(self, key, val, xType = None):
         self._setItem(key, val, xType = xType)
-        if self._elementOrder is None:
-            self._elementOrder = [ key ]
-        elif key not in self._elementOrder:
-            self._elementOrder.append(key)
+        if not self._elements:
+            self._elements = [ key ]
+        elif key not in self._elements:
+            self._elements.append(key)
 
     def _setItem(self, key, val, xType = None):
         current = getattr(self, key, None)
@@ -95,7 +99,7 @@ class XObject(object):
         elements = {}
         for key, val in self.__dict__.iteritems():
             if key[0] != '_':
-                if getattr(val, '_isattr', False):
+                if key in self._attributes:
                     key = addns(key)
                     attrs[key] = str(val)
                 else:
@@ -103,11 +107,11 @@ class XObject(object):
                     l.append(val)
 
         orderedElements = []
-        if self._elementOrder:
-            for name in self._elementOrder:
+        if self._elements:
+            for name in self._elements:
                 for val in elements[name]:
                     orderedElements.append((name, val))
-            for name in (set(elements) - set(self._elementOrder)):
+            for name in (set(elements) - set(self._elements)):
                 for val in elements[name]:
                     orderedElements.append((name, val))
 

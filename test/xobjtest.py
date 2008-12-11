@@ -11,14 +11,15 @@ from StringIO import StringIO
 class XobjTest(testhelp.TestCase):
 
     def testSimpleParse(self):
-        xml = StringIO('<top attr="anattr">\n'
+        xml = StringIO('<top attr1="anattr" attr2="another">\n'
                        '    <!-- comment -->'
                        '    <prop>something</prop>\n'
                        '    <subelement subattr="2"/>\n'
                        '</top>\n')
         o = xobj.parsef(xml)
         self.assertEqual(o.top.__class__.__name__, 'top_XObj_Type')
-        self.assertEqual(o.top.attr, 'anattr')
+        self.assertEqual(o.top.attr1, 'anattr')
+        self.assertEqual(o.top.attr2, 'another')
         self.assertEqual(o.top.prop, 'something')
         self.assertEqual(o.top.subelement.subattr, '2')
         self.assertEqual(o.top.subelement.__class__.__name__,
