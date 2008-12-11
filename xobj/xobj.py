@@ -138,14 +138,21 @@ class RootXObject(XObject):
 
     nameSpaceMap = {}
 
-    def tostring(self, nsmap = {}, prettyPrint = True):
+    def tostring(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
             if isinstance(val, XObject):
                 break
 
-        et = val.getElementTree(key, nsmap = self._xmlNsMap)
+        if self._explicitNamespaces:
+            map = self._xmlNsMap.copy()
+            del map[None]
+        else:
+            map = self._xmlNsMap
+
+        et = val.getElementTree(key, nsmap = map)
         xmlString = etree.tostring(et, pretty_print = prettyPrint,
-                                   encoding = 'UTF-8')
+                                   encoding = 'UTF-8',
+                                   xml_declaration = xml_declaration)
 
         return xmlString
 
@@ -153,7 +160,9 @@ class RootXObject(XObject):
 
         def nsmap(s):
             for short, long in self._xmlNsMap.iteritems():
-                if not short: continue
+                if self._explicitNamespaces and short is None:
+                    continue
+
                 if s.startswith('{' + long + '}'):
                     if short:
                         s = short + '_' + s[len(long) + 2:]
@@ -237,6 +246,12 @@ class RootXObject(XObject):
                     fullNsMap[long] = short
 
             self._xmlNsMap = dict((y,x) for (x,y) in fullNsMap.iteritems())
+
+        self._explicitNamespaces = False
+        if None in self._xmlNsMap:
+            if [ y for (x, y) in self._xmlNsMap.iteritems()
+                    if x and y == self._xmlNsMap[None] ]:
+                self._explicitNamespaces = True
 
         parseElement(rootElement)
 

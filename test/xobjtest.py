@@ -21,6 +21,8 @@ class XobjTest(testhelp.TestCase):
         self.assertEqual(o.top.attr, 'anattr')
         self.assertEqual(o.top.prop, 'something')
         self.assertEqual(o.top.subelement.subattr, '2')
+        self.assertEqual(o.top.subelement.__class__.__name__,
+                         'subelement_XObj_Type')
 
         # ---
 
@@ -64,7 +66,7 @@ class XobjTest(testhelp.TestCase):
         o = xobj.parsef(xml)
         assert(o.top.other_tag.other_val == '1')
         assert(o.top.other2_tag.val == '2')
-        assert(o.tostring() == xmlString)
+        assert(o.tostring(xml_declaration = False) == xmlString)
 
         class Top(xobj.RootXObject):
             nameSpaceMap = { 'other3' : 'http://other/other2' }
@@ -74,7 +76,7 @@ class XobjTest(testhelp.TestCase):
         assert(o.top.other3_tag.val == '2')
         newXmlString = xmlString.replace("other2:", "other3:")
         newXmlString = newXmlString.replace(":other2", ":other3")
-        assert(o.tostring() == newXmlString)
+        assert(o.tostring(xml_declaration = False) == newXmlString)
 
     def testSchemaValidation(self):
         s = (
