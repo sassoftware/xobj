@@ -49,7 +49,8 @@ def main(argv=None, individual=True):
     setup()
 
     cfg.cleanTestDirs = not individual
-    cfg.coverageExclusions = ['scripts/.*', 'epdb.py', 'stackutil.py']
+    cfg.coverageExclusions = ['scripts/.*', 'epdb.py', 'stackutil.py',
+                              'test/.*']
     cfg.coverageDirs = [ os.environ['XOBJ_PATH'] ]
 
     if argv is None:
