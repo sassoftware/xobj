@@ -11,6 +11,8 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
+import types
+
 import testsuite
 testsuite.setup()
 from testrunner import testhelp
@@ -66,6 +68,68 @@ class XobjTest(testhelp.TestCase):
         TopClass.subelement = [ SubelementClass ]
         o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement[0].subattr, [ 2] )
+
+    def testComplexParse(self):
+        xmlText = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                   '<top>\n'
+                   '  <prop>\n'
+                   '    <subprop subattr="1">asdf</subprop>\n'
+                   '    <subprop subattr="2">fdsa</subprop>\n'
+                   '  </prop>\n'
+                   '  <simple>simple</simple>\n'
+                   '</top>\n')
+        xml = StringIO(xmlText)
+        o = xobj.parsef(xml)
+
+        # ---
+
+        self.assertEqual(o.tostring(), xmlText)
+
+        # ---
+
+        self.assertEqual(o.top.__class__.__name__, 'top_XObj_Type')
+        self.assertEqual(type(o.top.prop.subprop), types.ListType)
+        self.assertEqual(o.top.prop.subprop, ['asdf', 'fdsa'])
+        asdf = o.top.prop.subprop[0]
+        self.assertEqual(asdf.__class__.__name__, 'subprop_XObj_Type')
+        self.assertEqual(o.top.prop.__class__.__name__,
+                         'prop_XObj_Type')
+        for i in range(2):
+            self.assertEqual(o.top.prop.subprop[i].__class__.__name__,
+                             'subprop_XObj_Type')
+
+        # ---
+
+        class SubpropClass(xobj.XObject):
+            subattr = int
+            unused = [ str ]
+
+        class PropClass(xobj.XObject):
+            subprop = [ SubpropClass ]
+
+        class SimpleClass(xobj.XObject):
+            pass
+
+        class TopClass(xobj.XObject):
+            unused = str
+            prop = PropClass
+            simple = [ SimpleClass ]
+
+        class DocumentClass(xobj.Document):
+            top = TopClass
+
+        o = xobj.parsef(xml, documentClass = DocumentClass)
+        self.assertEqual(o.top.prop.subprop[1].subattr, 2)
+        self.assertEqual(o.top.unused, None)
+        self.assertEqual(o.top.prop.subprop[0].unused, None)
+        self.assertEqual(o.top.simple[0].text, 'simple')
+
+        # ---
+
+        # asdf/fdsa have been dropped becuase text is dropped from
+        # the complex class PropClass
+        self.assertNotEqual(o.tostring(), xmlText)
+
 
     def testNamespaces(self):
         xmlString = ('<top xmlns="http://this" xmlns:other="http://other/other"'

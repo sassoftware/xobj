@@ -21,7 +21,6 @@ class UnknownXType(Exception):
 class XType(object):
 
     def _isComplex(self):
-        complex = False
         for key in self.pythonType.__dict__.iterkeys():
             if key[0] != '_':
                 return True
@@ -37,8 +36,6 @@ def XTypeFromXObjectType(xObjectType):
     if (type(xObjectType) == type and
             issubclass(xObjectType, XObject)):
         return XType(xObjectType)
-    elif issubclass(xObjectType.__class__, XType):
-        return XType
     elif xObjectType == int:
         return XType(XObjectInt)
     elif xObjectType == str:
@@ -189,6 +186,7 @@ class Document(XObject):
         def parseElement(element, parentXType = None, parentXObj = None):
             # handle the text for this tag
             if element.getchildren():
+                # It's a complex type, so the text is meaningless.
                 text = None
             else:
                 text = element.text
@@ -204,10 +202,6 @@ class Document(XObject):
                 thisPyType = getattr(parentXType.pythonType, tag, None)
                 if thisPyType:
                     thisXType = XTypeFromXObjectType(thisPyType)
-
-            if element.getchildren():
-                # It's a complex type, so the text is meaningless.
-                text = None
 
             if thisXType:
                 if text is not None and thisXType._isComplex():
