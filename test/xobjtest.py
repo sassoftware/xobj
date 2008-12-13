@@ -46,6 +46,7 @@ class XobjTest(testhelp.TestCase):
         class TopClass(xobj.XObject):
             subelement = SubelementClass
             unused = str
+            attr1 = str
 
         class DocumentClass(xobj.Document):
             top = TopClass
@@ -247,6 +248,35 @@ class XobjTest(testhelp.TestCase):
             self.assertEquals(str(e), 'No id found for element referenced by ref')
         else:
             assert(0)
+
+    def testExplicitNamespaces(self):
+        s = (
+            '<top xmlns="http://somens.xsd" xmlns:ns="http://somens.xsd">\n'
+            '  <element ns:attr="foo"/>\n'
+            '</top>\n'
+            )
+        xml = StringIO(s)
+
+        d = xobj.parsef(xml)
+        assert(d.ns_top.ns_element.ns_attr == 'foo')
+        s2 = d.tostring(xml_declaration = False)
+
+        expecteds2 = (
+            '<ns:top xmlns:ns="http://somens.xsd">\n'
+            '  <ns:element ns:attr="foo"/>\n'
+            '</ns:top>\n'
+            )
+        assert(s2 == expecteds2)
+
+    def testUnknownType(self):
+        s ='<top/>'
+        xml = StringIO(s)
+
+        class Document(xobj.Document):
+            top = object
+
+        self.assertRaises(xobj.UnknownXType, xobj.parsef, xml,
+                          documentClass = Document)
 
 if __name__ == "__main__":
     testsuite.main()
