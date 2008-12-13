@@ -187,6 +187,66 @@ class XobjTest(testhelp.TestCase):
         self.assertRaises(etree.XMLSyntaxError,
                           xobj.parsef, xml, schemaf = schema)
 
+    def testId(self):
+        s = (
+            '<top>\n'
+            '  <item id="theid" val="value"/>\n'
+            '  <ref other="theid"/>\n'
+            '</top>\n')
+        xml = StringIO(s)
+
+        class Ref(xobj.XObject):
+            other = xobj.XIDREF
+
+        class Top(xobj.XObject):
+            ref = Ref
+
+        class Document(xobj.Document):
+            top = Top
+
+        d = xobj.parsef(xml, documentClass = Document)
+        assert(d.top.ref.other == d.top.item)
+        s2 = d.tostring(xml_declaration = False)
+        self.assertEquals(s, s2)
+
+        # now test if the id is called something else
+        s = (
+            '<top>\n'
+            '  <item anid="theid" val="value"/>\n'
+            '  <ref other="theid"/>\n'
+            '</top>\n')
+        xml = StringIO(s)
+        try:
+            xobj.parsef(xml, documentClass = Document)
+        except xobj.XObjIdNotFound, e:
+            self.assertEquals(str(e), "XML ID 'theid' not found in document")
+        else:
+            assert(0)
+
+        class Item(xobj.XObject):
+            anid = xobj.XID
+        Top.item = Item
+
+        d = xobj.parsef(xml, documentClass = Document)
+        assert(d.top.ref.other == d.top.item)
+        s2 = d.tostring(xml_declaration = False)
+        self.assertEquals(s, s2)
+
+        # and test if the id isn't defined properly
+        class Top(xobj.XObject):
+            _attributes = set(['ref'])
+            ref = xobj.XIDREF
+        Document.top = Top
+
+        d = Document()
+        d.top = Top()
+        d.top.ref = xobj.XObjectStr('something')
+        try:
+            d.tostring()
+        except xobj.XObjSerializationException, e:
+            self.assertEquals(str(e), 'No id found for element referenced by ref')
+        else:
+            assert(0)
 
 if __name__ == "__main__":
     testsuite.main()
