@@ -128,7 +128,15 @@ class XobjTest(testhelp.TestCase):
 
         # asdf/fdsa have been dropped becuase text is dropped from
         # the complex class PropClass
-        self.assertNotEqual(o.tostring(), xmlText)
+        xmlOutText = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                   '<top>\n'
+                   '  <prop>\n'
+                   '    <subprop subattr="1"/>\n'
+                   '    <subprop subattr="2"/>\n'
+                   '  </prop>\n'
+                   '  <simple>simple</simple>\n'
+                   '</top>\n')
+        self.assertEqual(o.tostring(), xmlOutText)
 
 
     def testNamespaces(self):
