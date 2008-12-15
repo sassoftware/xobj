@@ -278,5 +278,15 @@ class XobjTest(testhelp.TestCase):
         self.assertRaises(xobj.UnknownXType, xobj.parsef, xml,
                           documentClass = Document)
 
+    def testTypeMap(self):
+        s ='<top><item val="3"/></top>'
+        xml = StringIO(s)
+
+        class D(xobj.Document):
+            typeMap = { 'val' : int }
+
+        d = xobj.parsef(xml, documentClass = D)
+        assert(d.top.item.val == 3)
+
 if __name__ == "__main__":
     testsuite.main()

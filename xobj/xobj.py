@@ -54,6 +54,9 @@ class XObject(object):
 
     def _setAttribute(self, doc, key, val):
         expectedType = getattr(self.__class__, key, None)
+        if expectedType is None:
+            expectedType = doc.typeMap.get(key, None)
+
         if expectedType:
             expectedXType = XTypeFromXObjectType(expectedType)
             if (key == 'id' or key == 'xml_id' or
@@ -186,8 +189,7 @@ class XIDREF(XObject):
 class Document(XObject):
 
     nameSpaceMap = {}
-    _ids = None
-    _idsNeeded = None
+    typeMap = {}
 
     def __init__(self):
         self._idsNeeded = []
@@ -247,6 +249,9 @@ class Document(XObject):
             thisXType = None
             if parentXType:
                 thisPyType = getattr(parentXType.pythonType, tag, None)
+                if not thisPyType:
+                    thisPyType = self.typeMap.get(tag, None)
+
                 if thisPyType:
                     thisXType = XTypeFromXObjectType(thisPyType)
 
