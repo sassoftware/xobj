@@ -209,7 +209,6 @@ class Document(XObject):
         else:
             map = self.__xmlNsMap
 
-        import epdb;epdb.st('f')
         et = val.getElementTree(key, nsmap = map)
         xmlString = etree.tostring(et, pretty_print = prettyPrint,
                                    encoding = 'UTF-8',
@@ -289,7 +288,10 @@ class Document(XObject):
             for key, val in xobj.__class__.__dict__.items():
                 if key[0] == '_': continue
                 if getattr(xobj, key) == val:
-                    setattr(xobj, key, None)
+                    if type(val) == list:
+                        setattr(xobj, key, [])
+                    else:
+                        setattr(xobj, key, None)
 
             if parentXObj is not None:
                 parentXObj._addElement(tag, xobj, thisXType)
@@ -345,19 +347,27 @@ class XObjSerializationException(Exception):
 
     pass
 
-def parsef(f, schemaf = None, documentClass = None):
+def parsef(f, schemaf = None, documentClass = Document, typeMap = {}):
     if schemaf:
         schemaObj = etree.XMLSchema(etree.parse(schemaf))
     else:
         schemaObj = None
 
-    if documentClass is None:
-        documentClass = Document
-
-    document = documentClass()
+    if typeMap:
+        newClass = type('XObj_Dynamic_Document', (documentClass,),
+                        { 'typeMap' : typeMap})
+        document = newClass()
+    else:
+        document = documentClass()
 
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
     document.fromElementTree(xml)
 
     return document
+
+def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
+    s = StringIO(s)
+    return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
+
+

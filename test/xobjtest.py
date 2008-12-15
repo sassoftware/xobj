@@ -103,7 +103,7 @@ class XobjTest(testhelp.TestCase):
 
         class SubpropClass(xobj.XObject):
             subattr = int
-            unused = [ str ]
+            unused = str
 
         class PropClass(xobj.XObject):
             subprop = [ SubpropClass ]
@@ -287,6 +287,13 @@ class XobjTest(testhelp.TestCase):
 
         d = xobj.parsef(xml, documentClass = D)
         assert(d.top.item.val == 3)
+
+    def testEmptyList(self):
+        class Top(xobj.XObject):
+            l = []
+
+        d = xobj.parse("<top/>", typeMap = { 'top' : Top })
+        assert(d.top.l == [])
 
 if __name__ == "__main__":
     testsuite.main()
