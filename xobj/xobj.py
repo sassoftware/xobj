@@ -246,13 +246,16 @@ class Document(XObject):
                 parentXType = XTypeFromXObjectType(self.__class__)
 
             thisXType = None
+            thisPyType = None
+
             if parentXType:
                 thisPyType = getattr(parentXType.pythonType, tag, None)
-                if not thisPyType:
-                    thisPyType = self.typeMap.get(tag, None)
 
-                if thisPyType:
-                    thisXType = XTypeFromXObjectType(thisPyType)
+            if not thisPyType:
+                thisPyType = self.typeMap.get(tag, None)
+
+            if thisPyType:
+                thisXType = XTypeFromXObjectType(thisPyType)
 
             if thisXType:
                 if text is not None and thisXType._isComplex():

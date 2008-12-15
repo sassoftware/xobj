@@ -259,6 +259,7 @@ class XobjTest(testhelp.TestCase):
 
         d = xobj.parsef(xml)
         assert(d.ns_top.ns_element.ns_attr == 'foo')
+        assert(d.__class__ == xobj.Document)
         s2 = d.tostring(xml_declaration = False)
 
         expecteds2 = (
@@ -286,6 +287,12 @@ class XobjTest(testhelp.TestCase):
             typeMap = { 'val' : int }
 
         d = xobj.parsef(xml, documentClass = D)
+        assert(d.top.item.val == 3)
+
+        class I(xobj.XObject):
+            val = int
+
+        d = xobj.parsef(xml, typeMap = { 'item' : I} )
         assert(d.top.item.val == 3)
 
     def testEmptyList(self):
