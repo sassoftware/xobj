@@ -52,21 +52,37 @@ class XObject(object):
     _elements = []
     _attributes = set()
 
-    def _setAttribute(self, key, val):
+    def _setAttribute(self, doc, key, val):
         expectedType = getattr(self.__class__, key, None)
+        if expectedType is None:
+            expectedType = doc.typeMap.get(key, None)
+
         if expectedType:
             expectedXType = XTypeFromXObjectType(expectedType)
-            val = expectedXType.pythonType(val)
+            if (key == 'id' or key == 'xml_id' or
+                        issubclass(expectedXType.pythonType, XID)):
+                doc._ids[val] = self
+            elif issubclass(expectedXType.pythonType, XIDREF):
+                doc._idsNeeded.append((self, key, val))
+                return
+            else:
+                val = expectedXType.pythonType(val)
         else:
+            if (key == 'id' or key == 'xml_id'):
+                doc._ids[val] = self
+
             expectedXType = None
             val = XObjectStr(val)
 
+        self._addAttribute(key, val, xType = expectedXType)
+
+    def _addAttribute(self, key, val, xType = None):
         if not self._attributes:
             self._attributes = set([key])
         elif key not in self._attributes:
             self._attributes.add(key)
 
-        self._setItem(key, val, expectedXType)
+        self._setItem(key, val, xType)
 
     def _addElement(self, key, val, xType = None):
         self._setItem(key, val, xType = xType)
@@ -84,8 +100,10 @@ class XObject(object):
                 current = []
                 setattr(self, key, current)
 
-        if key not in self.__dict__:
-            # This has not yet been set in the instance.
+        if self.__dict__.get(key, None) is None:
+            # This has not yet been set in the instance (because it's missing) or it's been
+            # set to None (because we think we don't have this value but it's actually an idref
+            # being filled in later)
             setattr(self, key, val)
         elif type(current) == list:
             current.append(val)
@@ -108,6 +126,20 @@ class XObject(object):
         for key, val in self.__dict__.iteritems():
             if key[0] != '_':
                 if key in self._attributes:
+                    pythonType = getattr(self.__class__, key, None)
+                    if pythonType and issubclass(pythonType, XIDREF):
+                        idVal = getattr(val, 'id', None)
+                        if idVal is None:
+                            for idKey, idType in val.__class__.__dict__.iteritems():
+                                if (idKey[0] != '_' and type(idType) == type
+                                                and issubclass(idType, XID)):
+                                    idVal = getattr(val, idKey)
+
+                        if idVal is None:
+                            raise XObjSerializationException('No id found for element referenced by '
+                                                             '%s' % key)
+                        val = idVal
+
                     key = addns(key)
                     attrs[key] = str(val)
                 else:
@@ -146,12 +178,28 @@ class XObject(object):
     def __init__(self, text = None):
         self.text = text
 
+class XID(XObject):
+
+    pass
+
+class XIDREF(XObject):
+
+    pass
+
 class Document(XObject):
 
     nameSpaceMap = {}
+    typeMap = {}
+
+    def __init__(self):
+        self._idsNeeded = []
+        self._ids = {}
+        self.__explicitNamespaces = False
+        self.__xmlNsMap = {}
 
     def tostring(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
+            if key[0] == '_': continue
             if isinstance(val, XObject):
                 break
 
@@ -198,10 +246,16 @@ class Document(XObject):
                 parentXType = XTypeFromXObjectType(self.__class__)
 
             thisXType = None
+            thisPyType = None
+
             if parentXType:
                 thisPyType = getattr(parentXType.pythonType, tag, None)
-                if thisPyType:
-                    thisXType = XTypeFromXObjectType(thisPyType)
+
+            if not thisPyType:
+                thisPyType = self.typeMap.get(tag, None)
+
+            if thisPyType:
+                thisXType = XTypeFromXObjectType(thisPyType)
 
             if thisXType:
                 if text is not None and thisXType._isComplex():
@@ -230,14 +284,17 @@ class Document(XObject):
             # handle attributes
             for (key, val) in element.items():
                 key = nsmap(key)
-                xobj._setAttribute(key, val)
+                xobj._setAttribute(self, key, val)
 
             # anything which is the same as in the class wasn't set in XML, so
             # set it to None
             for key, val in xobj.__class__.__dict__.items():
                 if key[0] == '_': continue
                 if getattr(xobj, key) == val:
-                    setattr(xobj, key, None)
+                    if type(val) == list:
+                        setattr(xobj, key, [])
+                    else:
+                        setattr(xobj, key, None)
 
             if parentXObj is not None:
                 parentXObj._addElement(tag, xobj, thisXType)
@@ -264,6 +321,11 @@ class Document(XObject):
 
         parseElement(rootElement)
 
+        for (xobj, tag, theId) in self._idsNeeded:
+            if theId not in self._ids:
+                raise XObjIdNotFound(theId)
+            xobj._addAttribute(tag, self._ids[theId])
+
 class XObjectInt(XObject, int):
 
     pass
@@ -276,19 +338,39 @@ class XObjParseException(Exception):
 
     pass
 
-def parsef(f, schemaf = None, documentClass = None):
+class XObjIdNotFound(XObjParseException):
+
+    def __str__(self):
+        return "XML ID '%s' not found in document" % self.theId
+
+    def __init__(self, theId):
+        self.theId = theId
+
+class XObjSerializationException(Exception):
+
+    pass
+
+def parsef(f, schemaf = None, documentClass = Document, typeMap = {}):
     if schemaf:
         schemaObj = etree.XMLSchema(etree.parse(schemaf))
     else:
         schemaObj = None
 
-    if documentClass is None:
-        documentClass = Document
-
-    document = documentClass()
+    if typeMap:
+        newClass = type('XObj_Dynamic_Document', (documentClass,),
+                        { 'typeMap' : typeMap})
+        document = newClass()
+    else:
+        document = documentClass()
 
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
     document.fromElementTree(xml)
 
     return document
+
+def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
+    s = StringIO(s)
+    return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
+
+

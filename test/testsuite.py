@@ -83,8 +83,8 @@ def main(argv=None, individual=True):
     sys.exit(not results.wasSuccessful())
 
 if __name__ == '__main__':
-    testDir = os.path.dirname(__file__)
-    if not os.path.exists(testDir + '/conarytest/testsetup.py'):
-        print "Executing makefile to create required symlinks..."
-        os.system('make')
+    #testDir = os.path.dirname(__file__)
+    #if not os.path.exists(testDir + '/conarytest/testsetup.py'):
+    #    print "Executing makefile to create required symlinks..."
+    #    os.system('make')
     main(sys.argv, individual=False)

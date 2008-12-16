@@ -46,6 +46,7 @@ class XobjTest(testhelp.TestCase):
         class TopClass(xobj.XObject):
             subelement = SubelementClass
             unused = str
+            attr1 = str
 
         class DocumentClass(xobj.Document):
             top = TopClass
@@ -102,7 +103,7 @@ class XobjTest(testhelp.TestCase):
 
         class SubpropClass(xobj.XObject):
             subattr = int
-            unused = [ str ]
+            unused = str
 
         class PropClass(xobj.XObject):
             subprop = [ SubpropClass ]
@@ -195,6 +196,119 @@ class XobjTest(testhelp.TestCase):
         self.assertRaises(etree.XMLSyntaxError,
                           xobj.parsef, xml, schemaf = schema)
 
+    def testId(self):
+        s = (
+            '<top>\n'
+            '  <item id="theid" val="value"/>\n'
+            '  <ref other="theid"/>\n'
+            '</top>\n')
+        xml = StringIO(s)
+
+        class Ref(xobj.XObject):
+            other = xobj.XIDREF
+
+        class Top(xobj.XObject):
+            ref = Ref
+
+        class Document(xobj.Document):
+            top = Top
+
+        d = xobj.parsef(xml, documentClass = Document)
+        assert(d.top.ref.other == d.top.item)
+        s2 = d.tostring(xml_declaration = False)
+        self.assertEquals(s, s2)
+
+        # now test if the id is called something else
+        s = (
+            '<top>\n'
+            '  <item anid="theid" val="value"/>\n'
+            '  <ref other="theid"/>\n'
+            '</top>\n')
+        xml = StringIO(s)
+        try:
+            xobj.parsef(xml, documentClass = Document)
+        except xobj.XObjIdNotFound, e:
+            self.assertEquals(str(e), "XML ID 'theid' not found in document")
+        else:
+            assert(0)
+
+        class Item(xobj.XObject):
+            anid = xobj.XID
+        Top.item = Item
+
+        d = xobj.parsef(xml, documentClass = Document)
+        assert(d.top.ref.other == d.top.item)
+        s2 = d.tostring(xml_declaration = False)
+        self.assertEquals(s, s2)
+
+        # and test if the id isn't defined properly
+        class Top(xobj.XObject):
+            _attributes = set(['ref'])
+            ref = xobj.XIDREF
+        Document.top = Top
+
+        d = Document()
+        d.top = Top()
+        d.top.ref = xobj.XObjectStr('something')
+        try:
+            d.tostring()
+        except xobj.XObjSerializationException, e:
+            self.assertEquals(str(e), 'No id found for element referenced by ref')
+        else:
+            assert(0)
+
+    def testExplicitNamespaces(self):
+        s = (
+            '<top xmlns="http://somens.xsd" xmlns:ns="http://somens.xsd">\n'
+            '  <element ns:attr="foo"/>\n'
+            '</top>\n'
+            )
+        xml = StringIO(s)
+
+        d = xobj.parsef(xml)
+        assert(d.ns_top.ns_element.ns_attr == 'foo')
+        assert(d.__class__ == xobj.Document)
+        s2 = d.tostring(xml_declaration = False)
+
+        expecteds2 = (
+            '<ns:top xmlns:ns="http://somens.xsd">\n'
+            '  <ns:element ns:attr="foo"/>\n'
+            '</ns:top>\n'
+            )
+        assert(s2 == expecteds2)
+
+    def testUnknownType(self):
+        s ='<top/>'
+        xml = StringIO(s)
+
+        class Document(xobj.Document):
+            top = object
+
+        self.assertRaises(xobj.UnknownXType, xobj.parsef, xml,
+                          documentClass = Document)
+
+    def testTypeMap(self):
+        s ='<top><item val="3"/></top>'
+        xml = StringIO(s)
+
+        class D(xobj.Document):
+            typeMap = { 'val' : int }
+
+        d = xobj.parsef(xml, documentClass = D)
+        assert(d.top.item.val == 3)
+
+        class I(xobj.XObject):
+            val = int
+
+        d = xobj.parsef(xml, typeMap = { 'item' : I} )
+        assert(d.top.item.val == 3)
+
+    def testEmptyList(self):
+        class Top(xobj.XObject):
+            l = []
+
+        d = xobj.parse("<top/>", typeMap = { 'top' : Top })
+        assert(d.top.l == [])
 
 if __name__ == "__main__":
     testsuite.main()
