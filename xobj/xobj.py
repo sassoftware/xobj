@@ -193,6 +193,7 @@ class Document(XObject):
 
     def __init__(self):
         self._idsNeeded = []
+        self._dynamicClassDict = {}
         self._ids = {}
         self.__explicitNamespaces = False
         self.__xmlNsMap = {}
@@ -241,21 +242,26 @@ class Document(XObject):
 
             tag = nsmap(element.tag)
 
-            if parentXObj is None:
-                parentXObj = self
-                parentXType = XTypeFromXObjectType(self.__class__)
+            if tag in self._dynamicClassDict:
+                thisXType = self._dynamicClassDict[tag]
+            else:
+                if parentXObj is None:
+                    parentXObj = self
+                    parentXType = XTypeFromXObjectType(self.__class__)
 
-            thisXType = None
-            thisPyType = None
+                thisXType = None
+                thisPyType = None
 
-            if parentXType:
-                thisPyType = getattr(parentXType.pythonType, tag, None)
+                if parentXType:
+                    thisPyType = getattr(parentXType.pythonType, tag, None)
 
-            if not thisPyType:
-                thisPyType = self.typeMap.get(tag, None)
+                if not thisPyType:
+                    thisPyType = self.typeMap.get(tag, None)
 
-            if thisPyType:
-                thisXType = XTypeFromXObjectType(thisPyType)
+                if thisPyType:
+                    thisXType = XTypeFromXObjectType(thisPyType)
+
+                self._dynamicClassDict[tag] = thisXType
 
             if thisXType:
                 if text is not None and thisXType._isComplex():
@@ -272,6 +278,7 @@ class Document(XObject):
                 else:
                     NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
                 xobj = NewClass(text)
+                self._dynamicClassDict[tag] = XType(NewClass)
 
             # handle children
             for childElement in element.getchildren():

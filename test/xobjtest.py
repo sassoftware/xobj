@@ -98,6 +98,8 @@ class XobjTest(testhelp.TestCase):
         for i in range(2):
             self.assertEqual(o.top.prop.subprop[i].__class__.__name__,
                              'subprop_XObj_Type')
+        assert(o.top.prop.subprop[0].__class__ ==
+               o.top.prop.subprop[1].__class__)
 
         # ---
 
