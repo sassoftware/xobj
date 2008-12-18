@@ -152,74 +152,6 @@ class AbstractXObject(object):
         else:
             setattr(self, key, [ current, val ])
 
-    def getElementTree(self, tag, rootElement = None, nsmap = {}):
-
-        def addns(s):
-            for short, long in nsmap.iteritems():
-                if short and s.startswith(short + '_'):
-                    s = '{' + long + '}' + s[len(short) + 1:]
-
-            return s
-
-        if hasattr(self, '_tag'):
-            tag = self._tag
-        else:
-            tag = addns(tag)
-
-        attrs = {}
-        elements = {}
-        for key, val in self.__dict__.iteritems():
-            if key[0] != '_':
-                if key in self._attributes:
-                    pythonType = getattr(self.__class__, key, None)
-                    if pythonType and issubclass(pythonType, XIDREF):
-                        idVal = getattr(val, 'id', None)
-                        if idVal is None:
-                            for idKey, idType in val.__class__.__dict__.iteritems():
-                                if (idKey[0] != '_' and type(idType) == type
-                                                and issubclass(idType, XID)):
-                                    idVal = getattr(val, idKey)
-
-                        if idVal is None:
-                            raise XObjSerializationException('No id found for element referenced by '
-                                                             '%s' % key)
-                        val = idVal
-
-                    key = addns(key)
-                    attrs[key] = str(val)
-                else:
-                    l = elements.setdefault(key, [])
-                    l.append(val)
-
-        orderedElements = []
-        if self._elements:
-            for name in self._elements:
-                for val in elements[name]:
-                    orderedElements.append((name, val))
-            for name in (set(elements) - set(self._elements)):
-                for val in elements[name]:
-                    orderedElements.append((name, val))
-
-        if rootElement is None:
-            element = etree.Element(tag, attrs, nsmap = nsmap)
-        else:
-            element = etree.SubElement(rootElement, tag, attrs)
-
-        if isinstance(self, str) and self:
-            element.text = str(self)
-
-        for key, val in orderedElements:
-            if val is not None:
-                if type(val) == list:
-                    for subval in val:
-                        subval.getElementTree(key, rootElement = element,
-                                              nsmap = nsmap)
-                else:
-                    val.getElementTree(key, rootElement = element,
-                                       nsmap = nsmap)
-
-        return element
-
 
 class XObjectInt(AbstractXObject, int):
 
@@ -229,7 +161,7 @@ class XObject(str, AbstractXObject):
 
     def __repr__(self):
         if self:
-            return self
+            return str.__repr__(self)
         else:
             return AbstractXObject.__repr__(self)
 
@@ -253,6 +185,87 @@ class Document(XObject):
         self.__explicitNamespaces = False
         self.__xmlNsMap = {}
 
+    def getElementTree(self, xobj, tag, rootElement = None, nsmap = {}):
+
+        def addns(s):
+            for short, long in nsmap.iteritems():
+                if short and s.startswith(short + '_'):
+                    s = '{' + long + '}' + s[len(short) + 1:]
+
+            return s
+
+        if type(xobj) == int:
+            xobj = str(xobj)
+
+        if type(xobj) == str:
+            element = etree.SubElement(rootElement, tag, {})
+            element.text = xobj
+            return element
+
+        if hasattr(xobj, '_tag'):
+            tag = xobj._tag
+        else:
+            tag = addns(tag)
+
+        attrSet = getattr(xobj, '_attributes', set())
+
+        attrs = {}
+        elements = {}
+        for key, val in xobj.__dict__.iteritems():
+            if key[0] != '_':
+                if key in attrSet:
+                    pythonType = getattr(xobj.__class__, key, None)
+                    if pythonType and issubclass(pythonType, XIDREF):
+                        idVal = getattr(val, 'id', None)
+                        if idVal is None:
+                            for idKey, idType in val.__class__.__dict__.iteritems():
+                                if (idKey[0] != '_' and type(idType) == type
+                                                and issubclass(idType, XID)):
+                                    idVal = getattr(val, idKey)
+
+                        if idVal is None:
+                            raise XObjSerializationException('No id found for element referenced by '
+                                                             '%s' % key)
+                        val = idVal
+
+                    key = addns(key)
+                    attrs[key] = str(val)
+                else:
+                    l = elements.setdefault(key, [])
+                    l.append(val)
+
+        orderedElements = []
+
+        if hasattr(xobj, '_elements'):
+            for name in xobj._elements:
+                for val in elements[name]:
+                    orderedElements.append((name, val))
+            for name in (set(elements) - set(xobj._elements)):
+                for val in elements[name]:
+                    orderedElements.append((name, val))
+        else:
+            orderedElements = sorted(elements.iteritems())
+
+        if rootElement is None:
+            element = etree.Element(tag, attrs, nsmap = nsmap)
+        else:
+            element = etree.SubElement(rootElement, tag, attrs)
+
+        if isinstance(xobj, str) and xobj:
+            element.text = str(xobj)
+
+        for key, val in orderedElements:
+            if val is not None:
+                if type(val) == list:
+                    for subval in val:
+                        self.getElementTree(subval, key, rootElement = element,
+                                              nsmap = nsmap)
+                else:
+                    self.getElementTree(val, key, rootElement = element,
+                                       nsmap = nsmap)
+
+        return element
+
     def tostring(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
             if key[0] == '_': continue
@@ -265,7 +278,7 @@ class Document(XObject):
         else:
             map = self.__xmlNsMap
 
-        et = val.getElementTree(key, nsmap = map)
+        et = self.getElementTree(val, key, nsmap = map)
         xmlString = etree.tostring(et, pretty_print = prettyPrint,
                                    encoding = 'UTF-8',
                                    xml_declaration = xml_declaration)
@@ -451,4 +464,11 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
     s = StringIO(s)
     return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
 
+def toxml(xobj, tag, prettyPrint = True, xml_declaration = True):
+    d = Document()
+    et = d.getElementTree(xobj, tag)
+    xmlString = etree.tostring(et, pretty_print = prettyPrint,
+                               encoding = 'UTF-8',
+                               xml_declaration = xml_declaration)
 
+    return xmlString

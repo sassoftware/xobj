@@ -357,5 +357,33 @@ class XobjTest(testhelp.TestCase):
         d = xobj.parse('<top/>', typeMap = { 'top' : Top } )
         assert(d.top.items == [])
 
+    def testObjectTree(self):
+        class Top(object):
+            pass
+
+        class Middle(object):
+
+            tag = int
+
+            def foo(self):
+                pass
+
+        t = Top()
+        t.prop = 'abc'
+        t.middle = Middle()
+        t.middle.tag = 123
+
+        s = xobj.toxml(t, 'top', xml_declaration = False)
+        self.assertEquals(s, '<top>\n'
+                             '  <middle>\n'
+                             '    <tag>123</tag>\n'
+                             '  </middle>\n'
+                             '  <prop>abc</prop>\n'
+                             '</top>\n')
+
+        d = xobj.parse(s, typeMap = { 'middle' : Middle })
+        import epdb;epdb.st()
+
+
 if __name__ == "__main__":
     testsuite.main()
