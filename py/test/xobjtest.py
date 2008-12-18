@@ -317,10 +317,41 @@ class XobjTest(testhelp.TestCase):
 
     def testEmptyList(self):
         class Top(xobj.XObject):
-            l = []
+            l = [ int ]
 
         d = xobj.parse("<top/>", typeMap = { 'top' : Top })
         assert(d.top.l == [])
+
+    def testUnion(self):
+        class TypeA(xobj.XObject):
+            vala = int
+
+        class TypeB(xobj.XObject):
+            valb = int
+
+        class Top(xobj.XObject):
+            items = [ { 'typea' : TypeA,
+                        'typeb' : TypeB } ]
+
+        s = _xml('union',
+                 '<top>\n'
+                 '  <typea vala="1"/>\n'
+                 '  <typeb valb="2"/>\n'
+                 '  <typea vala="3"/>\n'
+                 '  <typeb valb="4"/>\n'
+                 '  <typea vala="5"/>\n'
+                 '</top>\n')
+
+        d = xobj.parse(s, typeMap = { 'top' : Top } )
+        assert(d.top.items[0].vala == 1)
+        assert(d.top.items[1].valb == 2)
+        assert(d.top.items[2].vala == 3)
+        assert(d.top.items[3].valb == 4)
+        assert(d.top.items[4].vala == 5)
+        assert(s == d.tostring(xml_declaration = False))
+
+        d = xobj.parse('<top/>', typeMap = { 'top' : Top } )
+        assert(d.top.items == [])
 
 if __name__ == "__main__":
     testsuite.main()

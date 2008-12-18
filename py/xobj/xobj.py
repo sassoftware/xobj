@@ -31,6 +31,14 @@ class XType(object):
         self.pythonType = pythonType
         self.forceList = forceList
 
+class XUnionType(XType):
+
+    def __init__(self, d):
+        self.d = {}
+        for key, val in d.iteritems():
+            self.d[key] = XTypeFromXObjectType(val)
+            self.d[key].forceList = True
+
 def XTypeFromXObjectType(xObjectType):
 
     if (type(xObjectType) == type and
@@ -119,7 +127,10 @@ class XObject(object):
 
             return s
 
-        tag = addns(tag)
+        if hasattr(self, '_tag'):
+            tag = self._tag
+        else:
+            tag = addns(tag)
 
         attrs = {}
         elements = {}
@@ -217,7 +228,8 @@ class Document(XObject):
 
         return xmlString
 
-    def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {}):
+    def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {},
+                        unionTags = {}):
 
         def nsmap(s):
             for short, long in self.__xmlNsMap.iteritems():
@@ -232,7 +244,8 @@ class Document(XObject):
 
             return s
 
-        def parseElement(element, parentXType = None, parentXObj = None):
+        def parseElement(element, parentXType = None, parentXObj = None,
+                         parentUnionTags = {}):
             # handle the text for this tag
             if element.getchildren():
                 # It's a complex type, so the text is meaningless.
@@ -253,7 +266,10 @@ class Document(XObject):
                 thisPyType = None
 
                 if parentXType:
-                    thisPyType = getattr(parentXType.pythonType, tag, None)
+                    if tag in parentUnionTags:
+                        thisPyType = parentUnionTags[tag][1].pythonType
+                    else:
+                        thisPyType = getattr(parentXType.pythonType, tag, None)
 
                 if not thisPyType:
                     thisPyType = self.typeMap.get(tag, None)
@@ -263,6 +279,7 @@ class Document(XObject):
 
                 self._dynamicClassDict[tag] = thisXType
 
+            unionTags = {}
             if thisXType:
                 if text is not None and thisXType._isComplex():
                     # This type has child elements, so it's complex, so
@@ -270,6 +287,13 @@ class Document(XObject):
                     text = None
 
                 xobj = thisXType.pythonType(text)
+
+                # look for unions
+                for key, val in thisXType.pythonType.__dict__.iteritems():
+                    if isinstance(val, list) and isinstance(val[0], dict):
+                        ut = XUnionType(val[0])
+                        for a, b in ut.d.iteritems():
+                            unionTags[a] = (key, b)
             else:
                 localTag = nsmap(element.tag)
                 # create a subclass for this type
@@ -286,7 +310,8 @@ class Document(XObject):
                     # this catches comments. this is ugly.
                     continue
                 child = parseElement(childElement, parentXType = thisXType,
-                                     parentXObj = xobj)
+                                     parentXObj = xobj,
+                                     parentUnionTags = unionTags)
 
             # handle attributes
             for (key, val) in element.items():
@@ -304,7 +329,12 @@ class Document(XObject):
                         setattr(xobj, key, None)
 
             if parentXObj is not None:
-                parentXObj._addElement(tag, xobj, thisXType)
+                if tag in parentUnionTags:
+                    xobj._tag = tag
+                    parentXObj._addElement(parentUnionTags[tag][0], xobj,
+                                           parentUnionTags[tag][1])
+                else:
+                    parentXObj._addElement(tag, xobj, thisXType)
 
             return xobj
 
