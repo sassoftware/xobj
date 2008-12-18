@@ -1,13 +1,9 @@
 package com.rpath.xobj
 {
-    import flash.xml.XMLNode;
     import flash.utils.getDefinitionByName;
-    import flash.utils.getQualifiedClassName;
-    import flash.xml.XMLNodeType;
+    import flash.xml.XMLNode;
     
-    import mx.collections.ArrayCollection;
     import mx.utils.DescribeTypeCache;
-    import mx.utils.ObjectProxy;
 
     
     public class XObjUtils
@@ -57,16 +53,18 @@ package com.rpath.xobj
       */
     public static function getClassByName(className:String):Class
     {
-        if (className != "Object")
+        var classReference:Class = null;
+        
+        try
         {
-            var classReference:Class = getDefinitionByName(className) as Class;
-            return classReference;
+             classReference = getDefinitionByName(className) as Class;
         } 
-        else
+        catch (e:ReferenceError)
         {
-            return Object;
+            trace("Request for unknown class "+className);
         }
 
+        return classReference;
      }    
      
     private static var typePropertyCache:Object = {};

@@ -263,7 +263,7 @@ public class XObjXMLEncoder
             myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
             
             // TODO: this is expensive. Can we optimize?
-            var classInfo:Object = ObjectUtil.getClassInfo(obj, [XObjMetadata.METADATA_PROPERTY, "attributes"], CLASS_INFO_OPTIONS);
+            var classInfo:Object = ObjectUtil.getClassInfo(obj, [XObjMetadata.METADATA_PROPERTY, "attributes", "prototype"], CLASS_INFO_OPTIONS);
             var properties:Array = (classInfo.properties as Array);
             
             var propsDone:Object = {};

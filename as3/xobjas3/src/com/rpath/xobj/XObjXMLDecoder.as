@@ -209,11 +209,12 @@ public class XObjXMLDecoder
      *
      *  @return A tree of ActionScript Objects.
      */
-    public function decodeXML(dataNode:XMLNode, isTypedProperty:Boolean = false, propType:Class = null):Object
+    public function decodeXML(dataNode:XMLNode, propType:Class = null):Object
     {
         var result:*;
         var isSimpleType:Boolean = false;
         var shouldMakeBindable:Boolean = false;
+        var isTypedProperty:Boolean = false;
         var isTypedNode:Boolean = false;
         var isSpecifiedType:Boolean = false;
         var elementSet:Array = [];
@@ -233,6 +234,7 @@ public class XObjXMLDecoder
         Or it could be the element name maps to a type in the TypeMap
         
         */
+        isTypedProperty = (propType != null);
         
         var nodeType:Class = typeForTag(dataNode.nodeName);
         isTypedNode = (nodeType != null);
@@ -354,10 +356,14 @@ public class XObjXMLDecoder
                     
                     if (partTypeName != null)
                     {
-                        partObj = decodeXML(partNode, true, XObjUtils.getClassByName(partTypeName));
+                        var partClass:Class = XObjUtils.getClassByName(partTypeName);
+                        if (partClass)
+                            partObj = decodeXML(partNode, partClass);
+                        else
+                            partObj = decodeXML(partNode);
                     }
                     else
-                        partObj = decodeXML(partNode, false);
+                        partObj = decodeXML(partNode);
     
                     if (seenProperties[partName])
                     {
