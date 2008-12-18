@@ -72,7 +72,7 @@ class XobjTest(testhelp.TestCase):
 
         o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement.subattr, [ 2 ] )
-        self.assertEqual(o.top.prop.text, 'something')
+        self.assertEqual(o.top.prop, 'something')
 
         # ---
 
@@ -138,7 +138,7 @@ class XobjTest(testhelp.TestCase):
         self.assertEqual(o.top.prop.subprop[1].subattr, 2)
         self.assertEqual(o.top.unused, None)
         self.assertEqual(o.top.prop.subprop[0].unused, None)
-        self.assertEqual(o.top.simple[0].text, 'simple')
+        self.assertEqual(o.top.simple[0], 'simple')
 
         # ---
 
@@ -265,7 +265,7 @@ class XobjTest(testhelp.TestCase):
 
         d = Document()
         d.top = Top()
-        d.top.ref = xobj.XObjectStr('something')
+        d.top.ref = xobj.XObject('something')
         try:
             d.tostring()
         except xobj.XObjSerializationException, e:

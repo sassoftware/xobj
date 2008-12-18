@@ -51,7 +51,7 @@ def XTypeFromXObjectType(xObjectType):
     elif xObjectType == int:
         return XType(XObjectInt)
     elif xObjectType == str:
-        return XType(XObjectStr)
+        return XType(XObject)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
@@ -59,7 +59,7 @@ def XTypeFromXObjectType(xObjectType):
 
     raise UnknownXType
 
-class XObject(object):
+class AbstractXObject(object):
 
     """
     Superclass for all elements represented in XML. Subclasses of XObject
@@ -74,9 +74,8 @@ class XObject(object):
 
         class Element(xobj.XObject):
 
-            intAttr = int
-            strAttr = str
-            subelement = [ xobj.XObject ]
+            intAttr = int                       # force an int
+            subelement = [ str ]                # force a list
 
     (which is done with doc = xobj.parse("---xml string---",
                                     typeMap = { 'element' : Element } )
@@ -92,7 +91,8 @@ class XObject(object):
     _attributes = set()
 
     def __init__(self, text = None):
-        assert(text is None)
+        self._elements = [ x for x in self._elements ]
+        self._attributes = set(x for x in self._attributes)
 
     def _setAttribute(self, doc, key, val):
         expectedType = getattr(self.__class__, key, None)
@@ -114,7 +114,7 @@ class XObject(object):
                 doc._ids[val] = self
 
             expectedXType = None
-            val = XObjectStr(val)
+            val = XObject(val)
 
         self._addAttribute(key, val, xType = expectedXType)
 
@@ -205,8 +205,8 @@ class XObject(object):
         else:
             element = etree.SubElement(rootElement, tag, attrs)
 
-        if self.text is not None:
-            element.text = self.text
+        if isinstance(self, str) and self:
+            element.text = str(self)
 
         for key, val in orderedElements:
             if val is not None:
@@ -219,6 +219,19 @@ class XObject(object):
                                        nsmap = nsmap)
 
         return element
+
+
+class XObjectInt(AbstractXObject, int):
+
+    pass
+
+class XObject(str, AbstractXObject):
+
+    def __repr__(self):
+        if self:
+            return self
+        else:
+            return AbstractXObject.__repr__(self)
 
 class XID(XObject):
 
@@ -284,9 +297,6 @@ class Document(XObject):
             else:
                 text = element.text
 
-            if element.tag == 'prop':
-                import epdb;epdb.st('f')
-
             tag = nsmap(element.tag)
 
             if tag in self._dynamicClassDict:
@@ -320,7 +330,10 @@ class Document(XObject):
                     # the text is meaningless.
                     text = None
 
-                xobj = thisXType.pythonType(text)
+                if text:
+                    xobj = thisXType.pythonType(text)
+                else:
+                    xobj = thisXType.pythonType()
 
                 # look for unions
                 for key, val in thisXType.pythonType.__dict__.iteritems():
@@ -332,12 +345,13 @@ class Document(XObject):
             else:
                 localTag = nsmap(element.tag)
                 # create a subclass for this type
-                if text is None:
-                    NewClass = type(localTag + '_XObj_Type', (XObject,), {})
-                else:
-                    NewClass = type(localTag + '_XObj_Type', (XObjectStr,), {})
-                xobj = NewClass(text)
+                NewClass = type(localTag + '_XObj_Type', (XObject,), {})
                 self._dynamicClassDict[tag] = XType(NewClass)
+
+                if text:
+                    xobj = NewClass(text)
+                else:
+                    xobj = NewClass()
 
             # handle children
             for childElement in element.getchildren():
@@ -397,16 +411,6 @@ class Document(XObject):
             if theId not in self._ids:
                 raise XObjIdNotFound(theId)
             xobj._addAttribute(tag, self._ids[theId])
-
-class XObjectInt(XObject, int):
-
-    def __init__(self, v):
-        XObject.__init__(self, None)
-
-class XObjectStr(XObject, str):
-
-    def __init__(self, v):
-        XObject.__init__(self)
 
 class XObjParseException(Exception):
 
