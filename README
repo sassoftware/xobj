@@ -1,0 +1,28 @@
+INTRODUCTION
+============
+
+The xobj project provides an object reflector between various
+dynamic languages and XML.  Currently, Python and ActionScript 3
+implementations are available.
+
+These interfaces are intended to allow for concise code for using
+and manipulating XML documents.  For example, using the ElementTree
+Python library, you might write something like this:
+
+    imageItem = [ x for x in parent if x.tag='image' ]
+
+In this case, imageItem will always be a list, even if it is
+not defined in the XML schema to be a sequence.
+
+Using xobj, you could refer to the image element more directly:
+
+    parent.image
+
+That will be either a single item or a list, depending on the
+context.
+
+It is not required to provide an XML schema to use xobj.  Custom
+objects may be used for parts or all of the document, whether or
+not an XML schema is provided.  Schema validation is optional.
+If new elements show up, they will be preserved across read/write;
+schema additions will not normally require code changes.
