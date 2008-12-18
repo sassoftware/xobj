@@ -1,0 +1,4 @@
+<top>
+  <item id="theid" val="value"/>
+  <ref other="theid"/>
+</top>

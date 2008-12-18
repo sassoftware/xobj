@@ -21,14 +21,22 @@ from lxml import etree
 from xobj import xobj
 from StringIO import StringIO
 
+def _xml(fn, s, asFile = False):
+    f = open("../../test/%s.xml" % fn, "w")
+    f.write(s)
+    if asFile:
+        return StringIO(s)
+
+    return s
+
 class XobjTest(testhelp.TestCase):
 
     def testSimpleParse(self):
-        xml = StringIO('<top attr1="anattr" attr2="another">\n'
-                       '    <!-- comment -->'
-                       '    <prop>something</prop>\n'
-                       '    <subelement subattr="2"/>\n'
-                       '</top>\n')
+        xml = _xml('simple', '<top attr1="anattr" attr2="another">\n'
+                             '    <!-- comment -->'
+                             '    <prop>something</prop>\n'
+                             '    <subelement subattr="2"/>\n'
+                             '</top>\n', asFile = True)
         o = xobj.parsef(xml)
         self.assertEqual(o.top.__class__.__name__, 'top_XObj_Type')
         self.assertEqual(o.top.attr1, 'anattr')
@@ -71,14 +79,15 @@ class XobjTest(testhelp.TestCase):
         self.assertEqual(o.top.subelement[0].subattr, [ 2] )
 
     def testComplexParse(self):
-        xmlText = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
-                   '<top>\n'
-                   '  <prop>\n'
-                   '    <subprop subattr="1">asdf</subprop>\n'
-                   '    <subprop subattr="2">fdsa</subprop>\n'
-                   '  </prop>\n'
-                   '  <simple>simple</simple>\n'
-                   '</top>\n')
+        xmlText = _xml('complex',
+                       '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top>\n'
+                       '  <prop>\n'
+                       '    <subprop subattr="1">asdf</subprop>\n'
+                       '    <subprop subattr="2">fdsa</subprop>\n'
+                       '  </prop>\n'
+                       '  <simple>simple</simple>\n'
+                       '</top>\n')
         xml = StringIO(xmlText)
         o = xobj.parsef(xml)
 
@@ -132,23 +141,24 @@ class XobjTest(testhelp.TestCase):
         # asdf/fdsa have been dropped becuase text is dropped from
         # the complex class PropClass
         xmlOutText = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
-                   '<top>\n'
-                   '  <prop>\n'
-                   '    <subprop subattr="1"/>\n'
-                   '    <subprop subattr="2"/>\n'
-                   '  </prop>\n'
-                   '  <simple>simple</simple>\n'
-                   '</top>\n')
+                      '<top>\n'
+                      '  <prop>\n'
+                      '    <subprop subattr="1"/>\n'
+                      '    <subprop subattr="2"/>\n'
+                      '  </prop>\n'
+                      '  <simple>simple</simple>\n'
+                      '</top>\n')
         self.assertEqual(o.tostring(), xmlOutText)
 
 
     def testNamespaces(self):
-        xmlString = ('<top xmlns="http://this" xmlns:other="http://other/other"'
-                        ' xmlns:other2="http://other/other2">\n'
-                     '  <local/>\n'
-                     '  <other:tag other:val="1"/>\n'
-                     '  <other2:tag val="2"/>\n'
-                     '</top>\n')
+        xmlString = _xml('namespaces',
+                    '<top xmlns="http://this" xmlns:other="http://other/other"'
+                    ' xmlns:other2="http://other/other2">\n'
+                    '  <local/>\n'
+                    '  <other:tag other:val="1"/>\n'
+                    '  <other2:tag val="2"/>\n'
+                    '</top>\n')
         xml = StringIO(xmlString)
         o = xobj.parsef(xml)
         assert(o.top.other_tag.other_val == '1')
@@ -199,7 +209,7 @@ class XobjTest(testhelp.TestCase):
                           xobj.parsef, xml, schemaf = schema)
 
     def testId(self):
-        s = (
+        s = _xml('id1',
             '<top>\n'
             '  <item id="theid" val="value"/>\n'
             '  <ref other="theid"/>\n'
@@ -221,7 +231,7 @@ class XobjTest(testhelp.TestCase):
         self.assertEquals(s, s2)
 
         # now test if the id is called something else
-        s = (
+        s = _xml('id2',
             '<top>\n'
             '  <item anid="theid" val="value"/>\n'
             '  <ref other="theid"/>\n'
@@ -260,7 +270,7 @@ class XobjTest(testhelp.TestCase):
             assert(0)
 
     def testExplicitNamespaces(self):
-        s = (
+        s = _xml('explicitns',
             '<top xmlns="http://somens.xsd" xmlns:ns="http://somens.xsd">\n'
             '  <element ns:attr="foo"/>\n'
             '</top>\n'

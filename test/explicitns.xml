@@ -1,0 +1,3 @@
+<top xmlns="http://somens.xsd" xmlns:ns="http://somens.xsd">
+  <element ns:attr="foo"/>
+</top>
