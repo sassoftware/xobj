@@ -68,15 +68,19 @@ class XobjTest(testhelp.TestCase):
         class SubelementClass(xobj.XObject):
             subattr = [ int ]
         TopClass.subelement = SubelementClass
+        TopClass.prop = xobj.XObject
 
         o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement.subattr, [ 2 ] )
+        self.assertEqual(o.top.prop.text, 'something')
 
         # ---
 
         TopClass.subelement = [ SubelementClass ]
+        TopClass.prop = [ str ]
         o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement[0].subattr, [ 2] )
+        self.assertEqual(o.top.prop, [ 'something' ])
 
     def testComplexParse(self):
         xmlText = _xml('complex',

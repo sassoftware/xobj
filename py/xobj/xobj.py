@@ -10,19 +10,23 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 
 from lxml import etree
-import xmlschema
 import types
 from StringIO import StringIO
 
 class UnknownXType(Exception):
 
-    pass
+    """
+    Exception raised when a class prototype specifies a type which is not
+    understood.
+    """
 
 class XType(object):
 
     def _isComplex(self):
-        for key in self.pythonType.__dict__.iterkeys():
-            if key[0] != '_':
+        for key, val in self.pythonType.__dict__.iteritems():
+            if (type(val) != types.FunctionType and 
+                 type(val) != types.MethodType and key[0] != '_'
+                 and key != 'text'):
                 return True
 
         return False
@@ -47,7 +51,7 @@ def XTypeFromXObjectType(xObjectType):
     elif xObjectType == int:
         return XType(XObjectInt)
     elif xObjectType == str:
-        return XType(str)
+        return XType(XObjectStr)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
@@ -57,8 +61,38 @@ def XTypeFromXObjectType(xObjectType):
 
 class XObject(object):
 
+    """
+    Superclass for all elements represented in XML. Subclasses of XObject
+    can be used to specify how attributes and elements of the element are
+    represented in python. For example, parsing the XML:
+
+        <element intAttr="10" strAttr="hello">
+           <subelement>Value</subelement>
+        </element>
+
+    using this class:
+
+        class Element(xobj.XObject):
+
+            intAttr = int
+            strAttr = str
+            subelement = [ xobj.XObject ]
+
+    (which is done with doc = xobj.parse("---xml string---",
+                                    typeMap = { 'element' : Element } )
+    will result in the object tree:
+
+        doc.element.intAttr = 10
+        doc.element.strAttr = 'hello'
+        doc.element.subelement.text = [ 'Value' ]
+
+    """
+
     _elements = []
     _attributes = set()
+
+    def __init__(self, text = None):
+        assert(text is None)
 
     def _setAttribute(self, doc, key, val):
         expectedType = getattr(self.__class__, key, None)
@@ -186,9 +220,6 @@ class XObject(object):
 
         return element
 
-    def __init__(self, text = None):
-        self.text = text
-
 class XID(XObject):
 
     pass
@@ -253,6 +284,9 @@ class Document(XObject):
             else:
                 text = element.text
 
+            if element.tag == 'prop':
+                import epdb;epdb.st('f')
+
             tag = nsmap(element.tag)
 
             if tag in self._dynamicClassDict:
@@ -290,6 +324,7 @@ class Document(XObject):
 
                 # look for unions
                 for key, val in thisXType.pythonType.__dict__.iteritems():
+                    if key[0] == '_': continue
                     if isinstance(val, list) and isinstance(val[0], dict):
                         ut = XUnionType(val[0])
                         for a, b in ut.d.iteritems():
@@ -365,11 +400,13 @@ class Document(XObject):
 
 class XObjectInt(XObject, int):
 
-    pass
+    def __init__(self, v):
+        XObject.__init__(self, None)
 
 class XObjectStr(XObject, str):
 
-    pass
+    def __init__(self, v):
+        XObject.__init__(self)
 
 class XObjParseException(Exception):
 
