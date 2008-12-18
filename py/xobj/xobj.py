@@ -143,9 +143,9 @@ class AbstractXObject(object):
                 setattr(self, key, current)
 
         if self.__dict__.get(key, None) is None:
-            # This has not yet been set in the instance (because it's missing) or it's been
-            # set to None (because we think we don't have this value but it's actually an idref
-            # being filled in later)
+            # This has not yet been set in the instance (because it's missing)
+            # or it's been set to None (because we think we don't have this
+            # value but it's actually an idref being filled in later)
             setattr(self, key, val)
         elif type(current) == list:
             current.append(val)
@@ -218,14 +218,16 @@ class Document(XObject):
                     if pythonType and issubclass(pythonType, XIDREF):
                         idVal = getattr(val, 'id', None)
                         if idVal is None:
-                            for idKey, idType in val.__class__.__dict__.iteritems():
+                            for idKey, idType in (
+                                        val.__class__.__dict__.iteritems()):
                                 if (idKey[0] != '_' and type(idType) == type
                                                 and issubclass(idType, XID)):
                                     idVal = getattr(val, idKey)
 
                         if idVal is None:
-                            raise XObjSerializationException('No id found for element referenced by '
-                                                             '%s' % key)
+                            raise XObjSerializationException(
+                                    'No id found for element referenced by %s'
+                                    % key)
                         val = idVal
 
                     key = addns(key)

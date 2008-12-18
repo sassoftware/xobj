@@ -381,9 +381,7 @@ class XobjTest(testhelp.TestCase):
                              '  <prop>abc</prop>\n'
                              '</top>\n')
 
-        d = xobj.parse(s, typeMap = { 'middle' : Middle })
-        import epdb;epdb.st()
-
+        d = xobj.parse(s)
 
 if __name__ == "__main__":
     testsuite.main()
