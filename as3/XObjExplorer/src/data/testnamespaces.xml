@@ -1,0 +1,8 @@
+<top xmlns="http://this" xmlns:other="http://other/other" xmlns:other2="http://other/other2">
+  <local />
+  <other:tag other:val="1" />
+  <other2:tag val="2" >foobar</other2:tag>
+  <third xmlns:abc="http://abc">
+    <abc:tag other:val="2" other2:val="3" abc:id="4" id="5"/>
+  </third>
+</top>

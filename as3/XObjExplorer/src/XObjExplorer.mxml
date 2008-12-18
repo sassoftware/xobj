@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="creationComplete()">
+
+    <mx:Script>
+    <![CDATA[
+    import com.rpath.xobj.XObjXMLEncoder;
+    import com.rpath.xobj.XObjXMLDecoder;
+    import com.rpath.xobj.SchemaAwareXMLEncoder;
+    import com.rpath.xobj.SchemaAwareXMLDecoder;
+    import mx.controls.Alert;
+    import test.File;
+    import mx.rpc.http.HTTPService;
+    import mx.rpc.xml.*;
+    import mx.rpc.events.*;
+    import mx.binding.utils.BindingUtils;
+    import mx.rpc.xml.SimpleXMLDecoder;
+    import test.TestObject;
+    import mx.rpc.xml.SimpleXMLEncoder;
+    import mx.collections.ArrayCollection;
+    
+    [Bindable]
+    public var ovfFiles:ArrayCollection = new ArrayCollection(
+        [
+        { label: "outovf", value: "./data/out.ovf" },
+        { label: "outovf_bpja", value: "./data/out.bpja.ovf" },
+        { label: "garbage", value: "./data/garbage.out.ovf" },
+        { label: "images", value: "./data/images.xml" },
+        { label: "someovf", value: "./data/someOVF.ovf" },
+        { label: "testnamespaces", value: "./data/testnamespaces.xml" }
+        ]
+        );
+
+    [Bindable]
+    public var decoderChoices:ArrayCollection = new ArrayCollection(
+        [
+        { label: "Simple", value: "SIMPLE" },
+        { label: "Typed", value: "TYPED" },
+        { label: "Schema Aware", value: "SCHEMA" }
+        ]
+        );
+
+    private var schemaDecoder:SchemaAwareXMLDecoder;
+    private var schemaEncoder:SchemaAwareXMLEncoder;
+    private var typeRegistry:SchemaTypeRegistry;
+    private var schemaManager:SchemaManager;
+    private var schemaMarshaller:SchemaMarshaller;
+    private var schemaLoader:SchemaLoader;
+
+    private function setupSchemaHandling():void
+    {
+        schemaDecoder = new SchemaAwareXMLDecoder();
+        schemaDecoder.recordXSIType = true;
+
+        schemaEncoder = new SchemaAwareXMLEncoder();
+        
+        typeRegistry = schemaDecoder.typeRegistry;
+        schemaManager = schemaDecoder.schemaManager;
+        
+        schemaEncoder.schemaManager = schemaManager;
+        
+        schemaMarshaller = schemaManager.schemaMarshaller;
+        schemaLoader = new SchemaLoader();
+
+        schemaLoader.addEventListener(SchemaLoadEvent.LOAD, schemaLoaded);
+    }
+     
+    [Bindable]
+    public var isValid:Boolean;
+    
+    [Bindable]
+    public var testObject:*;
+    
+    [Bindable]
+    public var readyToDecode:Boolean;
+    
+    public function editXML(event:Event=null):void
+    {
+        try
+        { 
+            // check that this is valid XML
+            var testXML:XML = new XML(inputView.text);
+            
+            // good. snarf the text
+            inputXML = inputView.text;
+            outputXML = "";
+            readyToDecode = true;
+            readyToEncode = false;
+        }
+        catch (e:Error)
+        {
+            trace("error parsing XML" + e.message);
+            readyToDecode = false;
+            readyToEncode = false;
+        }
+    }
+    
+
+    public function creationComplete(event:Event=null):void
+    {
+        testObject = new TestObject();
+        BindingUtils.bindSetter(getInputXMLFromComboBox, filePicker, ["selectedItem"]);
+        
+        setupSchemaHandling();
+    }
+    
+    private function schemaLoaded(event:SchemaLoadEvent):void
+    {
+        schemaManager.addSchema(event.schema);
+        testObject = schemaDecoder.decode(new XML(inputXML), new QName("http://schemas.dmtf.org/ovf/envelope/1","Envelope"));
+    }
+    
+    public var oldTestObject:*;
+
+    private var refreshingXML:Boolean;
+    
+    private var currentChoice:* = {};
+    
+    private function getInputXMLFromComboBox(choice:*):void
+    {
+        if (choice && choice != currentChoice)
+        {
+            currentChoice = choice;
+            service.url = choice.value;
+            service.send();
+        }
+    }
+    
+    private function handleXMLResult(event:ResultEvent):void
+    {
+        inputView.text = event.result as String;
+        editXML();
+    }
+    
+    
+    [Bindable]
+    public var inputXML:String;
+    
+    [Bindable]
+    public var readyToEncode:Boolean;
+    
+    public function decodeInputXML():void
+    {
+        
+        if (!refreshingXML)
+        {
+            try
+            {
+                var newObject:*;
+
+                outputXML = "";
+                
+                oldTestObject = testObject;
+                
+                switch (decoderToUse.selectedItem.value)
+                {
+                    case "SIMPLE":
+                    var simpleDecoder:SimpleXMLDecoder = new SimpleXMLDecoder(false);
+                    var xmlNode:XMLNode = new XMLDocument(inputXML);
+                    newObject = simpleDecoder.decodeXML(xmlNode);
+                    break;
+                    
+                    case "TYPED":
+                    var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({Envelope:test.Envelope, File:test.File},
+                        { _default_ : "http://schemas.dmtf.org/ovf/envelope/1"}, false, false);
+                        
+                    xmlNode = new XMLDocument(inputXML);
+                    newObject = typedDecoder.decodeXML(xmlNode);
+                    break;
+                    
+                    case "SCHEMA":                    
+                    typeRegistry.registerClass(new QName("http://schemas.dmtf.org/ovf/envelope/1","EnvelopeType"), test.Envelope);
+                    typeRegistry.registerClass(new QName("http://schemas.dmtf.org/ovf/envelope/1","DeploymentOptionSection_Type"), test.OVFId);
+                    schemaLoader.load("http://schemas.dmtf.org/ovf/envelope/1/dsp8023.xsd");
+                    newObject = {};
+                    break;
+                }
+                    
+                
+                testObject = newObject;
+                readyToEncode = true;
+                //testObject.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, getObjectXML);
+                
+            }
+            catch (e:Error)
+            {
+                readyToEncode=false;
+                var stack:String = e.getStackTrace();
+                
+            }
+        }
+    }
+    
+    [Bindable]
+    public var outputXML:String;
+    
+    public function getOutputXML(event:Event=null):void
+    {
+        refreshingXML = true;
+        
+        var myXML:XMLDocument = new XMLDocument();
+        var xmlNode:XMLNode;
+        var xmlList:XMLList;
+        var unformattedOutput:String;
+        
+        switch (decoderToUse.selectedItem.value)
+        {
+            case "SIMPLE":
+            var simpleEncoder:SimpleXMLEncoder = new SimpleXMLEncoder(myXML);
+            xmlNode = simpleEncoder.encodeValue(testObject, new QName("local","foo"), new XMLNode(5,"root"));
+            unformattedOutput = myXML.toString();
+            break;
+            
+            case "TYPED":
+            var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({Envelope:test.Envelope, File: test.File},
+                { _default_ : "http://schemas.dmtf.org/ovf/envelope/1" }, myXML);
+            xmlNode = typedEncoder.encodeObject(testObject, myXML);
+            // this is disgusting. Says somehting is wrong in XMLDecode
+            unformattedOutput = myXML.firstChild.firstChild.toString();
+            break;
+            
+            case "SCHEMA":
+            var schemaEncoder:SchemaAwareXMLEncoder = new SchemaAwareXMLEncoder();
+            xmlList = schemaEncoder.encode(testObject,null, new QName("http://schemas.dmtf.org/ovf/envelope/1","EnvelopeType"), null);
+            unformattedOutput = xmlList.toXMLString();
+            break;
+        }
+        
+        //make the output look nice
+        outputXML = new XML(unformattedOutput).toString();
+                
+        refreshingXML = false;
+    }
+        
+    ]]>
+    </mx:Script>
+    
+    <mx:HTTPService id="service" resultFormat="text" result="handleXMLResult(event)"/>
+    
+    <mx:VDividedBox width="100%" height="100%">
+        <mx:HDividedBox width="100%" height="70%">
+            <mx:VBox width="50%" height="100%">
+                <mx:HBox>
+                    <mx:FormItem label="XML File" >
+                        <mx:ComboBox id="filePicker" dataProvider="{ovfFiles}"
+                        selectedIndex="-1"/>
+                    </mx:FormItem>           
+                    <mx:FormItem label="Decoder" >
+                        <mx:ComboBox id="decoderToUse" dataProvider="{decoderChoices}"
+                        selectedIndex="-1"/>
+                    </mx:FormItem>           
+                <mx:Button label="DECODE" click="decodeInputXML()" enabled="{readyToDecode}"/>
+                </mx:HBox>
+                <mx:TextArea id="inputView" width="100%" height="100%" text="{inputXML}" change="editXML(event)" />
+            </mx:VBox>
+            <mx:VBox width="50%" height="100%">
+                <mx:Button label="ENCODE" click="getOutputXML(event)" enabled="{readyToEncode}"/>
+                <mx:TextArea id="outputView" text="{outputXML}"  width="100%" height="100%" editable="false"/>
+            </mx:VBox>
+        </mx:HDividedBox>
+    </mx:VDividedBox>
+</mx:Application>
