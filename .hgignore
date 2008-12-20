@@ -4,9 +4,6 @@ syntax: glob
 bin/
 bin-debug/
 bin-release/
-docs/
-iclouds/src/generated/
-iclouds-build/test/
 *.swf
 .DS_Store
 .svn/
