@@ -212,6 +212,7 @@ public class XObjXMLDecoder
     public function decodeXML(dataNode:XMLNode, propType:Class = null):Object
     {
         var result:*;
+        var nullObject:Boolean;
         var isSimpleType:Boolean = false;
         var shouldMakeBindable:Boolean = false;
         var isTypedProperty:Boolean = false;
@@ -294,6 +295,9 @@ public class XObjXMLDecoder
         
         result = new resultType();
         
+        // track whether we actually have any values at all
+        nullObject = true;
+        
         // so what type did we eventually use?
         var resultTypeName:String = getQualifiedClassName(result);
         
@@ -309,6 +313,7 @@ public class XObjXMLDecoder
         
         if ((children.length == 1) && (children[0].nodeType == XMLNodeType.TEXT_NODE))
         {
+            nullObject = false;
             // If exactly one text node subtype, we must want a simple
             // value.
             
@@ -323,6 +328,7 @@ public class XObjXMLDecoder
         {
             if (children.length > 0)
             {
+                nullObject = false;
                 var seenProperties:Object = {};
                 var lastPartName:Object = {qname: null, propname: null};
                 
@@ -455,6 +461,7 @@ public class XObjXMLDecoder
         for (var attribute:String in attributes)
         {
             
+            nullObject = false;
             // result can be null if it contains no children.
             if (result == null)
             {
@@ -532,6 +539,10 @@ public class XObjXMLDecoder
         if (elementSet.length > 0)
             XObjMetadata.setElements(result, elementSet);
         
+        // so did we actually do anything to the object?
+        if (nullObject)
+            result = null;
+            
         return result;
     }
 

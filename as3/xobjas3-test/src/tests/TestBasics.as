@@ -150,7 +150,7 @@ public class TestBasics extends TestBase
         t.prop = 'abc';
         t.middle = new Middle();
         t.middle.tag = 123;
-
+        t.bottom = null;
         var typeMap:* = {top:Top};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
@@ -158,6 +158,7 @@ public class TestBasics extends TestBase
 
         var expectedString:String = 
                 '<top>\n'+
+                '  <bottom/>\n'+
                 '  <middle>\n'+
                 '    <tag>123</tag>\n'+
                 '  </middle>\n'+
@@ -174,6 +175,7 @@ public class TestBasics extends TestBase
         assertTrue(o.top.middle is Middle);
         assertTrue(o.top.middle.tag == 123);
         assertTrue(o.top.middle.foo() == 123);
+        assertTrue(o.top.bottom == null);
 
         // reencode and check round-trip
         xmlOutput = typedEncoder.encodeObject(o);

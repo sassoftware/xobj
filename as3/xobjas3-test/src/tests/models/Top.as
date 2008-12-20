@@ -20,5 +20,6 @@ package tests.models
         }
 
         public var middle:Middle;
+        public var bottom:Middle;
     }
 }
