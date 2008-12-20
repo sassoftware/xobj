@@ -11,13 +11,18 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
-package test
+package
 {
-    [Bindable]
-    public dynamic class Envelope
+    
+    import net.digitalprimates.fluint.tests.TestSuite;
+    
+    import tests.TestBasics;
+
+    public class TestSuite1 extends TestSuite
     {
-        public function Envelope()
+        public function TestSuite1()
         {
+            addTestCase( new TestBasics() );
         }
 
     }

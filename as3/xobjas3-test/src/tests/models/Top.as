@@ -11,14 +11,14 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
-package test
+package tests.models
 {
-    [Bindable]
-    public dynamic class Envelope
+    public dynamic class Top
     {
-        public function Envelope()
+        public function Top()
         {
         }
 
+        public var middle:Middle;
     }
 }

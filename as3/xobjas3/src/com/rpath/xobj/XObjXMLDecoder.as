@@ -330,12 +330,14 @@ public class XObjXMLDecoder
                 for (var i:uint = 0; i < children.length; i++)
                 {
                     var partNode:XMLNode = children[i];
-                    var partQName:XObjQName = new XObjQName(partNode.namespaceURI, partNode.nodeName);
+                    
                     // skip text nodes, which are part of mixed content
                     if (partNode.nodeType != XMLNodeType.ELEMENT_NODE)
                     {
                         continue;
                     }
+
+                    var partQName:XObjQName = new XObjQName(partNode.namespaceURI, XObjUtils.getNCName(partNode.nodeName));
 
                     // record the order we see the elements in for encoding purposes
                     // this is an attempt to "fake" XMLSchema sequence constraint of
@@ -348,7 +350,7 @@ public class XObjXMLDecoder
                     }
                     
                     // TODO: allow type map entries to be full QNames, not just local names
-                    var partName:* = decodePartName(partQName, dataNode);
+                    var partName:* = decodePartName(partQName, partNode);
                     lastPartName.propname = partName;
                     
                     var partTypeName:String = XObjUtils.typeNameForProperty(resultTypeName, partName);
@@ -511,6 +513,8 @@ public class XObjXMLDecoder
             for (var p:String in result)
             {
                 count++;
+                if (count > 1)
+                    break;
             }
             
             if (count == 1)

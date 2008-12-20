@@ -11,14 +11,25 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
-package test
+package
 {
-    [Bindable]
-    public dynamic class Envelope
+    
+    /** 
+     * TestConfiguration is a static helper class that
+     * returns the array of test suites to execute
+     */
+    
+    public class TestConfiguration
     {
-        public function Envelope()
+        
+        public static function suites() : Array
         {
+            var suiteArray:Array = new Array();
+    
+            suiteArray.push( new TestSuite1() );
+            //suiteArray.push( new ControllerTestSuite() );
+            
+            return suiteArray;
         }
-
     }
 }

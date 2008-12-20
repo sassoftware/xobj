@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+#
+# Copyright (c) 2008 rPath, Inc.
+#
+# This program is distributed under the terms of the MIT License as found 
+# in a file called LICENSE. If it is not present, the license
+# is always available at http://www.opensource.org/licenses/mit-license.php.
+#
+# This program is distributed in the hope that it will be useful, but
+# without any waranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the MIT License for full details.
+-->
+
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
     creationComplete="creationComplete()">
 
@@ -216,7 +229,7 @@
                 { _default_ : "http://schemas.dmtf.org/ovf/envelope/1" }, myXML);
             xmlNode = typedEncoder.encodeObject(testObject, myXML);
             // this is disgusting. Says somehting is wrong in XMLDecode
-            unformattedOutput = myXML.firstChild.firstChild.toString();
+            unformattedOutput = xmlNode.firstChild.toString();
             break;
             
             case "SCHEMA":

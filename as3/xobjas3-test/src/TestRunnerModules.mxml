@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 #
 # Copyright (c) 2008 rPath, Inc.
 #
@@ -9,16 +10,15 @@
 # This program is distributed in the hope that it will be useful, but
 # without any waranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the MIT License for full details.
-*/
+-->
 
-package test
-{
-    [Bindable]
-    public dynamic class Envelope
-    {
-        public function Envelope()
-        {
-        }
-
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" implements="net.digitalprimates.fluint.modules.ITestSuiteModule">
+    <mx:Script>
+    <![CDATA[
+    import net.digitalprimates.fluint.unitTests.frameworkSuite.FrameworkSuite;
+    public function getTestSuites():Array {
+        return TestConfiguration.suites()
     }
-}
+    ]]>
+    </mx:Script>    
+</mx:Module>

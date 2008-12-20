@@ -33,7 +33,6 @@ package com.rpath.xobj
 import flash.utils.*;
 import flash.xml.XMLDocument;
 import flash.xml.XMLNode;
-import flash.xml.XMLNodeType;
 
 import mx.utils.*;
 
@@ -135,10 +134,16 @@ public class XObjXMLEncoder
     //--------------------------------------------------------------------------
     
 
-    public function XObjXMLEncoder(typeMap:*, nmMap: *, myXML:XMLDocument=null)
+    public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null, myXML:XMLDocument=null)
     {
         super();
-
+        
+        if (typeMap == null)
+            typeMap = {};
+        
+        if (nmMap == null)
+            nmMap = {};
+            
         this.typeMap = typeMap;
 
         for (var prefix:String in nmMap)
@@ -147,7 +152,7 @@ public class XObjXMLEncoder
             spacenameMap[prefix] = nmMap[prefix];
         }
         
-        this.myXMLDoc = myXML ? myXML : new XMLDocument();
+        this.xmlDocument = myXML ? myXML : new XMLDocument();
     }
 
     //--------------------------------------------------------------------------
@@ -156,7 +161,7 @@ public class XObjXMLEncoder
     //
     //--------------------------------------------------------------------------
     
-    protected var myXMLDoc:XMLDocument;
+    public var xmlDocument:XMLDocument;
     
     //--------------------------------------------------------------------------
     //
@@ -176,25 +181,66 @@ public class XObjXMLEncoder
      * value.
      */
 
-    public function encodeObject(obj:Object, parentNode:XMLNode=null):XMLNode
+    public function encodeObject(obj:Object, parentNode:XMLNode=null):XMLDocument
     {
+        var qname:XObjQName;
+        
+        // is obj a root holder?
+        if (XObjMetadata.METADATA_PROPERTY in obj)
+        {
+            var xobj:XObjMetadata = obj[XObjMetadata.METADATA_PROPERTY];
+            if (xobj.elements.length == 1)
+            {
+                obj = obj[xobj.elements[0].propname];
+                qname = xobj.elements[0].qname;
+            }
+        }
+        
         // we want to make sure the type we use for root node is type of object
         var tag:String = tagForType(obj);
         
         // handle untyped objects
-        if(!tag)
+        if (!tag)
         {
             tag = defaultTag;
         }
         
-        if (!parentNode)
-            parentNode = new XMLNode(XMLNodeType.ELEMENT_NODE, tag);
-            
-        return encodeValue(obj, new XObjQName("",tag), parentNode);
+        if (qname == null)
+            qname = new XObjQName("", tag);
+        
+        // null parentNode means "make a new document please"
+        if (parentNode == null)
+        {
+            xmlDocument = new XMLDocument();
+            parentNode = xmlDocument;
+        }
+        else if (parentNode != xmlDocument)
+        {
+            parentNode.parentNode = xmlDocument;
+        }
+        
+        encodeValue(obj, qname, parentNode);
+        
+        return xmlDocument;
     }
 
-    public function encodeValue(obj:Object, qname:XObjQName, parentNode:XMLNode):XMLNode
+    public function encodeValue(obj:Object, q:*, parentNode:XMLNode):XMLNode
     {
+        var qname:XObjQName = new XObjQName();;
+        
+        if (q is XObjQName)
+            qname = q;
+        else if (q is QName)
+        {
+            qname.localName = (q as QName).localName;
+            qname.uri = (q as QName).uri;
+        }
+        else if (q is String)
+        {
+            qname.localName == q;
+            qname.uri="";
+        }
+            
         if (qname.localName == null || qname.localName == "")
             trace("missing qname");
         
@@ -202,9 +248,9 @@ public class XObjXMLEncoder
         // TODO: check whether this matches Erik's server-side Python mapping
         if (obj == null)
         {
-            var myElement:XMLNode = myXMLDoc.createElement("foo");
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
+            var myElement:XMLNode = xmlDocument.createElement("foo");
             parentNode.appendChild(myElement);
+            myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
             return myElement;
         }
         else if (qname.localName == XObjMetadata.METADATA_PROPERTY)
@@ -224,6 +270,8 @@ public class XObjXMLEncoder
             var newNode:XMLNode = encodeValue(obj.value, qname, parentNode);
             // encoded as meta ?
             setAttributes(newNode, obj);
+            // re-encode the nodename to pick up possible local namespace overrides
+            newNode.nodeName = XObjUtils.encodeElementTag(qname, newNode);
             return newNode;
         }
         else
@@ -249,7 +297,7 @@ public class XObjXMLEncoder
             return myElement;
         }
     
-        myElement = myXMLDoc.createElement("foo");
+        myElement = xmlDocument.createElement("foo");
         
         if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
@@ -384,7 +432,7 @@ public class XObjXMLEncoder
                 valueString = obj.toString();
             }
     
-            var valueNode:XMLNode = myXMLDoc.createTextNode(valueString);
+            var valueNode:XMLNode = xmlDocument.createTextNode(valueString);
             myElement.appendChild(valueNode);
         }
     
