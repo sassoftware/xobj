@@ -10,17 +10,24 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-default: test
-
-build: default-build testutils-build
-
-install: default-install testutils-install
-
-clean: default-clean testutils-clean
-
-test: default-test testutils-test
+SUBDIRS = py #as3
 
 
-export TOPDIR=$(shell pwd)/../..
+build: default-build
+
+install: default-install
+
+clean: default-clean
+
+test: default-test
+
+
+dist: archive
+
+archive:
+	hg archive --exclude .hgignore -t tbz2 xobj-`hg id -i`.tar.bz2
+
+
+export TOPDIR=$(shell pwd)
 include $(TOPDIR)/Make.rules
 include $(TOPDIR)/Make.defs

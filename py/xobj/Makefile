@@ -10,15 +10,17 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-default: test
+python_files = $(wildcard *.py)
+override PYDEST = /xobj
 
-build: default-build testutils-build
 
-install: default-install testutils-install
+build: default-build python-build
 
-clean: default-clean testutils-clean
+install: default-install python-install
 
-test: default-test testutils-test
+clean: default-clean python-clean
+
+test: default-test python-test
 
 
 export TOPDIR=$(shell pwd)/../..

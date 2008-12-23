@@ -17,7 +17,12 @@ bin-release/
 *.svn
 *.bz2
 *.cache
+.*.swp
+
 .testerr
 */junit.xml
 */user.properties
 
+py/test/.coverage/
+py/test/.times
+py/test/annotate/
