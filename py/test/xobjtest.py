@@ -45,13 +45,18 @@ class XobjTest(testhelp.TestCase):
         self.assertEqual(o.top.subelement.subattr, '2')
         self.assertEqual(o.top.subelement.__class__.__name__,
                          'subelement_XObj_Type')
+        assert(repr(o.startswith('<xobj.xobj.Document object')))
+        assert(repr(o.top.startswith('<xobj.xobj.top_XObj_Type object')))
+        assert(repr(o.top.subelement).startswith(
+                                    '<xobj.xobj.subelement_XObj_Type object'))
+        self.assertEqual(repr(o.top.attr1), "'anattr'")
 
         # ---
 
-        class SubelementClass(xobj.XObject):
+        class SubelementClass(object):
             subattr = int
 
-        class TopClass(xobj.XObject):
+        class TopClass(object):
             subelement = SubelementClass
             unused = str
             attr1 = str
@@ -65,7 +70,7 @@ class XobjTest(testhelp.TestCase):
 
         # ---
 
-        class SubelementClass(xobj.XObject):
+        class SubelementClass(object):
             subattr = [ int ]
         TopClass.subelement = SubelementClass
         TopClass.prop = xobj.XObject
@@ -116,11 +121,11 @@ class XobjTest(testhelp.TestCase):
 
         # ---
 
-        class SubpropClass(xobj.XObject):
+        class SubpropClass(object):
             subattr = int
             unused = str
 
-        class PropClass(xobj.XObject):
+        class PropClass(object):
             subprop = [ SubpropClass ]
 
         class SimpleClass(xobj.XObject):
@@ -259,7 +264,7 @@ class XobjTest(testhelp.TestCase):
 
         # and test if the id isn't defined properly
         class Top(xobj.XObject):
-            _attributes = set(['ref'])
+            _xobj = xobj.XObjMetadata(attributes = [ 'ref' ])
             ref = xobj.XIDREF
         Document.top = Top
 
@@ -293,15 +298,15 @@ class XobjTest(testhelp.TestCase):
             )
         assert(s2 == expecteds2)
 
-    def testUnknownType(self):
-        s ='<top/>'
+    def testObjectType(self):
+        s ='<top attr="foo"/>'
         xml = StringIO(s)
 
         class Document(xobj.Document):
             top = object
 
-        self.assertRaises(xobj.UnknownXType, xobj.parsef, xml,
-                          documentClass = Document)
+        d = xobj.parsef(xml, documentClass = Document)
+        assert(d.top.attr == 'foo')
 
     def testTypeMap(self):
         s ='<top><item val="3"/></top>'
@@ -382,6 +387,27 @@ class XobjTest(testhelp.TestCase):
                              '</top>\n')
 
         d = xobj.parse(s)
+
+    def testCleanCreation(self):
+        class Top:
+            _xobj = xobj.XObjMetadata(
+                        elements = [ "first", "second", "third" ],
+                        attributes = [ "foo", "bar" ])
+
+        t = Top()
+        t.first = "1"
+        t.second = "2"
+        t.foo = "f"
+
+        self.assertEquals(xobj.toxml(t, 'top', xml_declaration = False),
+            '<top foo="f">\n'
+            '  <first>1</first>\n'
+            '  <second>2</second>\n'
+            '</top>\n')
+
+        t.unknown = "unknown"
+        assert("<unknown>unknown</unknown>" in
+                    xobj.toxml(t, 'top', xml_declaration = False))
 
 if __name__ == "__main__":
     testsuite.main()

@@ -45,24 +45,20 @@ class XUnionType(XType):
 
 def XTypeFromXObjectType(xObjectType):
 
-    if (type(xObjectType) == type and
-            issubclass(xObjectType, XObject)):
-        return XType(xObjectType)
-    elif xObjectType == int:
-        return XType(XObjectInt)
-    elif xObjectType == str:
+    if xObjectType == str or xObjectType == object:
+        # Basic object's are static, making instantiating one pretty worthless.
         return XType(XObject)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
                      forceList = True)
 
-    raise UnknownXType
+    return XType(xObjectType)
 
-class AbstractXObject(object):
+class XObject(str):
 
     """
-    Superclass for all elements represented in XML. Subclasses of XObject
+    Example class for all elements represented in XML. Subclasses of XObject
     can be used to specify how attributes and elements of the element are
     represented in python. For example, parsing the XML:
 
@@ -87,83 +83,28 @@ class AbstractXObject(object):
 
     """
 
-    _elements = []
-    _attributes = set()
-
-    def __init__(self, text = None):
-        self._elements = [ x for x in self._elements ]
-        self._attributes = set(x for x in self._attributes)
-
-    def _setAttribute(self, doc, key, val):
-        expectedType = getattr(self.__class__, key, None)
-        if expectedType is None:
-            expectedType = doc.typeMap.get(key, None)
-
-        if expectedType:
-            expectedXType = XTypeFromXObjectType(expectedType)
-            if (key == 'id' or key == 'xml_id' or
-                        issubclass(expectedXType.pythonType, XID)):
-                doc._ids[val] = self
-            elif issubclass(expectedXType.pythonType, XIDREF):
-                doc._idsNeeded.append((self, key, val))
-                return
-            else:
-                val = expectedXType.pythonType(val)
-        else:
-            if (key == 'id' or key == 'xml_id'):
-                doc._ids[val] = self
-
-            expectedXType = None
-            val = XObject(val)
-
-        self._addAttribute(key, val, xType = expectedXType)
-
-    def _addAttribute(self, key, val, xType = None):
-        if not self._attributes:
-            self._attributes = set([key])
-        elif key not in self._attributes:
-            self._attributes.add(key)
-
-        self._setItem(key, val, xType)
-
-    def _addElement(self, key, val, xType = None):
-        self._setItem(key, val, xType = xType)
-        if not self._elements:
-            self._elements = [ key ]
-        elif key not in self._elements:
-            self._elements.append(key)
-
-    def _setItem(self, key, val, xType = None):
-        current = getattr(self, key, None)
-        if xType and xType.forceList:
-            # force the item to be a list, and use the type inside of
-            # this list as the type of elements of the list
-            if key not in self.__dict__:
-                current = []
-                setattr(self, key, current)
-
-        if self.__dict__.get(key, None) is None:
-            # This has not yet been set in the instance (because it's missing)
-            # or it's been set to None (because we think we don't have this
-            # value but it's actually an idref being filled in later)
-            setattr(self, key, val)
-        elif type(current) == list:
-            current.append(val)
-        else:
-            setattr(self, key, [ current, val ])
-
-
-class XObjectInt(AbstractXObject, int):
-
-    pass
-
-class XObject(str, AbstractXObject):
-
     def __repr__(self):
         if self:
             return str.__repr__(self)
         else:
-            return AbstractXObject.__repr__(self)
+            return object.__repr__(self)
+
+class XObjMetadata(object):
+
+    __slots__ = [ 'elements', 'attributes', 'tag' ]
+
+    def __init__(self, elements = None, attributes = None):
+        if elements:
+            self.elements = list(elements)
+        else:
+            self.elements = []
+
+        if attributes:
+            self.attributes = set(attributes)
+        else:
+            self.attributes = set()
+
+        self.tag = None
 
 class XID(XObject):
 
@@ -184,6 +125,7 @@ class Document(XObject):
         self._ids = {}
         self.__explicitNamespaces = False
         self.__xmlNsMap = {}
+        self._xobj = XObjMetadata()
 
     def getElementTree(self, xobj, tag, rootElement = None, nsmap = {}):
 
@@ -202,12 +144,15 @@ class Document(XObject):
             element.text = xobj
             return element
 
-        if hasattr(xobj, '_tag'):
-            tag = xobj._tag
-        else:
-            tag = addns(tag)
+        tag = addns(tag)
 
-        attrSet = getattr(xobj, '_attributes', set())
+        if hasattr(xobj, '_xobj'):
+            attrSet = xobj._xobj.attributes
+
+            if xobj._xobj.tag is not None:
+                tag = xobj._xobj.tag
+        else:
+            attrSet = set()
 
         attrs = {}
         elements = {}
@@ -238,11 +183,11 @@ class Document(XObject):
 
         orderedElements = []
 
-        if hasattr(xobj, '_elements'):
-            for name in xobj._elements:
-                for val in elements[name]:
+        if hasattr(xobj, '_xobj'):
+            for name in xobj._xobj.elements:
+                for val in elements.get(name, []):
                     orderedElements.append((name, val))
-            for name in (set(elements) - set(xobj._elements)):
+            for name in (set(elements) - set(xobj._xobj.elements)):
                 for val in elements[name]:
                     orderedElements.append((name, val))
         else:
@@ -302,6 +247,59 @@ class Document(XObject):
                         s = s[len(long) + 2:]
 
             return s
+
+        def setAttribute(xobj, doc, key, val):
+            expectedType = getattr(xobj.__class__, key, None)
+            if expectedType is None:
+                expectedType = doc.typeMap.get(key, None)
+
+            if expectedType:
+                expectedXType = XTypeFromXObjectType(expectedType)
+                if (key == 'id' or key == 'xml_id' or
+                            issubclass(expectedXType.pythonType, XID)):
+                    doc._ids[val] = xobj
+                elif issubclass(expectedXType.pythonType, XIDREF):
+                    doc._idsNeeded.append((xobj, key, val))
+                    return
+                else:
+                    val = expectedXType.pythonType(val)
+            else:
+                if (key == 'id' or key == 'xml_id'):
+                    doc._ids[val] = xobj
+
+                expectedXType = None
+                val = XObject(val)
+
+            addAttribute(xobj, key, val, xType = expectedXType)
+
+        def addAttribute(xobj, key, val, xType = None):
+            setItem(xobj, key, val, xType)
+            xobj._xobj.attributes.add(key)
+
+        def addElement(xobj, key, val, xType = None):
+            setItem(xobj, key, val, xType = xType)
+            if key not in xobj._xobj.elements:
+                xobj._xobj.elements.append(key)
+
+        def setItem(xobj, key, val, xType = None):
+            current = getattr(xobj, key, None)
+            if xType and xType.forceList:
+                # force the item to be a list, and use the type inside of
+                # this list as the type of elements of the list
+                if key not in xobj.__dict__:
+                    current = []
+                    setattr(xobj, key, current)
+
+            if xobj.__dict__.get(key, None) is None:
+                # This has not yet been set in the instance (because it's
+                # missing) or it's been set to None (because we think we don't
+                # have this value but it's actually an idref being filled in
+                # later)
+                setattr(xobj, key, val)
+            elif type(current) == list:
+                current.append(val)
+            else:
+                setattr(xobj, key, [ current, val ])
 
         def parseElement(element, parentXType = None, parentXObj = None,
                          parentUnionTags = {}):
@@ -368,6 +366,9 @@ class Document(XObject):
                 else:
                     xobj = NewClass()
 
+            if not hasattr(xobj, '_xobj'):
+                xobj._xobj = XObjMetadata()
+
             # handle children
             for childElement in element.getchildren():
                 if types.BuiltinFunctionType == type(childElement.tag):
@@ -380,7 +381,7 @@ class Document(XObject):
             # handle attributes
             for (key, val) in element.items():
                 key = nsmap(key)
-                xobj._setAttribute(self, key, val)
+                setAttribute(xobj, self, key, val)
 
             # anything which is the same as in the class wasn't set in XML, so
             # set it to None
@@ -394,11 +395,11 @@ class Document(XObject):
 
             if parentXObj is not None:
                 if tag in parentUnionTags:
-                    xobj._tag = tag
-                    parentXObj._addElement(parentUnionTags[tag][0], xobj,
+                    xobj._xobj.tag = tag
+                    addElement(parentXObj, parentUnionTags[tag][0], xobj,
                                            parentUnionTags[tag][1])
                 else:
-                    parentXObj._addElement(tag, xobj, thisXType)
+                    addElement(parentXObj, tag, xobj, thisXType)
 
             return xobj
 
@@ -425,7 +426,7 @@ class Document(XObject):
         for (xobj, tag, theId) in self._idsNeeded:
             if theId not in self._ids:
                 raise XObjIdNotFound(theId)
-            xobj._addAttribute(tag, self._ids[theId])
+            addAttribute(xobj, tag, self._ids[theId])
 
 class XObjParseException(Exception):
 
