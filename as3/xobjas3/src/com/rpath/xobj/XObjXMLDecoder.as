@@ -235,6 +235,14 @@ public class XObjXMLDecoder
         Or it could be the element name maps to a type in the TypeMap
         
         */
+        
+        //TODO: make sure we don't obscure typeMap entries with
+        // generic Array or ArrayCollection requests
+        if (XObjUtils.isTypeArray(propType) || XObjUtils.isTypeArrayCollection(propType))
+        {
+            propType = nodeType;
+        }
+        
         isTypedProperty = (propType != null);
         
         var nodeType:Class = typeForTag(dataNode.nodeName);
@@ -304,13 +312,12 @@ public class XObjXMLDecoder
         // thus, what type of assignment function should we use?
         var assign:Function;
         
-        if (XObjUtils.isTypeArray(resultTypeName))
+        if (XObjUtils.isTypeArray(resultType) || XObjUtils.isTypeArrayCollection(resultType))
             assign = assignToArray;
         else
             assign = assignToProperty;
 
         // OK. Now we're ready to decode some actual data!
-        
         if ((children.length == 1) && (children[0].nodeType == XMLNodeType.TEXT_NODE))
         {
             nullObject = false;
@@ -348,7 +355,7 @@ public class XObjXMLDecoder
                     // record the order we see the elements in for encoding purposes
                     // this is an attempt to "fake" XMLSchema sequence constraint of
                     // ordered elements. Collapse sequenced repetitions to a single entry
-                    if (partQName != lastPartName.qname)
+                    if (!XObjQName.equal(partQName,lastPartName.qname))
                     {
                         lastPartName = {};
                         lastPartName.qname = partQName;
@@ -358,8 +365,12 @@ public class XObjXMLDecoder
                     // TODO: allow type map entries to be full QNames, not just local names
                     var partName:* = decodePartName(partQName, partNode);
                     lastPartName.propname = partName;
-                    
-                    var partTypeName:String = XObjUtils.typeNameForProperty(resultTypeName, partName);
+                                        
+                    // what type do we want?
+                    var typeInfo:Object = XObjUtils.typeInfoForProperty(resultTypeName, partName);
+                    var partTypeName:String = typeInfo.typeName;
+                    var propertyIsArray:Boolean = typeInfo.isArray;
+                    var propertyIsArrayCollection:Boolean = typeInfo.isArrayCollection;
                     var partObj:*;
                     
                     if (partTypeName != null)
@@ -372,84 +383,14 @@ public class XObjXMLDecoder
                     }
                     else
                         partObj = decodeXML(partNode);
-    
+                        
+                    // if we've seen this property before, assume it's an Array
                     if (seenProperties[partName])
                     {
-                           // Enable processing multiple copies of the same element (sequences)
-                        var existing:Object = result[partName];
+                        propertyIsArray = true;
                     }
                     
-                    if ((seenProperties[partName] && existing != null))
-                    {
-                        if (existing is Array)
-                        {
-                            existing.push(partObj);
-                        }
-                        else if (existing is ArrayCollection)
-                        {
-                            existing.source.push(partObj);
-                        }
-                        else
-                        {
-                            // make it an array
-                            if (existing)
-                                existing = [existing];
-                            else
-                                existing = [];
-                           
-                            existing.push(partObj);
-    
-                            if (shouldMakeBindable)
-                                existing = new ArrayCollection(existing as Array);
-    
-                            assign(result, partName, existing);
-                        }
-                    }
-                    // check the type of the property we're about to add, is it an array?
-                    else if (XObjUtils.isTypeArray(partTypeName))
-                    {
-                        if (partObj is Array)
-                            assign(result, partName, partObj);
-                        else if (partObj is ArrayCollection)
-                            assign(result, partName, partObj.source);
-                        else if (partObj is ObjectProxy)
-                        {
-                            partObj = partObj.item;
-                            // this is getting ugly
-                            if (partObj is Array)
-                                assign(result, partName, partObj);
-                            else if (partObj is ArrayCollection)
-                                assign(result, partName, partObj.source);
-                            else
-                                assign(result, partName, [partObj]);
-                        }
-                        else
-                            assign(result, partName, [partObj]);
-                    }
-                    else if (XObjUtils.isTypeArrayCollection(partTypeName))
-                    {
-                        if (partObj is Array)
-                            assign(result, partName, new ArrayCollection(partObj));
-                        else if (partObj is ArrayCollection)
-                            assign(result, partName, partObj);
-                        else if (partObj is ObjectProxy)
-                        {
-                            partObj = partObj.item;
-                            // this is getting ugly
-                            if (partObj is Array)
-                                assign(result, partName, new ArrayCollection(partObj));
-                            else if (partObj is ArrayCollection)
-                                assign(result, partName, partObj);
-                            else
-                                assign(result, partName, new ArrayCollection([partObj]));
-                        }
-                        else 
-                            assign(result, partName, new ArrayCollection([partObj]));
-                    }
-                    else
-                    {
-                        assign(result, partName, partObj);
-                    }
+                    assign(result, partName, partObj, propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
     
                     seenProperties[partName] = true;
                 }
@@ -547,16 +488,55 @@ public class XObjXMLDecoder
     }
 
     import flash.utils.flash_proxy;
-    
-    private function assignToProperty(result:*, propName:String, value:*):void
+
+    private function assignToProperty(result:*, propName:String, value:*,
+        makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):void
     {
+        if (result == null)
+            return;
+        
+        if (makeArray || makeArrayCollection)
+        {
+            var existing:* = result[propName];
+            
+            if (existing == null)
+            {
+                existing = [];
+                existing = (existing as Array).concat(value);
+            }
+            else if (existing is Array)
+            {
+                existing = (existing as Array).concat(value);
+            }
+            else if (existing is ArrayCollection)
+            {
+                existing = (existing as ArrayCollection).source.concat(value);
+            }
+            else
+            {
+                existing = [existing];
+                existing = (existing as Array).concat(value);
+            }
+            
+            if ((makeArrayCollection || makeBindable) && !(existing is ArrayCollection))
+                existing = new ArrayCollection(existing as Array);
+                
+            value = existing;
+        }
+        
         result[propName] = value;
     }
     
-    private function assignToArray(result:*, propName:String, value:*):void
+    private function assignToArray(result:*, propName:String, value:*,
+        makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):void
     {
-        // propName is ignored in this case
-        result.push(value);
+        if (result == null)
+            return;
+        
+        if (result is Array)
+            result.push(value);
+        else if (result is ArrayCollection)
+            result.addItem(value);
     }
     
 

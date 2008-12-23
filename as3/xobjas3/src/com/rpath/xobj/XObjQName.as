@@ -26,5 +26,15 @@ package com.rpath.xobj
         
         public var uri:String;
         
+        public static function equal(a: XObjQName, b:XObjQName):Boolean
+        {
+            if (a == null || b == null)
+                return false;
+            
+            if ((a.uri == b.uri) && (a.localName == b.localName))
+                return true;
+            
+            return false;
+        }
     }
 }

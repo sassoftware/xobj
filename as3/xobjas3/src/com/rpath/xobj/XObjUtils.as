@@ -16,6 +16,7 @@ package com.rpath.xobj
     import flash.utils.getDefinitionByName;
     import flash.xml.XMLNode;
     
+    import mx.collections.ArrayCollection;
     import mx.utils.DescribeTypeCache;
 
     
@@ -82,56 +83,89 @@ package com.rpath.xobj
      
     private static var typePropertyCache:Object = {};
 
-    public static function isTypeArray(typeName:String):Boolean
+    public static function isTypeArray(type:Class):Boolean
     {
-        // TODO: figure out how to generically detect a collection subtype
-        return (typeName == "Array");
+        if (type == null)
+            return false;
+        
+        var foo:* = new type();
+        return (foo is Array);
     }
 
-    public static function isTypeArrayCollection(typeName:String):Boolean
+    public static function isTypeArrayCollection(type:Class):Boolean
     {
-        // TODO: figure out how to generically detect a collection subtype
-        return (typeName == "mx.collections::ArrayCollection");
+        if (type == null)
+            return false;
+
+        var foo:* = new type();
+        return (type is ArrayCollection);
     }
     
-    public static function typeNameForProperty(className:String, propName:String):String
+    public static function typeInfoForProperty(className:String, propName:String):Object
     {
-        //var className:String = getQualifiedClassName(obj);
+        var isArray:Boolean = false;
+        var result:Object = {typeName: null, isArray: false, isArrayCollection: false};
         
         if (className == "Object" || className == "mx.utils::ObjectProxy")
-            return null;
+            return result;
         
-        var propertyClassName:String;
         var propertyCacheKey:String = className + "." + propName;
+        var arrayElementType:String;
         
-        propertyClassName = typePropertyCache[propertyCacheKey];
+        result = typePropertyCache[propertyCacheKey];
             
-        if (propertyClassName == null)
+        if (result == null)
         {
+            result = {typeName: null, isArray: false, isArrayCollection: false};
+            
             // go look it up (expensive)
             var typeDesc:* = DescribeTypeCache.describeType(className);
             var typeInfo:XML = typeDesc.typeDescription;
             
-            propertyClassName = typeInfo..accessor.(@name == propName).@type.toString().replace( /::/, "." );
-            if (propertyClassName == null || propertyClassName == "")
+            result.typeName = typeInfo..accessor.(@name == propName).@type.toString().replace( /::/, "." );
+            if (result.typeName == null || result.typeName == "")
             {    
-                propertyClassName = typeInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
+                result.typeName = typeInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
+                arrayElementType = typeInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+            }
+            else
+                arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+            
+            if (result.typeName == "Array")
+            {
+                result.isArray = true;
+                result.typeName = null; // assume generic object unless told otherwise
+            }
+            else if (result.typeName == "ArrayCollection")
+            {
+                result.isArrayCollection = true;
+                result.typeName = null; // assume generic object unless told otherwise
             }
             
-            if (propertyClassName == null || propertyClassName == "")
-                propertyClassName = "Undefined";
+            if (arrayElementType != "")
+            {
+                // use type specified
+                result.typeName = arrayElementType;
+            }
             
-                
+            if (result.typeName == "Object"
+                || result.typeName == "mx.utils::ObjectProxy"
+                || result.typeName == "Undefined"
+                || result.typeName == "*"
+                || result.typeName == "")
+            {
+                result.typeName = null;
+            }
+                 
             // cache the result for next time
-            typePropertyCache[propertyCacheKey] = propertyClassName;
+            typePropertyCache[propertyCacheKey] = result;
         }
         
-        if (propertyClassName == "Object" || propertyClassName == "mx.utils::ObjectProxy")
-            return null;
-            
-        return (propertyClassName != "Undefined") ? propertyClassName : null;
+       
+        return result;
     }
     
-    
+
+        
     }
 }
