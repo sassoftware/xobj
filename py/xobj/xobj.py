@@ -174,11 +174,21 @@ class ElementGenerator(object):
                     if pythonType and issubclass(pythonType, XIDREF):
                         idVal = getattr(val, 'id', None)
                         if idVal is None:
+                            # look for an id name in a different namespace
+                            for idKey, idType in (
+                                        val.__dict__.iteritems()):
+                                if idKey.endswith('_id'):
+                                    idVal = getattr(val, idKey)
+                                    break
+
+                        if idVal is None:
+                            # look for something prorotyped XID
                             for idKey, idType in (
                                         val.__class__.__dict__.iteritems()):
                                 if (idKey[0] != '_' and type(idType) == type
                                                 and issubclass(idType, XID)):
                                     idVal = getattr(val, idKey)
+                                    break
 
                         if idVal is None:
                             raise XObjSerializationException(
@@ -186,7 +196,7 @@ class ElementGenerator(object):
                                     % key)
                         val = idVal
                         self.idsNeeded.add(idVal)
-                    elif (key == 'id' or
+                    elif (key == 'id' or key.endswith('_id') or
                           (pythonType and issubclass(pythonType, XID))):
                         self.idsFound.add(val)
 
@@ -262,8 +272,7 @@ class Document(object):
     def toxml(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
             if key[0] == '_': continue
-            if isinstance(val, XObj):
-                break
+            break
 
         if self.__explicitNamespaces:
             map = self.__xmlNsMap.copy()
@@ -298,7 +307,7 @@ class Document(object):
 
             if expectedType:
                 expectedXType = XTypeFromXObjectType(expectedType)
-                if (key == 'id' or key == 'xml_id' or
+                if (key == 'id' or key.endswith('_id') or
                             issubclass(expectedXType.pythonType, XID)):
                     doc._ids[val] = xobj
                 elif issubclass(expectedXType.pythonType, XIDREF):
@@ -307,7 +316,7 @@ class Document(object):
                 else:
                     val = expectedXType.pythonType(val)
             else:
-                if (key == 'id' or key == 'xml_id'):
+                if (key == 'id' or key.endswith('_id')):
                     doc._ids[val] = xobj
 
                 expectedXType = None

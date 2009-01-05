@@ -307,6 +307,22 @@ class XobjTest(testhelp.TestCase):
         else:
             assert(0)
 
+    def testIdInNamespace(self):
+        s = _xml('id-in-ns1',
+            '<ns:top xmlns:ns="http://somens.xsd">\n'
+            '  <ns:item ns:id="theid" ns:val="value"/>\n'
+            '  <ns:ref ns:other="theid"/>\n'
+            '</ns:top>\n')
+        xml = StringIO(s)
+
+        class Ref(object):
+            ns_other = xobj.XIDREF
+
+        d = xobj.parsef(xml, typeMap = { 'ns_ref' : Ref } )
+        assert(d.ns_top.ns_ref.ns_other == d.ns_top.ns_item)
+        s2 = d.toxml(xml_declaration = False)
+        assert(s == s2)
+
     def testExplicitNamespaces(self):
         s = _xml('explicitns',
             '<top xmlns="http://somens.xsd" xmlns:ns="http://somens.xsd">\n'
