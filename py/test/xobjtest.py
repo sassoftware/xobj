@@ -458,5 +458,26 @@ class XobjTest(testhelp.TestCase):
         xml = _xml('intelement', '<top><anint>5</anint></top>')
         doc = xobj.parse(xml, typeMap = { 'anint' : int })
 
+    def testMetadataAttributeTypes(self):
+        class Bar:
+            _xobj = xobj.XObjMetadata(
+                        attributes = { 'ref' : xobj.XIDREF } )
+
+        class Top:
+            _xobj = xobj.XObjMetadata(
+                        attributes = { 'val' : int } )
+            bar = Bar
+
+        s = ('<top id="foo" val="5">\n'
+             '  <bar ref="foo"/>\n'
+             '</top>\n')
+
+        d = xobj.parse(s, typeMap = { 'top' : Top })
+        assert(d.top.val == 5)
+        assert(d.top == d.top.bar.ref)
+
+        s2 = d.toxml(xml_declaration = False)
+        assert(s == s2)
+
 if __name__ == "__main__":
     testsuite.main()

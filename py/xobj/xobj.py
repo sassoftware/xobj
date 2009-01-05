@@ -122,9 +122,12 @@ class XObjMetadata(object):
             self.elements = []
 
         if attributes:
-            self.attributes = set(attributes)
+            if type(attributes) == dict:
+                self.attributes = attributes.copy()
+            else:
+                self.attributes = dict( (x, None) for x in attributes )
         else:
-            self.attributes = set()
+            self.attributes = dict()
 
         self.tag = None
 
@@ -135,6 +138,17 @@ class XID(XObj):
 class XIDREF(XObj):
 
     pass
+
+def findPythonType(xobj, key):
+    pc = getattr(xobj.__class__, key, None)
+    if pc is not None:
+        return pc
+
+    md = getattr(xobj.__class__, '_xobj', None)
+    if md is None:
+        return None
+
+    return md.attributes.get(key, None)
 
 class ElementGenerator(object):
 
@@ -170,7 +184,8 @@ class ElementGenerator(object):
         for key, val in xobj.__dict__.iteritems():
             if key[0] != '_':
                 if key in attrSet:
-                    pythonType = getattr(xobj.__class__, key, None)
+                    pythonType = findPythonType(xobj, key)
+
                     if pythonType and issubclass(pythonType, XIDREF):
                         idVal = getattr(val, 'id', None)
                         if idVal is None:
@@ -301,7 +316,7 @@ class Document(object):
             return s
 
         def setAttribute(xobj, doc, key, val):
-            expectedType = getattr(xobj.__class__, key, None)
+            expectedType = findPythonType(xobj, key)
             if expectedType is None:
                 expectedType = doc.typeMap.get(key, None)
 
@@ -326,7 +341,9 @@ class Document(object):
 
         def addAttribute(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType)
-            xobj._xobj.attributes.add(key)
+            if key not in xobj._xobj.attributes:
+                # preserver any type information we copied in
+                xobj._xobj.attributes[key] = None
 
         def addElement(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType = xType)
