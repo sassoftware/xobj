@@ -227,6 +227,11 @@ class ElementGenerator(object):
 
         return element
 
+    def tostring(self, prettyPrint = True, xml_declaration = True):
+        return etree.tostring(self.element, pretty_print = prettyPrint,
+                              encoding = 'UTF-8',
+                              xml_declaration = xml_declaration)
+
     def __init__(self, xobj, tag, nsmap = {}):
         self.idsNeeded = set()
         self.idsFound = set()
@@ -260,11 +265,8 @@ class Document(XObj):
             map = self.__xmlNsMap
 
         gen = ElementGenerator(val, key, nsmap = map)
-        xmlString = etree.tostring(gen.element, pretty_print = prettyPrint,
-                                   encoding = 'UTF-8',
-                                   xml_declaration = xml_declaration)
-
-        return xmlString
+        return gen.tostring(prettyPrint = prettyPrint,
+                            xml_declaration = xml_declaration)
 
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {},
                         unionTags = {}):
@@ -502,10 +504,6 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
     return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
 
 def toxml(xobj, tag, prettyPrint = True, xml_declaration = True):
-    d = Document()
     gen = ElementGenerator(xobj, tag)
-    xmlString = etree.tostring(gen.element, pretty_print = prettyPrint,
-                               encoding = 'UTF-8',
-                               xml_declaration = xml_declaration)
-
-    return xmlString
+    return gen.tostring(prettyPrint = prettyPrint,
+                        xml_declaration = xml_declaration)
