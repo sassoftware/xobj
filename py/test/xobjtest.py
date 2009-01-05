@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2008-2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -159,6 +159,95 @@ class XobjTest(testhelp.TestCase):
                       '</top>\n')
         self.assertEqual(o.tostring(), xmlOutText)
 
+    def testComplexListStrGen(self):
+        """
+        Test generating XML from a list of strings.
+        """
+
+        class Collection(object):
+            data = [ str ]
+        class DocumentClass(xobj.Document):
+            collection = Collection
+
+        collection = Collection()
+        collection.data = [ 'a', 'b', 'c', ]
+
+        xml = xobj.toxml(collection, 'collection')
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(collection.data, doc.collection.data)
+
+    def testComplexListObjGen(self):
+        """
+        Test generating XML from lists of objects.
+        """
+
+        class Basic(object):
+            foo = str
+        class BasicCollection(object):
+            data = [ Basic ]
+        class DocumentClass(xobj.Document):
+            collection = BasicCollection
+
+        basic = Basic()
+        basic.foo = 'a'
+
+        collection = BasicCollection()
+        collection.data = [ basic, ]
+
+        xml = xobj.toxml(collection, 'collection')
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(basic.foo, doc.collection.data[0].foo)
+
+    def testComplexDictStrGen(self):
+        """
+        Test generating XML from dictionaries of strings.
+        """
+
+        raise testhelp.SkipTestException('dicts not currently supported')
+
+        class Collection(object):
+            data = {str: str}
+        class DocumentClass(xobj.Document):
+            collection = Collection
+
+        collection = Collection()
+        collection.data = {'a': 'A'}
+
+        xml = xobj.toxml(collection, 'collection')
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(collection.data, doc.collection.data)
+
+    def testComplexDictObjGen(self):
+        """
+        Test generating XML from dictionaries of objects.
+        """
+
+        raise testhelp.SkipTestException('dicts not currently supported')
+
+        class Basic(object):
+            foo = str
+        class Collection(object):
+            data = {Basic: Basic}
+        class DocumentClass(xobj.Document):
+            collection = Collection
+
+        basicKey = Basic()
+        basicKey.foo = 'a'
+
+        basicVal = Basic()
+        basicVal.foo = 'A'
+
+        collection = Collection()
+        collection.data = {basicKey: basicVal}
+
+        xml = xobj.toxml(collection, 'collection')
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+
+        key = doc.collection.data.keys()[0]
+        val = doc.colleciton.data[key]
+
+        self.failUnlessEqual(key.foo, basicKey.foo)
+        self.failUnlessEqual(val.foo, basicVal.foo)
 
     def testNamespaces(self):
         xmlString = _xml('namespaces',
@@ -408,6 +497,66 @@ class XobjTest(testhelp.TestCase):
         t.unknown = "unknown"
         assert("<unknown>unknown</unknown>" in
                     xobj.toxml(t, 'top', xml_declaration = False))
+
+    def testSimpleMultiParse(self):
+        """
+        Test parsing multiple xml documents with one set of classes.
+        """
+
+        class Top(object):
+            foo = str
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        topA = Top()
+        topA.foo = 'A'
+        xmlA = xobj.toxml(topA, 'top')
+
+        topB = Top()
+        topB.foo = 'B'
+        xmlB = xobj.toxml(topB, 'top')
+
+        docA = xobj.parse(xmlA, documentClass=DocumentClass)
+        docB = xobj.parse(xmlB, documentClass=DocumentClass)
+
+        self.failUnlessEqual('A', docA.top.foo)
+        self.failUnlessEqual('B', docB.top.foo)
+
+    def testComplexMultiParse(self):
+        """
+        Test parsing multiple xml documents with one set of classes using more
+        complex types.
+        """
+
+        class Top(object):
+            foo = [ str ]
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        xmlTextA = _xml('complex',
+                       '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top>\n'
+                       '  <foo>a</foo>\n'
+                       '  <foo>b</foo>\n'
+                       '</top>\n')
+
+        xmlA = StringIO(xmlTextA)
+        docA = xobj.parsef(xmlA, documentClass=DocumentClass)
+
+        xmlTextB = _xml('complex',
+                       '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top>\n'
+                       '  <foo>A</foo>\n'
+                       '  <foo>B</foo>\n'
+                       '</top>\n')
+
+        xmlB = StringIO(xmlTextB)
+        docB = xobj.parsef(xmlB, documentClass=DocumentClass)
+
+        self.failUnlessEqual('a', docA.top.foo[0])
+        self.failUnlessEqual('b', docA.top.foo[1])
+        self.failUnlessEqual('A', docB.top.foo[0])
+        self.failUnlessEqual('B', docB.top.foo[1])
 
 if __name__ == "__main__":
     testsuite.main()
