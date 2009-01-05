@@ -73,7 +73,7 @@ class XobjTest(testhelp.TestCase):
         class SubelementClass(object):
             subattr = [ int ]
         TopClass.subelement = SubelementClass
-        TopClass.prop = xobj.XObject
+        TopClass.prop = xobj.XObj
 
         o = xobj.parsef(xml, documentClass = DocumentClass)
         self.assertEqual(o.top.subelement.subattr, [ 2 ] )
@@ -128,10 +128,10 @@ class XobjTest(testhelp.TestCase):
         class PropClass(object):
             subprop = [ SubpropClass ]
 
-        class SimpleClass(xobj.XObject):
+        class SimpleClass(xobj.XObj):
             pass
 
-        class TopClass(xobj.XObject):
+        class TopClass(xobj.XObj):
             unused = str
             prop = PropClass
             simple = [ SimpleClass ]
@@ -225,10 +225,11 @@ class XobjTest(testhelp.TestCase):
             '</top>\n')
         xml = StringIO(s)
 
-        class Ref(xobj.XObject):
+        class Ref(xobj.XObj):
+            _xobj = xobj.XObjMetadata(attributes = [ 'other' ])
             other = xobj.XIDREF
 
-        class Top(xobj.XObject):
+        class Top(xobj.XObj):
             ref = Ref
 
         class Document(xobj.Document):
@@ -253,7 +254,8 @@ class XobjTest(testhelp.TestCase):
         else:
             assert(0)
 
-        class Item(xobj.XObject):
+        class Item(xobj.XObj):
+            _xobj = xobj.XObjMetadata(attributes = [ 'anid' ])
             anid = xobj.XID
         Top.item = Item
 
@@ -262,19 +264,40 @@ class XobjTest(testhelp.TestCase):
         s2 = d.tostring(xml_declaration = False)
         self.assertEquals(s, s2)
 
+        # test outputing an idref w/o a corresponding id
+        t = Top()
+        t.item = Item()
+        t.item.anid = 'foo'
+        t.ref = Ref()
+        t.ref.other = Item()
+        t.ref.other.anid = 'bar'
+        try:
+            xobj.toxml(t, 'top', xml_declaration = False)
+        except xobj.UnmatchedIdRef, e:
+            assert(str(e) == 'Unmatched idref values during XML creation '
+                             'for id(s): bar')
+
+        t.ref.other = t.item
+        s = xobj.toxml(t, 'top', xml_declaration = False)
+        self.assertEquals(s, '<top>\n'
+                             '  <item anid="foo"/>\n'
+                             '  <ref other="foo"/>\n'
+                             '</top>\n')
+
         # and test if the id isn't defined properly
-        class Top(xobj.XObject):
+        class Top(xobj.XObj):
             _xobj = xobj.XObjMetadata(attributes = [ 'ref' ])
             ref = xobj.XIDREF
         Document.top = Top
 
         d = Document()
         d.top = Top()
-        d.top.ref = xobj.XObject('something')
+        d.top.ref = xobj.XObj('something')
         try:
             d.tostring()
         except xobj.XObjSerializationException, e:
-            self.assertEquals(str(e), 'No id found for element referenced by ref')
+            self.assertEquals(str(e), 'No id found for element referenced '
+                                      'by ref')
         else:
             assert(0)
 
@@ -318,27 +341,27 @@ class XobjTest(testhelp.TestCase):
         d = xobj.parsef(xml, documentClass = D)
         assert(d.top.item.val == 3)
 
-        class I(xobj.XObject):
+        class I(xobj.XObj):
             val = int
 
         d = xobj.parsef(xml, typeMap = { 'item' : I} )
         assert(d.top.item.val == 3)
 
     def testEmptyList(self):
-        class Top(xobj.XObject):
+        class Top(xobj.XObj):
             l = [ int ]
 
         d = xobj.parse("<top/>", typeMap = { 'top' : Top })
         assert(d.top.l == [])
 
     def testUnion(self):
-        class TypeA(xobj.XObject):
+        class TypeA(xobj.XObj):
             vala = int
 
-        class TypeB(xobj.XObject):
+        class TypeB(xobj.XObj):
             valb = int
 
-        class Top(xobj.XObject):
+        class Top(xobj.XObj):
             items = [ { 'typea' : TypeA,
                         'typeb' : TypeB } ]
 
@@ -408,6 +431,10 @@ class XobjTest(testhelp.TestCase):
         t.unknown = "unknown"
         assert("<unknown>unknown</unknown>" in
                     xobj.toxml(t, 'top', xml_declaration = False))
+
+    def testIntElement(self):
+        xml = _xml('intelement', '<top><anint>5</anint></top>')
+        doc = xobj.parse(xml, typeMap = { 'anint' : int })
 
 if __name__ == "__main__":
     testsuite.main()

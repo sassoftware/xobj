@@ -20,6 +20,20 @@ class UnknownXType(Exception):
     understood.
     """
 
+class UnmatchedIdRef(Exception):
+
+    """
+    Exception raised when idref's cannot be matched with an id during
+    XML generation.
+    """
+
+    def __str__(self):
+        return ("Unmatched idref values during XML creation for id(s): %s"
+                    % ",".join(str(x) for x in self.idList))
+
+    def __init__(self, idList):
+        self.idList = idList
+
 class XType(object):
 
     def _isComplex(self):
@@ -47,7 +61,9 @@ def XTypeFromXObjectType(xObjectType):
 
     if xObjectType == str or xObjectType == object:
         # Basic object's are static, making instantiating one pretty worthless.
-        return XType(XObject)
+        return XType(XObj)
+    elif xObjectType == int:
+        return XType(XObjInt)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
@@ -55,7 +71,7 @@ def XTypeFromXObjectType(xObjectType):
 
     return XType(xObjectType)
 
-class XObject(str):
+class XObj(str):
 
     """
     Example class for all elements represented in XML. Subclasses of XObject
@@ -68,7 +84,7 @@ class XObject(str):
 
     using this class:
 
-        class Element(xobj.XObject):
+        class Element(xobj.XObj):
 
             intAttr = int                       # force an int
             subelement = [ str ]                # force a list
@@ -89,6 +105,10 @@ class XObject(str):
         else:
             return object.__repr__(self)
 
+class XObjInt(int):
+
+    pass
+
 class XObjMetadata(object):
 
     __slots__ = [ 'elements', 'attributes', 'tag' ]
@@ -106,28 +126,17 @@ class XObjMetadata(object):
 
         self.tag = None
 
-class XID(XObject):
+class XID(XObj):
 
     pass
 
-class XIDREF(XObject):
+class XIDREF(XObj):
 
     pass
 
-class Document(XObject):
+class ElementGenerator(object):
 
-    nameSpaceMap = {}
-    typeMap = {}
-
-    def __init__(self):
-        self._idsNeeded = []
-        self._dynamicClassDict = {}
-        self._ids = {}
-        self.__explicitNamespaces = False
-        self.__xmlNsMap = {}
-        self._xobj = XObjMetadata()
-
-    def getElementTree(self, xobj, tag, rootElement = None, nsmap = {}):
+    def getElementTree(self, xobj, tag, parentElement = None, nsmap = {}):
 
         def addns(s):
             for short, long in nsmap.iteritems():
@@ -140,7 +149,7 @@ class Document(XObject):
             xobj = str(xobj)
 
         if type(xobj) == str:
-            element = etree.SubElement(rootElement, tag, {})
+            element = etree.SubElement(parentElement, tag, {})
             element.text = xobj
             return element
 
@@ -174,6 +183,10 @@ class Document(XObject):
                                     'No id found for element referenced by %s'
                                     % key)
                         val = idVal
+                        self.idsNeeded.add(idVal)
+                    elif (key == 'id' or
+                          (pythonType and issubclass(pythonType, XID))):
+                        self.idsFound.add(val)
 
                     key = addns(key)
                     attrs[key] = str(val)
@@ -193,10 +206,10 @@ class Document(XObject):
         else:
             orderedElements = sorted(elements.iteritems())
 
-        if rootElement is None:
+        if parentElement is None:
             element = etree.Element(tag, attrs, nsmap = nsmap)
         else:
-            element = etree.SubElement(rootElement, tag, attrs)
+            element = etree.SubElement(parentElement, tag, attrs)
 
         if isinstance(xobj, str) and xobj:
             element.text = str(xobj)
@@ -205,18 +218,39 @@ class Document(XObject):
             if val is not None:
                 if type(val) == list:
                     for subval in val:
-                        self.getElementTree(subval, key, rootElement = element,
-                                              nsmap = nsmap)
+                        self.getElementTree(subval, key,
+                                            parentElement = element,
+                                            nsmap = nsmap)
                 else:
-                    self.getElementTree(val, key, rootElement = element,
-                                       nsmap = nsmap)
+                    self.getElementTree(val, key, parentElement = element,
+                                        nsmap = nsmap)
 
         return element
+
+    def __init__(self, xobj, tag, nsmap = {}):
+        self.idsNeeded = set()
+        self.idsFound = set()
+        self.element = self.getElementTree(xobj, tag, nsmap = nsmap)
+        if (self.idsNeeded - self.idsFound):
+            raise UnmatchedIdRef(self.idsNeeded - self.idsFound)
+
+class Document(XObj):
+
+    nameSpaceMap = {}
+    typeMap = {}
+
+    def __init__(self):
+        self._idsNeeded = []
+        self._dynamicClassDict = {}
+        self._ids = {}
+        self.__explicitNamespaces = False
+        self.__xmlNsMap = {}
+        self._xobj = XObjMetadata()
 
     def tostring(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
             if key[0] == '_': continue
-            if isinstance(val, XObject):
+            if isinstance(val, XObj):
                 break
 
         if self.__explicitNamespaces:
@@ -225,8 +259,8 @@ class Document(XObject):
         else:
             map = self.__xmlNsMap
 
-        et = self.getElementTree(val, key, nsmap = map)
-        xmlString = etree.tostring(et, pretty_print = prettyPrint,
+        gen = ElementGenerator(val, key, nsmap = map)
+        xmlString = etree.tostring(gen.element, pretty_print = prettyPrint,
                                    encoding = 'UTF-8',
                                    xml_declaration = xml_declaration)
 
@@ -268,7 +302,7 @@ class Document(XObject):
                     doc._ids[val] = xobj
 
                 expectedXType = None
-                val = XObject(val)
+                val = XObj(val)
 
             addAttribute(xobj, key, val, xType = expectedXType)
 
@@ -358,7 +392,7 @@ class Document(XObject):
             else:
                 localTag = nsmap(element.tag)
                 # create a subclass for this type
-                NewClass = type(localTag + '_XObj_Type', (XObject,), {})
+                NewClass = type(localTag + '_XObj_Type', (XObj,), {})
                 self._dynamicClassDict[tag] = XType(NewClass)
 
                 if text:
@@ -469,8 +503,8 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
 
 def toxml(xobj, tag, prettyPrint = True, xml_declaration = True):
     d = Document()
-    et = d.getElementTree(xobj, tag)
-    xmlString = etree.tostring(et, pretty_print = prettyPrint,
+    gen = ElementGenerator(xobj, tag)
+    xmlString = etree.tostring(gen.element, pretty_print = prettyPrint,
                                encoding = 'UTF-8',
                                xml_declaration = xml_declaration)
 
