@@ -45,8 +45,8 @@ class XobjTest(testhelp.TestCase):
         self.assertEqual(o.top.subelement.subattr, '2')
         self.assertEqual(o.top.subelement.__class__.__name__,
                          'subelement_XObj_Type')
-        assert(repr(o.startswith('<xobj.xobj.Document object')))
-        assert(repr(o.top.startswith('<xobj.xobj.top_XObj_Type object')))
+        assert(repr(o).startswith('<xobj.xobj.Document object'))
+        assert(repr(o.top).startswith('<xobj.xobj.top_XObj_Type object'))
         assert(repr(o.top.subelement).startswith(
                                     '<xobj.xobj.subelement_XObj_Type object'))
         self.assertEqual(repr(o.top.attr1), "'anattr'")
@@ -102,7 +102,7 @@ class XobjTest(testhelp.TestCase):
 
         # ---
 
-        self.assertEqual(o.tostring(), xmlText)
+        self.assertEqual(o.toxml(), xmlText)
 
         # ---
 
@@ -157,7 +157,7 @@ class XobjTest(testhelp.TestCase):
                       '  </prop>\n'
                       '  <simple>simple</simple>\n'
                       '</top>\n')
-        self.assertEqual(o.tostring(), xmlOutText)
+        self.assertEqual(o.toxml(), xmlOutText)
 
 
     def testNamespaces(self):
@@ -172,7 +172,7 @@ class XobjTest(testhelp.TestCase):
         o = xobj.parsef(xml)
         assert(o.top.other_tag.other_val == '1')
         assert(o.top.other2_tag.val == '2')
-        assert(o.tostring(xml_declaration = False) == xmlString)
+        assert(o.toxml(xml_declaration = False) == xmlString)
 
         class Top(xobj.Document):
             nameSpaceMap = { 'other3' : 'http://other/other2' }
@@ -182,7 +182,7 @@ class XobjTest(testhelp.TestCase):
         assert(o.top.other3_tag.val == '2')
         newXmlString = xmlString.replace("other2:", "other3:")
         newXmlString = newXmlString.replace(":other2", ":other3")
-        assert(o.tostring(xml_declaration = False) == newXmlString)
+        assert(o.toxml(xml_declaration = False) == newXmlString)
 
     def testSchemaValidation(self):
         s = (
@@ -210,7 +210,13 @@ class XobjTest(testhelp.TestCase):
             '  <subelement subattr="2"/>\n'
             '</top>\n')
         xml = StringIO(s)
-        xobj.parsef(xml, schemaf = schema)
+        d = xobj.parsef(xml, schemaf = schema)
+        s2 = d.toxml(xml_declaration = False)
+        assert(s == s2)
+        d.top.unknown = 'foo'
+        self.assertRaises(xobj.DocumentInvalid, d.toxml)
+        self.assertRaises(xobj.DocumentInvalid, xobj.toxml,
+                          d.top, 'top', schemaf = schema)
 
         xml = StringIO(s.replace('prop', 'prop2'))
         xobj.parsef(xml)
@@ -237,7 +243,7 @@ class XobjTest(testhelp.TestCase):
 
         d = xobj.parsef(xml, documentClass = Document)
         assert(d.top.ref.other == d.top.item)
-        s2 = d.tostring(xml_declaration = False)
+        s2 = d.toxml(xml_declaration = False)
         self.assertEquals(s, s2)
 
         # now test if the id is called something else
@@ -261,7 +267,7 @@ class XobjTest(testhelp.TestCase):
 
         d = xobj.parsef(xml, documentClass = Document)
         assert(d.top.ref.other == d.top.item)
-        s2 = d.tostring(xml_declaration = False)
+        s2 = d.toxml(xml_declaration = False)
         self.assertEquals(s, s2)
 
         # test outputing an idref w/o a corresponding id
@@ -294,7 +300,7 @@ class XobjTest(testhelp.TestCase):
         d.top = Top()
         d.top.ref = xobj.XObj('something')
         try:
-            d.tostring()
+            d.toxml()
         except xobj.XObjSerializationException, e:
             self.assertEquals(str(e), 'No id found for element referenced '
                                       'by ref')
@@ -312,7 +318,7 @@ class XobjTest(testhelp.TestCase):
         d = xobj.parsef(xml)
         assert(d.ns_top.ns_element.ns_attr == 'foo')
         assert(d.__class__ == xobj.Document)
-        s2 = d.tostring(xml_declaration = False)
+        s2 = d.toxml(xml_declaration = False)
 
         expecteds2 = (
             '<ns:top xmlns:ns="http://somens.xsd">\n'
@@ -380,7 +386,7 @@ class XobjTest(testhelp.TestCase):
         assert(d.top.items[2].vala == 3)
         assert(d.top.items[3].valb == 4)
         assert(d.top.items[4].vala == 5)
-        assert(s == d.tostring(xml_declaration = False))
+        assert(s == d.toxml(xml_declaration = False))
 
         d = xobj.parse('<top/>', typeMap = { 'top' : Top } )
         assert(d.top.items == [])

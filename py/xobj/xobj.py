@@ -13,6 +13,8 @@ from lxml import etree
 import types
 from StringIO import StringIO
 
+DocumentInvalid = etree.DocumentInvalid
+
 class UnknownXType(Exception):
 
     """
@@ -232,27 +234,32 @@ class ElementGenerator(object):
                               encoding = 'UTF-8',
                               xml_declaration = xml_declaration)
 
-    def __init__(self, xobj, tag, nsmap = {}):
+    def __init__(self, xobj, tag, nsmap = {}, schema = None):
         self.idsNeeded = set()
         self.idsFound = set()
         self.element = self.getElementTree(xobj, tag, nsmap = nsmap)
         if (self.idsNeeded - self.idsFound):
             raise UnmatchedIdRef(self.idsNeeded - self.idsFound)
 
-class Document(XObj):
+        if schema:
+            schema.assertValid(self.element)
+
+class Document(object):
 
     nameSpaceMap = {}
     typeMap = {}
 
-    def __init__(self):
+    def __init__(self, schema = None):
+        XObj.__init__(self)
         self._idsNeeded = []
         self._dynamicClassDict = {}
         self._ids = {}
         self.__explicitNamespaces = False
         self.__xmlNsMap = {}
         self._xobj = XObjMetadata()
+        self.__schema = schema
 
-    def tostring(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
+    def toxml(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
         for key, val in self.__dict__.iteritems():
             if key[0] == '_': continue
             if isinstance(val, XObj):
@@ -264,7 +271,7 @@ class Document(XObj):
         else:
             map = self.__xmlNsMap
 
-        gen = ElementGenerator(val, key, nsmap = map)
+        gen = ElementGenerator(val, key, nsmap = map, schema = self.__schema)
         return gen.tostring(prettyPrint = prettyPrint,
                             xml_declaration = xml_declaration)
 
@@ -482,16 +489,16 @@ class XObjSerializationException(Exception):
 
 def parsef(f, schemaf = None, documentClass = Document, typeMap = {}):
     if schemaf:
-        schemaObj = etree.XMLSchema(etree.parse(schemaf))
+        schemaObj = etree.XMLSchema(file = schemaf)
     else:
         schemaObj = None
 
     if typeMap:
         newClass = type('XObj_Dynamic_Document', (documentClass,),
                         { 'typeMap' : typeMap})
-        document = newClass()
+        document = newClass(schema = schemaObj)
     else:
-        document = documentClass()
+        document = documentClass(schema = schemaObj)
 
     parser = etree.XMLParser(schema = schemaObj)
     xml = etree.parse(f, parser)
@@ -503,7 +510,14 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
     s = StringIO(s)
     return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
 
-def toxml(xobj, tag, prettyPrint = True, xml_declaration = True):
-    gen = ElementGenerator(xobj, tag)
+def toxml(xobj, tag, prettyPrint = True, xml_declaration = True,
+          schemaf = None):
+    if schemaf:
+        schemaObj = etree.XMLSchema(file = schemaf)
+    else:
+        schemaObj = None
+
+    gen = ElementGenerator(xobj, tag, schema = schemaObj)
+
     return gen.tostring(prettyPrint = prettyPrint,
                         xml_declaration = xml_declaration)
