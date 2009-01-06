@@ -17,7 +17,7 @@
     <![CDATA[
     import net.digitalprimates.fluint.unitTests.frameworkSuite.FrameworkSuite;
     public function getTestSuites():Array {
-        return TestConfiguration.suites()
+        return TestSuites.suites()
     }
     ]]>
     </mx:Script>    

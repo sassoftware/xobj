@@ -16,7 +16,7 @@ install: default-install as-install
 
 clean: default-clean as-clean
 
-test: default-test
+test: default-test as-test
 
 
 export TOPDIR=$(shell pwd)/../..

@@ -111,20 +111,10 @@
         <!-- Build the lib -->
     	<antcall target="xobj-build"/>
     </target>
-	
-	<!-- Targets for testing -->
-	<target name="test" description="Run automated tests">
-        <antcall target="test-clean"/>
-        <exec executable="${flexlibs-build.test.Xvnc-wrapper.cmd}">
-            <arg line="${air.sdk.bin.dir}/${air.sdk.runner} ${flexlibs-build.test.dir}/TestRunner-app.xml -- -headless -reportDir=${basedir}/${flexlibs-build.test.output.dir} -fileSet=${basedir}/${flexlibs-build.test.modules.dir}"/>
-        </exec>
-        <move file="${flexlibs-build.test.output.dir}/${flexlibs.testrunner.report}" tofile="${flexlibs-build.test.output.dir}/junit.xml"/>
-    </target>
     
     <!-- Target to do a clean build then run any tests -->
     <target name="dist" description="Perform a full build and run any tests">
         <antcall target="build"/>
-    	<antcall target="auto-test"/>
     </target>
     
 </project>

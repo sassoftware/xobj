@@ -10,7 +10,7 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-SUBDIRS = xobj test
+SUBDIRS = xobj #test
 
 
 build: default-build
