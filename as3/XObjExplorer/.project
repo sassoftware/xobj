@@ -3,7 +3,7 @@
 	<name>XObjExplorer</name>
 	<comment></comment>
 	<projects>
-		<project>RESTful</project>
+		<project>xobjas3</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
