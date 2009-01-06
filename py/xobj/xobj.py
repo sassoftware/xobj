@@ -144,12 +144,6 @@ class Document(XObject):
             element.text = xobj
             return element
 
-        if type(xobj) == list:
-            for item in xobj:
-                element = self.getElementTree(item, tag, rootElement=rootElement, nsmap=nsmap)
-                rootElement.append(element)
-            return rootElement
-
         tag = addns(tag)
 
         if hasattr(xobj, '_xobj'):
@@ -185,7 +179,10 @@ class Document(XObject):
                     attrs[key] = str(val)
                 else:
                     l = elements.setdefault(key, [])
-                    l.append(val)
+                    if type(val) == list:
+                        l.extend(val)
+                    else:
+                        l.append(val)
 
         orderedElements = []
 
