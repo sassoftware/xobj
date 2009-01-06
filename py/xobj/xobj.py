@@ -219,7 +219,10 @@ class ElementGenerator(object):
                     attrs[key] = str(val)
                 else:
                     l = elements.setdefault(key, [])
-                    l.append(val)
+                    if type(val) == list:
+                        l.extend(val)
+                    else:
+                        l.append(val)
 
         orderedElements = []
 
