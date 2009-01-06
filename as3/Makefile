@@ -10,7 +10,7 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-SUBDIRS = py as3
+SUBDIRS = xobjas3
 
 
 build: default-build
@@ -22,12 +22,6 @@ clean: default-clean
 test: default-test
 
 
-dist: archive
-
-archive:
-	hg archive --exclude .hgignore -t tbz2 xobj-`hg id -i`.tar.bz2
-
-
-export TOPDIR=$(shell pwd)
+export TOPDIR=$(shell pwd)/..
 include $(TOPDIR)/Make.rules
 include $(TOPDIR)/Make.defs

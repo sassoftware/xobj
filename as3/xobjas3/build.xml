@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright (c) 2008 rPath, Inc.
+
+ This program is distributed under the terms of the MIT License as found 
+ in a file called LICENSE. If it is not present, the license
+ is always available at http://www.opensource.org/licenses/mit-license.php.
+
+ This program is distributed in the hope that it will be useful, but
+ without any waranty; without even the implied warranty of merchantability
+ or fitness for a particular purpose. See the MIT License for full details.
+-->
+
+<project basedir="." default="dist" name="xobj">
+    
+    <!-- Load user's property file to override settings -->
+    <property file="user.properties"/>
+    
+    <!-- Load our property file -->
+    <property file="build.properties"/>
+    
+    <!-- Include support for Flex ant tasks -->
+    <taskdef resource="flexTasks.tasks" classpath="${flex.sdk.ant.flextasks.jar}"/>
+	
+	<!-- Macro to build a flex library -->	
+	<macrodef name="flexlib-build" description="Builds a flex library">
+	   
+		<!-- The title of the lib for logging purposes -->
+		<attribute name="title"/>
+		
+		<!-- The path/name of the lib we are creating -->
+	    <attribute name="outputLib"/>
+		
+		<!-- The source dir for the lib -->
+		<attribute name="srcDir"/>
+		
+		<!-- The namespace for the lib -->
+		<attribute name="namespace"/>
+		
+		<!-- The manifest file to use -->
+		<attribute name="manifest"/>
+		
+		<!-- Additional compc elements -->
+		<element name="compc-elements" optional="true"/>
+		
+		<sequential>			
+			<!-- Build the lib -->
+			<echo>Building @{title} flex lib...</echo>
+			
+    		<compc output="@{outputLib}">
+    			<source-path path-element="@{srcDir}"/>
+    			
+    			<!-- Include libraries we need to link to -->
+    			<include-libraries dir="${flex.sdk.frameworks.libs}">
+    				<!--
+    				    Do not include the Flash lib here as we don't need to
+    				    link to it.  We just need it for compiling, so it
+    				    will be added via external-library-path below.
+    				    Do not include AIR libraries.
+    				-->
+                    <include name="**/*.swc" />
+                    <exclude name="**/${flex.sdk.flashlib.name}"/>
+                    <exclude name="**/air/*"/>
+                </include-libraries>
+    			
+    			<!-- Add libs required only for compilitaion -->
+    			<external-library-path file="${flex.sdk.flashlib}"/>
+    			
+    			<!-- Add any custom compc elements -->
+    			<compc-elements/>
+    			
+    			<!-- Register the namespace -->
+                <namespace uri="@{namespace}" manifest="@{manifest}" />
+                <include-namespaces uri="@{namespace}"/>
+            </compc>
+			
+            <echo>Build completed</echo>
+		</sequential>
+	</macrodef>
+    
+    <target name="clean" description="Initialization for building">
+    	<echo>Cleaning xobj</echo>
+        <delete includeemptydirs="true" quiet="true">
+        	<fileset dir="${xobj.build.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+    	<echo>Cleaning completed</echo>
+    </target>
+	    
+    <target name="init" description="Initialization for building">
+    	<mkdir dir="${xobj.build.dir}" />
+    </target>
+    
+    <target name="xobj-build" description="Build the xobj flex library">
+    	<flexlib-build 
+    		title="xobj" 
+    		outputlib="${xobj.lib}"
+    		srcdir="${xobj.src.dir}"
+    		namespace="${xobj.namespace}"
+    		manifest="${xobj.manifest}">    		
+        </flexlib-build>
+    </target>
+	
+    <target name="build" description="Build the flexlibs">
+        <!-- Clean up build environment -->
+        <antcall target="clean"/>
+        <antcall target="init"/>
+    	
+        <!-- Build the lib -->
+    	<antcall target="xobj-build"/>
+    </target>
+	
+	<!-- Targets for testing -->
+	<target name="test" description="Run automated tests">
+        <antcall target="test-clean"/>
+        <exec executable="${flexlibs-build.test.Xvnc-wrapper.cmd}">
+            <arg line="${air.sdk.bin.dir}/${air.sdk.runner} ${flexlibs-build.test.dir}/TestRunner-app.xml -- -headless -reportDir=${basedir}/${flexlibs-build.test.output.dir} -fileSet=${basedir}/${flexlibs-build.test.modules.dir}"/>
+        </exec>
+        <move file="${flexlibs-build.test.output.dir}/${flexlibs.testrunner.report}" tofile="${flexlibs-build.test.output.dir}/junit.xml"/>
+    </target>
+    
+    <!-- Target to do a clean build then run any tests -->
+    <target name="dist" description="Perform a full build and run any tests">
+        <antcall target="build"/>
+    	<antcall target="auto-test"/>
+    </target>
+    
+</project>

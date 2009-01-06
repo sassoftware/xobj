@@ -73,6 +73,18 @@ python-clean:
 
 python-test:
 
+# Actionscript rules
+as-build:
+	ANT_OPTS=$(antopts) ant build
+
+as-install:
+
+as-clean:
+	ANT_OPTS=$(antopts) ant clean
+
+as-test:
+	ANT_OPTS=$(antopts) ant test
+
 
 # testutils rules
 testutils-build:
