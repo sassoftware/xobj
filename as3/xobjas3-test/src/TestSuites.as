@@ -15,19 +15,18 @@ package
 {
     
     /** 
-     * TestConfiguration is a static helper class that
+     * TestSuites is a static helper class that
      * returns the array of test suites to execute
      */
     
-    public class TestConfiguration
+    public class TestSuites
     {
         
         public static function suites() : Array
         {
             var suiteArray:Array = new Array();
     
-            suiteArray.push( new TestSuite1() );
-            //suiteArray.push( new ControllerTestSuite() );
+            suiteArray.push(new TestSuite1());
             
             return suiteArray;
         }

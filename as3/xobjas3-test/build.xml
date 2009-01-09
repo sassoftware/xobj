@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright (c) 2008 rPath, Inc.
+
+ This program is distributed under the terms of the MIT License as found 
+ in a file called LICENSE. If it is not present, the license
+ is always available at http://www.opensource.org/licenses/mit-license.php.
+
+ This program is distributed in the hope that it will be useful, but
+ without any waranty; without even the implied warranty of merchantability
+ or fitness for a particular purpose. See the MIT License for full details.
+-->
+
+<project basedir="." default="dist" name="xobj-test">
+    
+    <!-- Load user's property file to override settings -->
+    <property file="user.properties"/>
+    
+    <!-- Load our property file -->
+    <property file="build.properties"/>
+    
+    <!-- Include support for Flex ant tasks -->
+    <taskdef resource="flexTasks.tasks" classpath="${flex.sdk.ant.flextasks.jar}"/>
+	
+    <target name="clean" description="Clean for building">
+    	<echo>Cleaning xobj-test</echo>
+        <delete includeemptydirs="true" quiet="true">
+        	<fileset dir="${xobj-test.build.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+    	<echo>Cleaning completed</echo>
+    </target>
+	
+	<target name="test-clean" description="Clean for testing">
+        <echo>Cleaning xobj-test testing environment</echo>
+        <delete includeemptydirs="true" quiet="true">
+            <fileset dir="${xobj-test.output.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+        <echo>Cleaning completed</echo>
+    </target>
+	    
+    <target name="init" description="Initialization for testing">
+    	<mkdir dir="${xobj-test.test.output.dir}" />
+    	<mkdir dir="${xobj-test.test.modules.dir}" />
+    </target>
+	
+	<!-- Build the test modules -->
+	<target name="testrunner-modules-build" description="Build the test modules">
+		<echo>Building testrunner modules</echo>
+        <mxmlc file="${xobj-test.modules.src.file}" output="${xobj-test.modules.swf}" 
+            actionscript-file-encoding="UTF-8" keep-generated-actionscript="true"
+            incremental="true" debug="true">
+            
+            <!-- Get default compiler options. -->
+            <load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+    
+            <!-- List of path elements that form the roots of ActionScript
+            class hierarchies. -->
+            <source-path path-element="${flex.sdk.frameworks.dir}"/>
+            <source-path path-element="${xobj-test.src.dir}"/>
+        	<source-path path-element="${xobj.src.dir}"/>
+    
+            <!-- List of SWC files or directories that contain SWC files. -->
+            <library-path dir="${flex.sdk.frameworks.libs}" append="true">
+                <include name="**/*.swc" />
+                <exclude name="**/${flex.sdk.flashlib.name}"/>
+                <exclude name="air/*" />
+            </library-path>
+            <library-path file="${flex.sdk.flashlib}" append="true"/>
+            <library-path dir="${xobj.build.dir}" append="true">
+                <include name="**/*.swc" />
+            </library-path>
+        	<library-path dir="${xobj-test.libs.dir}" append="true">
+                <include name="**/*.swc" />
+            </library-path>
+    
+        </mxmlc>
+        <echo>Build completed</echo>
+    </target>
+	
+	<!-- Build the testrunner -->
+	<target name="testrunner-build" description="Build the TestRunner swf">
+		<echo>Building testrunner</echo>
+        <mxmlc file="${xobj-test.testrunner.app}" output="${xobj-test.testrunner.swf}" 
+            actionscript-file-encoding="UTF-8" keep-generated-actionscript="true"
+            incremental="true" debug="true">
+            
+            <!-- Get default compiler options. -->
+            <load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+    
+            <!-- List of path elements that form the roots of ActionScript
+            class hierarchies. -->
+            <source-path path-element="${flex.sdk.frameworks.dir}"/>
+        	<source-path path-element="${xobj-test.src.dir}"/>
+        	<source-path path-element="${xobj.src.dir}"/>
+    
+            <!-- List of SWC files or directories that contain SWC files. -->
+            <library-path dir="${flex.sdk.frameworks.libs}" append="true">
+                <include name="**/*.swc" />
+                <exclude name="**/${flex.sdk.flashlib.name}"/>
+                <exclude name="air/*" />
+            </library-path>
+            <library-path file="${flex.sdk.flashlib}" append="true"/>
+        	<library-path dir="${xobj.build.dir}" append="true">
+                <include name="**/*.swc" />
+            </library-path>
+            <include-libraries dir="${air.sdk.lib.dir}" append="true">
+                <include name="**/*.swc" />
+            </include-libraries>
+        	<library-path dir="${xobj-test.libs.dir}" append="true">
+                <include name="**/*.swc" />
+            </library-path>
+    
+            <!-- Set size of output SWF file. -->
+            <default-size width="${xobj-test.testrunner.swf.width}" height="${xobj-test.testrunner.swf.height}" />
+        </mxmlc>
+        <copy todir="${xobj-test.test.dir}">
+            <fileset dir="${xobj-test.src.dir}">
+                <include name="${xobj-test.testrunner.desc.name}"/>
+            </fileset>
+        </copy>
+        <echo>Build complete</echo>
+    </target>
+	
+	<target name="build" description="Build everything">
+        <!-- Clean up build environment -->
+        <antcall target="clean"/>
+        <antcall target="init"/>
+        
+        <!-- Build everything -->
+        <antcall target="testrunner-modules-build"/>
+		<antcall target="testrunner-build"/>
+    </target>
+	
+	<!-- Targets for testing -->
+	<target name="test" description="Run automated tests">
+        <antcall target="test-clean"/>
+        <exec executable="${xobj-test.Xvnc-wrapper.cmd}">
+            <arg line="${air.sdk.bin.dir}/${air.sdk.runner} ${xobj-test.test.dir}/TestRunner-app.xml -- -headless -reportDir=${basedir}/${xobj-test.test.output.dir} -fileSet=${basedir}/${xobj-test.test.modules.dir}"/>
+        </exec>
+    </target>
+    
+    <!-- Target to do a clean build then run any tests -->
+    <target name="dist" description="Perform a full build and run any tests">
+        <antcall target="build"/>
+    	<antcall target="auto-test"/>
+    </target>
+    
+</project>
