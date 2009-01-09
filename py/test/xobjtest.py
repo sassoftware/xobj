@@ -511,6 +511,7 @@ class XobjTest(testhelp.TestCase):
         t.prop = 'abc'
         t.middle = Middle()
         t.middle.tag = 123
+        t.bottom = None
 
         s = xobj.toxml(t, 'top', xml_declaration = False)
         self.assertEquals(s, '<top>\n'
@@ -628,6 +629,98 @@ class XobjTest(testhelp.TestCase):
         self.failUnlessEqual('b', docA.top.foo[1])
         self.failUnlessEqual('A', docB.top.foo[0])
         self.failUnlessEqual('B', docB.top.foo[1])
+
+    def testNoneSingleElementSerialization(self):
+        """
+        Test serializing a single element set to None.
+        """
+
+        class Top(object):
+            foo = str
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        top = Top()
+        top.foo = None
+
+        xml = xobj.toxml(top, 'top')
+        expectedXml = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top/>\n')
+        self.failUnlessEqual(xml, expectedXml)
+
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(top.foo, doc.top.foo)
+
+    def testNoneMultiElementSerialization(self):
+        """
+        Test serializing multiple elements that are set to None.
+        """
+
+        class Top(object):
+            foo = str
+            bar = str
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        top = Top()
+        top.foo = None
+        top.bar = ''
+
+        xml = xobj.toxml(top, 'top')
+        expectedXml = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top>\n'
+                       '  <bar></bar>\n'
+                       '</top>\n')
+        self.failUnlessEqual(xml, expectedXml)
+
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(top.foo, doc.top.foo)
+        self.failUnlessEqual(top.bar, doc.top.bar)
+
+    def testNoneSingleAttributeSerialization(self):
+        """
+        Test serializing a single attribute that is set to None.
+        """
+
+        class Top(object):
+            _xobj = xobj.XObjMetadata(attributes=['foo'])
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        top = Top()
+        top.foo = None
+
+        xml = xobj.toxml(top, 'top')
+        expectedXml = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top/>\n')
+        self.failUnlessEqual(xml, expectedXml)
+
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(top.foo, doc.top.foo)
+
+    def testNoneMultiAttributeSerialization(self):
+        """
+        Test serializing multiple attributes that are set to None.
+        """
+
+        class Top(object):
+            _xobj = xobj.XObjMetadata(attributes=['foo', 'bar'])
+        class DocumentClass(xobj.Document):
+            top = Top
+
+        top = Top()
+        top.foo = None
+        top.bar = ''
+
+        xml = xobj.toxml(top, 'top')
+        expectedXml = ('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                       '<top bar=""/>\n')
+        self.failUnlessEqual(xml, expectedXml)
+
+        doc = xobj.parse(xml, documentClass=DocumentClass)
+        self.failUnlessEqual(top.foo, doc.top.foo)
+        self.failUnlessEqual(top.bar, doc.top.bar)
+
 
 if __name__ == "__main__":
     testsuite.main()
