@@ -161,6 +161,9 @@ class ElementGenerator(object):
 
             return s
 
+        if xobj is None:
+            return
+
         if type(xobj) == int:
             xobj = str(xobj)
 
@@ -215,8 +218,9 @@ class ElementGenerator(object):
                           (pythonType and issubclass(pythonType, XID))):
                         self.idsFound.add(val)
 
-                    key = addns(key)
-                    attrs[key] = str(val)
+                    if val is not None:
+                        key = addns(key)
+                        attrs[key] = str(val)
                 else:
                     l = elements.setdefault(key, [])
                     if type(val) == list:
@@ -278,7 +282,6 @@ class Document(object):
     typeMap = {}
 
     def __init__(self, schema = None):
-        XObj.__init__(self)
         self._idsNeeded = []
         self._dynamicClassDict = {}
         self._ids = {}
@@ -338,7 +341,6 @@ class Document(object):
                     doc._ids[val] = xobj
 
                 expectedXType = None
-                val = XObj(val)
 
             addAttribute(xobj, key, val, xType = expectedXType)
 
@@ -454,6 +456,16 @@ class Document(object):
             for (key, val) in element.items():
                 key = nsmap(key)
                 setAttribute(xobj, self, key, val)
+
+            # Backfill any attributes that were not in the XML with None.
+            for key, val in xobj._xobj.attributes.iteritems():
+                key = nsmap(key)
+                # Do not backfill values that are XIDREFs, they will be
+                # handled later.
+                if val is not None and issubclass(val, XIDREF):
+                    continue
+                if not hasattr(xobj, key):
+                    setAttribute(xobj, self, key, val)
 
             # anything which is the same as in the class wasn't set in XML, so
             # set it to None
