@@ -66,6 +66,8 @@ def XTypeFromXObjectType(xObjectType):
         return XType(XObj)
     elif xObjectType == int:
         return XType(XObjInt)
+    elif xObjectType == float:
+        return XType(XObjFloat)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
         return XType(XTypeFromXObjectType(xObjectType[0]).pythonType,
@@ -108,7 +110,9 @@ class XObj(str):
             return object.__repr__(self)
 
 class XObjInt(int):
+    pass
 
+class XObjFloat(float):
     pass
 
 class XObjMetadata(object):
@@ -164,7 +168,7 @@ class ElementGenerator(object):
         if xobj is None:
             return
 
-        if type(xobj) == int:
+        if type(xobj) in (int, float):
             xobj = str(xobj)
 
         if type(xobj) == str:
