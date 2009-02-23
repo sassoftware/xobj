@@ -75,7 +75,7 @@ def XTypeFromXObjectType(xObjectType):
 
     return XType(xObjectType)
 
-class XObj(str):
+class XObj(object):
 
     """
     Example class for all elements represented in XML. Subclasses of XObject
@@ -117,9 +117,9 @@ class XObjFloat(float):
 
 class XObjMetadata(object):
 
-    __slots__ = [ 'elements', 'attributes', 'tag' ]
+    __slots__ = [ 'elements', 'attributes', 'tag', 'text' ]
 
-    def __init__(self, elements = None, attributes = None):
+    def __init__(self, elements = None, attributes = None, text = None):
         if elements:
             self.elements = list(elements)
         else:
@@ -134,6 +134,7 @@ class XObjMetadata(object):
             self.attributes = dict()
 
         self.tag = None
+        self.text = text
 
 class XID(XObj):
 
@@ -249,8 +250,13 @@ class ElementGenerator(object):
         else:
             element = etree.SubElement(parentElement, tag, attrs)
 
+
         if isinstance(xobj, str) and xobj:
             element.text = str(xobj)
+        elif xobj._xobj.text and not orderedElements:
+            # only add text if we don't have elements
+            # can't have both.
+            element.text = xobj._xobj.text
 
         for key, val in orderedElements:
             if val is not None:
