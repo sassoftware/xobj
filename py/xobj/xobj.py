@@ -75,7 +75,7 @@ def XTypeFromXObjectType(xObjectType):
 
     return XType(xObjectType)
 
-class XObj(object):
+class XObj(str):
 
     """
     Example class for all elements represented in XML. Subclasses of XObject
