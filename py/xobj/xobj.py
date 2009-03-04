@@ -253,7 +253,8 @@ class ElementGenerator(object):
 
         if isinstance(xobj, str) and xobj:
             element.text = str(xobj)
-        elif xobj._xobj.text and not orderedElements:
+        elif (hasattr(xobj, '_xobj') and xobj._xobj.text 
+              and not orderedElements):
             # only add text if we don't have elements
             # can't have both.
             element.text = xobj._xobj.text
