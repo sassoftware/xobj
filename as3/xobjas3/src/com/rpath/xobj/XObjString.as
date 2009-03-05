@@ -43,6 +43,7 @@ package com.rpath.xobj
 public dynamic class XObjString
 {
 
+    [Bindable]
     public var value:String;
 
     public var _xobj:XObjMetadata;

@@ -321,15 +321,26 @@ public class XObjXMLDecoder
         if ((children.length == 1) && (children[0].nodeType == XMLNodeType.TEXT_NODE))
         {
             nullObject = false;
-            // If exactly one text node subtype, we must want a simple
-            // value.
-            
-            //TODO: if the propType is provided then we SHOULD NOT assume simpleType. Further, if we 
-            //end up adding attrs to it (see below), we want propType not ComplexString
-            
-            isSimpleType = true;
-            
-            result = XObjXMLDecoder.simpleType(children[0].nodeValue);
+
+            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue);
+            if (!isSpecifiedType || 
+                (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number))
+            {
+                isSimpleType = true;
+                result = temp;
+            }
+            else
+            {
+                try
+                {
+                    result.value = temp;
+                }
+                catch (e:Error)
+                {
+                    // give up
+                }
+            }
+                
         }
         else 
         {
