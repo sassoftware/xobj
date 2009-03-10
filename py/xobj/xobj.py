@@ -302,9 +302,11 @@ class Document(object):
         self.__schema = schema
 
     def toxml(self, nsmap = {}, prettyPrint = True, xml_declaration = True):
-        for key, val in self.__dict__.iteritems():
-            if key[0] == '_': continue
-            break
+        items = sorted((key, value) for (key, value) in self.__dict__.items()
+                if not key.startswith('_'))
+        if not items:
+            raise RuntimeError("Document has no root element.")
+        rootName, rootValue = items[0]
 
         if self.__explicitNamespaces:
             map = self.__xmlNsMap.copy()
@@ -312,7 +314,8 @@ class Document(object):
         else:
             map = self.__xmlNsMap
 
-        gen = ElementGenerator(val, key, nsmap = map, schema = self.__schema)
+        gen = ElementGenerator(rootValue, rootName,
+                nsmap=map, schema=self.__schema)
         return gen.tostring(prettyPrint = prettyPrint,
                             xml_declaration = xml_declaration)
 

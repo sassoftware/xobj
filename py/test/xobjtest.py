@@ -761,6 +761,17 @@ class XobjTest(TestCase):
         self.failUnlessEqual(top.foo, doc.top.foo)
         self.failUnlessEqual(top.bar, doc.top.bar)
 
+    def testMissingRootElement(self):
+        """
+        Test that an error is raised if toxml() is called on a document
+        with no root element.
+        """
+        class Broken(xobj.Document):
+            top = str
+        xml = Broken()
+        error = self.assertRaises(RuntimeError, xml.toxml)
+        self.assertEquals(error.args, ('Document has no root element.',))
+
 
 if __name__ == "__main__":
     testsuite.main()
