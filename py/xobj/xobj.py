@@ -126,7 +126,7 @@ class XObjMetadata(object):
             self.elements = []
 
         if attributes:
-            if type(attributes) == dict:
+            if isinstance(attributes, dict):
                 self.attributes = attributes.copy()
             else:
                 self.attributes = dict( (x, None) for x in attributes )
@@ -242,6 +242,16 @@ class ElementGenerator(object):
             for name in (set(elements) - set(xobj._xobj.elements)):
                 for val in elements[name]:
                     orderedElements.append((name, val))
+            attrSet = xobj._xobj.attributes
+            if type(attrSet) != dict:
+                # allow for ordered dictionaries
+                orderedAttrs = xobj._xobj.attributes.__class__()
+                for key in attrSet.keys():
+                    if key in attrs:
+                        orderedAttrs[key] = attrs.pop(key)
+                for key in attrs.keys():
+                    orderedAttrs[key] = attrs[key]
+                attrs = orderedAttrs
         else:
             orderedElements = sorted(elements.iteritems())
 
