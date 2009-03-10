@@ -11,6 +11,7 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
+import os
 import types
 
 import testsuite
@@ -22,6 +23,13 @@ from xobj import xobj
 from StringIO import StringIO
 
 def _xml(fn, s, asFile = False):
+    # We write out the XML files into a directory that is shared with the
+    # actionscript test suite. Make sure you hg add the file when you create a
+    # new one.
+    f = open(os.path.join(os.path.dirname(__file__),
+                          "../../test/%s.xml" % fn), "w")
+    f.write(s)
+
     if asFile:
         return StringIO(s)
 
@@ -30,6 +38,10 @@ def _xml(fn, s, asFile = False):
 class TestCase(testhelp.TestCase):
     @classmethod
     def assertXmlEqual(cls, s1, s2):
+        """
+        A more reliable way to compare two XML documents. The order of
+        attributes is undefined, and that should not break the equality.
+        """
         d1 = etree.fromstring(s1)
         d2 = etree.fromstring(s2)
         return cls._compareTrees(d1, d2)
@@ -46,12 +58,12 @@ class TestCase(testhelp.TestCase):
         # 3. The attributes are identical (order is not important)
         if not (dict(t1.items()) == dict(t2.items())):
             return False
-        # 3. Same number of children (so we can apply zip() below
+        # 3. Same number of children (so we can apply zip() below)
         ch1 = t1.getchildren()
         ch2 = t2.getchildren()
         if len(ch1) != len(ch2):
             return False
-        # If all children are equal (recursively)
+        # 4. Children on corresponding positions are equal (recursively)
         for child1, child2 in zip(ch1, ch2):
             if not cls._compareTrees(child1, child2):
                 return False

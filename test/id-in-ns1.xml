@@ -1,0 +1,4 @@
+<ns:top xmlns:ns="http://somens.xsd">
+  <ns:item ns:id="theid" ns:val="value"/>
+  <ns:ref ns:other="theid"/>
+</ns:top>
