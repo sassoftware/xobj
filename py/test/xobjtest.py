@@ -22,14 +22,42 @@ from xobj import xobj
 from StringIO import StringIO
 
 def _xml(fn, s, asFile = False):
-    f = open("../../test/%s.xml" % fn, "w")
-    f.write(s)
     if asFile:
         return StringIO(s)
 
     return s
 
-class XobjTest(testhelp.TestCase):
+class TestCase(testhelp.TestCase):
+    @classmethod
+    def assertXmlEqual(cls, s1, s2):
+        d1 = etree.fromstring(s1)
+        d2 = etree.fromstring(s2)
+        return cls._compareTrees(d1, d2)
+
+    @classmethod
+    def _compareTrees(cls, t1, t2):
+        # Two DOM trees are equal if:
+        # 1. the tags are identical
+        if not (t1.tag == t2.tag):
+            return False
+        # 2. Same text
+        if not (t1.text == t2.text):
+            return False
+        # 3. The attributes are identical (order is not important)
+        if not (dict(t1.items()) == dict(t2.items())):
+            return False
+        # 3. Same number of children (so we can apply zip() below
+        ch1 = t1.getchildren()
+        ch2 = t2.getchildren()
+        if len(ch1) != len(ch2):
+            return False
+        # If all children are equal (recursively)
+        for child1, child2 in zip(ch1, ch2):
+            if not cls._compareTrees(child1, child2):
+                return False
+        return True
+
+class XobjTest(TestCase):
 
     def testSimpleParse(self):
         xml = _xml('simple', '<top attr1="anattr" attr2="another">\n'
@@ -261,7 +289,7 @@ class XobjTest(testhelp.TestCase):
         o = xobj.parsef(xml)
         assert(o.top.other_tag.other_val == '1')
         assert(o.top.other2_tag.val == '2')
-        assert(o.toxml(xml_declaration = False) == xmlString)
+        self.assertXmlEqual(o.toxml(xml_declaration = False), xmlString)
 
         class Top(xobj.Document):
             nameSpaceMap = { 'other3' : 'http://other/other2' }
@@ -271,7 +299,7 @@ class XobjTest(testhelp.TestCase):
         assert(o.top.other3_tag.val == '2')
         newXmlString = xmlString.replace("other2:", "other3:")
         newXmlString = newXmlString.replace(":other2", ":other3")
-        assert(o.toxml(xml_declaration = False) == newXmlString)
+        self.assertXmlEqual(o.toxml(xml_declaration = False), newXmlString)
 
     def testSchemaValidation(self):
         s = (
