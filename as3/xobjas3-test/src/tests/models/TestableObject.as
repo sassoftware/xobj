@@ -11,20 +11,19 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
-package
+package tests.models
 {
-    
-    import net.digitalprimates.fluint.tests.TestSuite;
-    
-    import tests.*;
-
-    public class TestSuite1 extends TestSuite
+    /**
+     * A random object for use in validating encoding of objects
+     */ 
+    public class TestableObject
     {
-        public function TestSuite1()
-        {
-            addTestCase(new TestBasics());
-            addTestCase(new TestTransients());
-        }
-
+        public var someVal:String;
+        
+        [Transient]
+        public var transientVar:String;
+        
+        [xobjTransient]
+        public var xobjTransientVar:String;
     }
 }

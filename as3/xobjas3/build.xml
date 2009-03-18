@@ -73,6 +73,9 @@
     			<!-- Register the namespace -->
                 <namespace uri="@{namespace}" manifest="@{manifest}" />
                 <include-namespaces uri="@{namespace}"/>
+    			
+    			<!-- Include the xobjTransient metadata tag -->
+    			<keep-as3-metadata name="xobjTransient"/>
             </compc>
 			
             <echo>Build completed</echo>
