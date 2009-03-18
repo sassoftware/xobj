@@ -56,7 +56,7 @@
             incremental="true" debug="true">
             
             <!-- Get default compiler options. -->
-            <load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+            <load-config filename="${xobj.dir}/xobj-flex-config.xml"/>
     
             <!-- List of path elements that form the roots of ActionScript
             class hierarchies. -->
@@ -90,7 +90,7 @@
             incremental="true" debug="true">
             
             <!-- Get default compiler options. -->
-            <load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+        	<load-config filename="${xobj.dir}/xobj-flex-config.xml"/>
     
             <!-- List of path elements that form the roots of ActionScript
             class hierarchies. -->
