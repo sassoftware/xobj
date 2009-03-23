@@ -107,7 +107,7 @@ package com.rpath.xobj
                 return false;
     
             var foo:* = new type();
-            return (type is ArrayCollection);
+            return (foo is ArrayCollection);
         }
         
         public static function typeInfoForProperty(className:String, propName:String):Object

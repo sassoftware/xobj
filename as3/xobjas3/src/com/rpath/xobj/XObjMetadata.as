@@ -50,7 +50,7 @@ package com.rpath.xobj
                    target[METADATA_PROPERTY] = new XObjMetadata();
                    result = target[METADATA_PROPERTY];
                }
-               catch (e:ReferenceError)
+               catch (e:Error)
                {
                    // must be nondynamic type
                }

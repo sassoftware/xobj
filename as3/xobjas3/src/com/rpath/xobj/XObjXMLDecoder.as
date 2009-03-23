@@ -236,17 +236,19 @@ public class XObjXMLDecoder
         
         */
         
-        //TODO: make sure we don't obscure typeMap entries with
-        // generic Array or ArrayCollection requests
-        if (XObjUtils.isTypeArray(propType) || XObjUtils.isTypeArrayCollection(propType))
-        {
-            propType = nodeType;
-        }
-        
         isTypedProperty = (propType != null);
         
         var nodeType:Class = typeForTag(dataNode.nodeName);
         isTypedNode = (nodeType != null);
+
+        //TODO: make sure we don't obscure typeMap entries with
+        // generic Array or ArrayCollection requests
+        if (isTypedNode && 
+            (XObjUtils.isTypeArray(propType) || XObjUtils.isTypeArrayCollection(propType)))
+        {
+            propType = nodeType;
+        }
+        
         
         isSpecifiedType = isTypedProperty || isTypedNode;
         
@@ -376,7 +378,7 @@ public class XObjXMLDecoder
                     // TODO: allow type map entries to be full QNames, not just local names
                     var partName:* = decodePartName(partQName, partNode);
                     lastPartName.propname = partName;
-                                        
+
                     // what type do we want?
                     var typeInfo:Object = XObjUtils.typeInfoForProperty(resultTypeName, partName);
                     var partTypeName:String = typeInfo.typeName;
@@ -387,6 +389,7 @@ public class XObjXMLDecoder
                     if (partTypeName != null)
                     {
                         var partClass:Class = XObjUtils.getClassByName(partTypeName);
+                        
                         if (partClass)
                             partObj = decodeXML(partNode, partClass);
                         else
