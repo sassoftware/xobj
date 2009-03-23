@@ -119,7 +119,8 @@ class XObjMetadata(object):
 
     __slots__ = [ 'elements', 'attributes', 'tag', 'text' ]
 
-    def __init__(self, elements = None, attributes = None, text = None):
+    def __init__(self, elements = None, attributes = None, text = None,
+                 tag = None):
         if elements:
             self.elements = list(elements)
         else:
@@ -133,7 +134,7 @@ class XObjMetadata(object):
         else:
             self.attributes = dict()
 
-        self.tag = None
+        self.tag = tag
         self.text = text
 
 class XID(XObj):

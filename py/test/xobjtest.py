@@ -772,6 +772,17 @@ class XobjTest(TestCase):
         error = self.assertRaises(RuntimeError, xml.toxml)
         self.assertEquals(error.args, ('Document has no root element.',))
 
+    def testManualTag(self):
+        class Item(str):
+            _xobj = xobj.XObjMetadata(tag = 'item')
+
+        i = Item()
+        i.val = 10
+        s = xobj.toxml(i, None)
+        assert(s == "<?xml version='1.0' encoding='UTF-8'?>\n"
+                    "<item>\n"
+                    "  <val>10</val>\n"
+                    "</item>\n")
 
 if __name__ == "__main__":
     testsuite.main()
