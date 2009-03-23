@@ -40,9 +40,10 @@ package tests
     
             // neither the Transient nor the xobjTransient vars should be there
             var expectedString:String = 
-                    '<obj>\n'+
-                    '  <someVal>someval</someVal>\n'+
-                    '</obj>\n';
+                '<obj>\n'+
+                '  <booleanVar>false</booleanVar>\n'+
+                '  <someVal>someval</someVal>\n'+                
+                '</obj>\n';
             
             assertTrue(compareXMLtoString(xmlOutput, expectedString));
             

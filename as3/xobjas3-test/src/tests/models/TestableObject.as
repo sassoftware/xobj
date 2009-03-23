@@ -25,5 +25,7 @@ package tests.models
         
         [xobjTransient]
         public var xobjTransientVar:String;
+        
+        public var booleanVar:Boolean;
     }
 }

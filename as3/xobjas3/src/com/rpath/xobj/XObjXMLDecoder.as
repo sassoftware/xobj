@@ -324,7 +324,7 @@ public class XObjXMLDecoder
 
             var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue);
             if (!isSpecifiedType || 
-                (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number))
+                (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number) || (result is Boolean))
             {
                 isSimpleType = true;
                 result = temp;

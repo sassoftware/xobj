@@ -187,6 +187,41 @@ public class TestBasics extends TestBase
     public function testId():void
     {
     }
+    
+    /** 
+     * Ensure boolean data is handled properly
+     */
+    public function testBoolean():void
+    {
+        var obj:TestableObject = new TestableObject();
+        obj.someVal = "someval";
+        obj.booleanVar = true;
+        var typeMap:* = {obj: TestableObject};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+
+        // neither the Transient nor the xobjTransient vars should be there
+        var expectedString:String = 
+                '<obj>\n'+
+                '  <booleanVar>true</booleanVar>\n'+
+                '  <someVal>someval</someVal>\n'+                
+                '</obj>\n';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        // now decode it and validate
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        assertTrue(o.obj is TestableObject);
+        assertTrue(o.obj.someVal =="someval");
+        assertTrue(o.obj.booleanVar);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+    }
 
 }
 }
