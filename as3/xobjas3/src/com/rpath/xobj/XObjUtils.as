@@ -110,7 +110,7 @@ package com.rpath.xobj
             return (foo is ArrayCollection);
         }
         
-        public static function typeInfoForProperty(className:String, propName:String):Object
+        public static function typeInfoForProperty(object:*, className:String, propName:String):Object
         {
             var isArray:Boolean = false;
             var result:Object = {typeName: null, isArray: false, isArrayCollection: false};
@@ -128,7 +128,10 @@ package com.rpath.xobj
                 result = {typeName: null, isArray: false, isArrayCollection: false};
                 
                 // go look it up (expensive)
-                var typeDesc:* = DescribeTypeCache.describeType(className);
+                // very important to use the instance object here, not the classname
+                // using the classname results in the typeInfo cache
+                // returning class not instance info later on! Bad cache!
+                var typeDesc:* = DescribeTypeCache.describeType(object);
                 var typeInfo:XML = typeDesc.typeDescription;
                 
                 result.typeName = typeInfo..accessor.(@name == propName).@type.toString().replace( /::/, "." );
