@@ -784,5 +784,41 @@ class XobjTest(TestCase):
                     "  <val>10</val>\n"
                     "</item>\n")
 
+
+    def testUnicodeIn(self):
+        doc = xobj.parse('<top>'
+                '<foo>m\xc3\xb8\xc3\xb8se bites are n\xc3\xa5sti</foo>'
+                '<bar asdf="\xe3\x81\xa7\xe3\x81\x99\xe3\x80\x9c" />'
+                '<baz ghjk="bl&#xEB;h" /></top>')
+        self.assertEquals(doc.top.foo, u'm\xf8\xf8se bites are n\xe5sti')
+        self.assertEquals(doc.top.bar.asdf, u'\u3067\u3059\u301c')
+        self.assertEquals(doc.top.baz.ghjk, u'bl\xebh')
+
+    def testUnicodeOut(self):
+        class Stuff(xobj.Document):
+            class top(xobj.XObj):
+                _xobj = xobj.XObjMetadata(attributes=['bar'])
+                foo = str
+        s = Stuff()
+        s.top = Stuff.top()
+
+        # Bad: non-ASCII str in text
+        s.top.foo = 'b\xc3\xa5d'
+        s.top.bar = 'good'
+        self.assertRaises(UnicodeDecodeError, s.toxml)
+
+        # Bad: non-ASCII str in attribute
+        s.top.foo = 'good'
+        s.top.bar = 'b\xc3\xa5d'
+        self.assertRaises(UnicodeDecodeError, s.toxml)
+
+        # Good: char string (unicode) for text and attribute
+        s.top.foo = u'\xf6'
+        s.top.bar = u'\xf6'
+        self.assertEquals(s.toxml(),
+                '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+                '<top bar="&#xF6;">\n  <foo>\xc3\xb6</foo>\n</top>\n')
+
+
 if __name__ == "__main__":
     testsuite.main()

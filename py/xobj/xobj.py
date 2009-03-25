@@ -75,7 +75,7 @@ def XTypeFromXObjectType(xObjectType):
 
     return XType(xObjectType)
 
-class XObj(str):
+class XObj(unicode):
 
     """
     Example class for all elements represented in XML. Subclasses of XObject
@@ -105,7 +105,7 @@ class XObj(str):
 
     def __repr__(self):
         if self:
-            return str.__repr__(self)
+            return unicode.__repr__(self)
         else:
             return object.__repr__(self)
 
@@ -170,10 +170,16 @@ class ElementGenerator(object):
         if xobj is None:
             return
 
-        if type(xobj) in (int, float):
-            xobj = str(xobj)
+        if type(xobj) in (int, long, float):
+            xobj = unicode(xobj)
 
         if type(xobj) == str:
+            # Only simple ASCII str are allowed, otherwise it
+            # *must* be a unicode object. This is consistent with ET
+            # and lxml, but forcing it here makes a better error.
+            xobj = xobj.decode('ascii')
+
+        if type(xobj) == unicode:
             element = etree.SubElement(parentElement, tag, {})
             element.text = xobj
             return element
@@ -226,7 +232,7 @@ class ElementGenerator(object):
 
                     if val is not None:
                         key = addns(key)
-                        attrs[key] = str(val)
+                        attrs[key] = unicode(val)
                 else:
                     l = elements.setdefault(key, [])
                     if type(val) == list:
@@ -262,8 +268,8 @@ class ElementGenerator(object):
             element = etree.SubElement(parentElement, tag, attrs)
 
 
-        if isinstance(xobj, str) and xobj:
-            element.text = str(xobj)
+        if isinstance(xobj, basestring) and xobj:
+            element.text = unicode(xobj)
         elif (hasattr(xobj, '_xobj') and xobj._xobj.text 
               and not orderedElements):
             # only add text if we don't have elements
