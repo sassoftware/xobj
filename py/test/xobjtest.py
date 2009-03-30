@@ -820,5 +820,15 @@ class XobjTest(TestCase):
                 '<top bar="&#xF6;">\n  <foo>\xc3\xb6</foo>\n</top>\n')
 
 
+    def testLong(self):
+        class Foo(object):
+            i = long
+
+        f = Foo()
+        f.i = 1 << 33
+        s = xobj.toxml(f, 'foo')
+        x = xobj.parse(s, typeMap = { 'foo' : Foo })
+        assert(x.foo.i == 1 << 33)
+
 if __name__ == "__main__":
     testsuite.main()

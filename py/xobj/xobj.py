@@ -66,6 +66,8 @@ def XTypeFromXObjectType(xObjectType):
         return XType(XObj)
     elif xObjectType == int:
         return XType(XObjInt)
+    elif xObjectType == long:
+        return XType(XObjLong)
     elif xObjectType == float:
         return XType(XObjFloat)
     elif type(xObjectType) == list:
@@ -113,6 +115,9 @@ class XObjInt(int):
     pass
 
 class XObjFloat(float):
+    pass
+
+class XObjLong(long):
     pass
 
 class XObjMetadata(object):
