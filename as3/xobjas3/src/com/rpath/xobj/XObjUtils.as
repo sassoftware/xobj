@@ -115,6 +115,9 @@ package com.rpath.xobj
             var isArray:Boolean = false;
             var result:Object = {typeName: null, isArray: false, isArrayCollection: false};
             
+            if (propName == "label")
+                trace("stop");
+                
             if (className == "Object" || className == "mx.utils::ObjectProxy")
                 return result;
             
@@ -148,7 +151,7 @@ package com.rpath.xobj
                     result.isArray = true;
                     result.typeName = null; // assume generic object unless told otherwise
                 }
-                else if (result.typeName == "ArrayCollection")
+                else if (result.typeName == "mx.collections.ArrayCollection")
                 {
                     result.isArrayCollection = true;
                     result.typeName = null; // assume generic object unless told otherwise
