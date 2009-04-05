@@ -114,10 +114,7 @@ package com.rpath.xobj
         {
             var isArray:Boolean = false;
             var result:Object = {typeName: null, isArray: false, isArrayCollection: false};
-            
-            if (propName == "label")
-                trace("stop");
-                
+
             if (className == "Object" || className == "mx.utils::ObjectProxy")
                 return result;
             
