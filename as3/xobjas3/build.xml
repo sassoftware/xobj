@@ -99,16 +99,53 @@
         </delete>
     	<echo>Cleaning completed</echo>
     </target>
+	
+	<target name="build-version" description="Create the build version and timestamp files">
+        <echo>Obtaining build version for ${ant.project.name}...</echo>
+        
+        <!-- Write the version from mercurial -->
+        <exec executable="${xobj.hg-version.cmd}" outputproperty="build.version"/>
+        <echo file="${xobj.build.dir.version.file}" message="${build.version}"/>
+        <loadfile property="build.info.version" srcFile="${xobj.build.dir.version.file}"/>
+        <echo>Current build version is ${build.info.version}</echo>
+        
+        <!-- Write the date/time stamp -->
+        <tstamp>
+            <format property="build.timestamp" pattern="MM/dd/yyyy HH:mm:ss"/>
+        </tstamp>
+        <echo file="${xobj.build.dir.timestamp.file}" message="${build.timestamp}"/>
+        <loadfile property="build.info.timestamp" srcFile="${xobj.build.dir.timestamp.file}"/>
+        <echo>Current build timestamp is ${build.info.timestamp}</echo>
+    </target>
 	    
     <target name="init" description="Initialization for building">
     	<mkdir dir="${xobj.build.dir}" />
+    	<mkdir dir="${xobj.temp.src.dir}" />
+    	<antcall target="build-version"/>
     </target>
     
     <target name="xobj-build" description="Build the xobj flex library">
+    	
+    	<!-- Copy the source dir to a new location so we can stamp version info
+             without having to worry about failure cases where the file
+             remains modified and gets checked in with an actual version
+             instead of the replacement token.-->
+        <copy todir="${xobj.temp.src.dir}">
+            <fileset dir="${xobj.src.dir}"/>
+        </copy>
+        
+        <!-- Stamp version info -->
+        <property name="tmpSrcFile" value="${xobj.temp.src.dir}/${xobj.package.path}/XObjVersion.as"/>
+        <loadfile property="build.version" srcFile="${xobj.build.dir.version.file}"/>
+        <loadfile property="build.timestamp" srcFile="${xobj.build.dir.timestamp.file}"/>
+        <property name="fullVersion" value="${build.version} (${build.timestamp})"/>
+        <echo>Stamping XObjVersion.as with build version "${fullVersion}"</echo>
+        <replace file="${xobj.temp.src.dir}/${xobj.package.path}/XObjVersion.as" token="@@XOBJ-BUILDVERSION@@" value="${fullVersion}"/>
+
     	<flexlib-build 
     		title="xobj" 
     		outputlib="${xobj.lib}"
-    		srcdir="${xobj.src.dir}"
+    		srcdir="${xobj.temp.src.dir}"
     		namespace="${xobj.namespace}"
     		manifest="${xobj.manifest}">    		
         </flexlib-build>
