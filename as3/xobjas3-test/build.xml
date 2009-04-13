@@ -56,7 +56,10 @@
             incremental="true" debug="true">
             
             <!-- Get default compiler options. -->
-            <load-config filename="${xobj.dir}/xobj-flex-config.xml"/>
+        	<load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+        	
+        	<keep-as3-metadata name="xobjTransient"/>
+        	<keep-as3-metadata name="ArrayElementType"/>
     
             <!-- List of path elements that form the roots of ActionScript
             class hierarchies. -->
@@ -90,7 +93,10 @@
             incremental="true" debug="true">
             
             <!-- Get default compiler options. -->
-        	<load-config filename="${xobj.dir}/xobj-flex-config.xml"/>
+        	<load-config filename="${flex.sdk.frameworks.dir}/${flex-config.name}"/>
+        	
+        	<keep-as3-metadata name="xobjTransient"/>
+        	<keep-as3-metadata name="ArrayElementType"/>
     
             <!-- List of path elements that form the roots of ActionScript
             class hierarchies. -->

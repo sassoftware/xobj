@@ -50,13 +50,6 @@
 			
     		<compc output="@{outputLib}">
     			
-    			<!-- 
-    			    Load our own config since ant compc is busted and doesn't
-    			    allow saving metadata.  The xobjTransient metadata tag
-    			    will not work without this. 
-    			-->
-    			<load-config filename="xobj-flex-config.xml"/>
-    			
     			<source-path path-element="@{srcDir}"/>
     			
     			<!-- Include libraries we need to link to -->
@@ -84,6 +77,7 @@
     			
     			<!-- Include the xobjTransient metadata tag -->
     			<keep-as3-metadata name="xobjTransient"/>
+    			<keep-as3-metadata name="ArrayElementType"/>
             </compc>
 			
             <echo>Build completed</echo>
