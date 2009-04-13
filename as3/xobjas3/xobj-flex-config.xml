@@ -101,6 +101,7 @@
       <!--          5. Transient                                                                         -->
       
       <keep-as3-metadata>
+          <name>ArrayElementType</name>
           <name>Bindable</name>
           <name>Managed</name>
           <name>ChangeEvent</name>
