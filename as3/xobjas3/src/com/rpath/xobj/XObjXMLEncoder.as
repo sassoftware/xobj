@@ -32,6 +32,8 @@ package com.rpath.xobj
 
 import flash.utils.*;
 import flash.xml.*;
+
+import mx.collections.ArrayCollection;
 import mx.utils.*;
 
     
@@ -641,6 +643,8 @@ public class XObjXMLEncoder
         else if (obj is Date)
             return XObjXMLEncoder.DATE_TYPE;
         else if (obj is Array)
+            return XObjXMLEncoder.ARRAY_TYPE;
+        else if (obj is ArrayCollection)
             return XObjXMLEncoder.ARRAY_TYPE;
         else if (obj is Function)
             return XObjXMLEncoder.FUNCTION_TYPE;
