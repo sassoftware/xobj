@@ -48,6 +48,7 @@ package com.rpath.xobj
    
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
+import flash.xml.XMLDocument;
 import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
@@ -181,7 +182,8 @@ public class XObjXMLDecoder
      */
     public function XObjXMLDecoder(typeMap:* = null, nmMap:* = null,
             makeObjectsBindable:Boolean = false,
-            makeAttributesMeta:Boolean = false)
+            makeAttributesMeta:Boolean = false,
+            defer:Boolean=false)
     {
         super();
         this.typeMap = typeMap;
@@ -194,8 +196,11 @@ public class XObjXMLDecoder
         
         this.makeObjectsBindable = makeObjectsBindable;
         this.makeAttributesMeta = makeAttributesMeta;
+        this.deferred = defer;
     }
 
+    public var deferred:Boolean;
+    
     //--------------------------------------------------------------------------
     //
     //  Methods
@@ -211,6 +216,15 @@ public class XObjXMLDecoder
      */
     public function decodeXML(dataNode:XMLNode, propType:Class = null):Object
     {
+        if (!deferred)
+            return actualDecodeXML(dataNode, propType);
+        else
+            return new XObjDeferredDecode(this, dataNode, propType);
+    }
+
+
+    public function actualDecodeXML(dataNode:XMLNode, propType:Class = null, rootObject:* = null, isRootNode:Boolean = false):Object
+    {
         var result:*;
         var nullObject:Boolean;
         var isSimpleType:Boolean = false;
@@ -220,9 +234,14 @@ public class XObjXMLDecoder
         var isSpecifiedType:Boolean = false;
         var elementSet:Array = [];
         var attributeSet:Array = [];
+        var nextNodeIsRoot:Boolean = false;
+        var doneRootDupe:Boolean = false;
         
         if (dataNode == null)
             return null;
+        
+        if (dataNode is XMLDocument)
+            nextNodeIsRoot = true;
             
         var children:Array = dataNode.childNodes;
 
@@ -301,10 +320,16 @@ public class XObjXMLDecoder
                     
         }
         
-        // OK, so now we know what type to instantiate
-        
-        result = new resultType();
-        
+        // OK, so now we know what type we want
+        if (rootObject && isRootNode)
+        {
+            result = rootObject;
+        }
+        else
+        {
+            result = new resultType();
+        }
+
         // track whether we actually have any values at all
         nullObject = true;
         
@@ -391,12 +416,12 @@ public class XObjXMLDecoder
                         var partClass:Class = XObjUtils.getClassByName(partTypeName);
                         
                         if (partClass)
-                            partObj = decodeXML(partNode, partClass);
+                            partObj = actualDecodeXML(partNode, partClass, rootObject, nextNodeIsRoot);
                         else
-                            partObj = decodeXML(partNode);
+                            partObj = actualDecodeXML(partNode, null, rootObject, nextNodeIsRoot);
                     }
                     else
-                        partObj = decodeXML(partNode);
+                        partObj = actualDecodeXML(partNode, null, rootObject, nextNodeIsRoot);
                         
                     // if we've seen this property before, assume it's an Array
                     if (seenProperties[partName])
@@ -405,7 +430,14 @@ public class XObjXMLDecoder
                     }
                     
                     assign(result, partName, partObj, propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
-    
+                    
+                    // should we keep an extra, well-known ref to the object?
+                    if (nextNodeIsRoot && !doneRootDupe)
+                    {
+                        assign(result, "root", partObj, propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
+                        doneRootDupe = true;
+                    }
+                    
                     seenProperties[partName] = true;
                 }
             }
