@@ -175,6 +175,8 @@ class ElementGenerator(object):
         if xobj is None:
             return
 
+        tag = addns(tag)
+
         if type(xobj) in (int, long, float):
             xobj = unicode(xobj)
 
@@ -189,7 +191,6 @@ class ElementGenerator(object):
             element.text = xobj
             return element
 
-        tag = addns(tag)
 
         if hasattr(xobj, '_xobj'):
             attrSet = xobj._xobj.attributes
@@ -330,7 +331,9 @@ class Document(object):
             raise RuntimeError("Document has no root element.")
         rootName, rootValue = items[0]
 
-        if self.__explicitNamespaces:
+        if self.nameSpaceMap:
+            map = self.nameSpaceMap
+        elif self.__explicitNamespaces:
             map = self.__xmlNsMap.copy()
             del map[None]
         else:
@@ -588,13 +591,13 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
     return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
 
 def toxml(xobj, tag, prettyPrint = True, xml_declaration = True,
-          schemaf = None):
+          schemaf = None, nsmap = {}):
     if schemaf:
         schemaObj = etree.XMLSchema(file = schemaf)
     else:
         schemaObj = None
 
-    gen = ElementGenerator(xobj, tag, schema = schemaObj)
+    gen = ElementGenerator(xobj, tag, schema = schemaObj, nsmap = nsmap)
 
     return gen.tostring(prettyPrint = prettyPrint,
                         xml_declaration = xml_declaration)
