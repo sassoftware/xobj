@@ -197,6 +197,7 @@ class ElementGenerator(object):
 
             if xobj._xobj.tag is not None:
                 tag = xobj._xobj.tag
+                tag = addns(tag)
         else:
             attrSet = set()
 
