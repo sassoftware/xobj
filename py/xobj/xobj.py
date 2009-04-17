@@ -331,13 +331,14 @@ class Document(object):
             raise RuntimeError("Document has no root element.")
         rootName, rootValue = items[0]
 
-        if self.nameSpaceMap:
-            map = self.nameSpaceMap
-        elif self.__explicitNamespaces:
-            map = self.__xmlNsMap.copy()
-            del map[None]
+        if nsmap:
+            map = nsmap
         else:
             map = self.__xmlNsMap
+
+        if self.__explicitNamespaces:
+            map = map.copy()
+            del map[None]
 
         gen = ElementGenerator(rootValue, rootName,
                 nsmap=map, schema=self.__schema)
