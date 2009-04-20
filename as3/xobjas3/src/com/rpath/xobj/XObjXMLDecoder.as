@@ -541,9 +541,6 @@ public class XObjXMLDecoder
         if (result == null)
             return result;
         
-        if (propName == "file")
-            trace("file");
-            
         if (makeArray || makeArrayCollection)
         {
             var existing:* = result[propName];
