@@ -429,12 +429,12 @@ public class XObjXMLDecoder
                         propertyIsArray = true;
                     }
                     
-                    assign(result, partName, partObj, propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
+                    result = assign(result, partName, partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
                     
                     // should we keep an extra, well-known ref to the object?
                     if (nextNodeIsRoot && !doneRootDupe)
                     {
-                        assign(result, "root", partObj, propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
+                        result = assign(result, "root", partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
                         doneRootDupe = true;
                     }
                     
@@ -536,32 +536,117 @@ public class XObjXMLDecoder
     import flash.utils.flash_proxy;
 
     private function assignToProperty(result:*, propName:String, value:*,
-        makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):void
+        seenBefore:Boolean, makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):*
     {
         if (result == null)
-            return;
+            return result;
         
+        if (propName == "file")
+            trace("file");
+            
         if (makeArray || makeArrayCollection)
         {
             var existing:* = result[propName];
             
             if (existing == null)
             {
-                existing = [];
-                existing = (existing as Array).concat(value);
+                if (makeArrayCollection)
+                {
+                    existing = new ArrayCollection([]);
+                    if (!(value is Array) && !(value is ArrayCollection))
+                    {
+                        (existing as ArrayCollection).addItem(value);
+                    }
+                    else
+                    {
+                        value = makeCollection(value);
+                        for each (var v:* in value)
+                        {
+                            (existing as ArrayCollection).addItem(v);
+                        }
+                    }
+                }
+                else
+                {
+                    existing = [];
+                    existing = (existing as Array).concat(value);
+                }
             }
             else if (existing is Array)
             {
+                if (!seenBefore)
+                {
+                    (existing as Array).splice(0, (existing as Array).length);
+                }
+                
                 existing = (existing as Array).concat(value);
             }
             else if (existing is ArrayCollection)
             {
-                existing = (existing as ArrayCollection).source.concat(value);
+                if (!seenBefore)
+                {
+                    (existing as ArrayCollection).removeAll();
+                }
+                
+                if (!(value is Array) && !(value is ArrayCollection))
+                {
+                    (existing as ArrayCollection).addItem(value);
+                }
+                else
+                {
+                    value = makeCollection(value);
+                    for each (var v1:* in value)
+                    {
+                        (existing as ArrayCollection).addItem(v1);
+                    }
+                }
             }
             else
             {
-                existing = [existing];
-                existing = (existing as Array).concat(value);
+                if (!seenBefore)
+                {
+                    // throw away old, (non decoded) value
+                    if (makeArrayCollection)
+                    {
+                        existing = new ArrayCollection([]);
+                    }
+                    else
+                    {
+                        existing = [];
+                    }
+                }
+                else
+                {
+                    // throw away old, (non decoded) value
+                    if (makeArrayCollection)
+                    {
+                        existing = new ArrayCollection([existing]);
+                    }
+                    else
+                    {
+                        existing = [existing];
+                    }
+                }
+
+                if (makeArrayCollection)
+                {
+                    if (!(value is Array) && !(value is ArrayCollection))
+                    {
+                        (existing as ArrayCollection).addItem(value);
+                    }
+                    else
+                    {
+                        value = makeCollection(value);
+                        for each (var v2:* in value)
+                        {
+                            (existing as ArrayCollection).addItem(v2);
+                        }
+                    }
+                }
+                else
+                {
+                    existing = (existing as Array).concat(value);
+                }
             }
             
             if ((makeArrayCollection || makeBindable) && !(existing is ArrayCollection))
@@ -571,18 +656,33 @@ public class XObjXMLDecoder
         }
         
         result[propName] = value;
+        return result;
     }
     
     private function assignToArray(result:*, propName:String, value:*,
-        makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):void
+        seenBefore:Boolean, makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):*
     {
         if (result == null)
-            return;
-        
+            return result;
+
         if (result is Array)
+        {
+            if (!seenBefore)
+            {
+                (result as Array).splice(0, (result as Array).length);
+            }
             result.push(value);
+        }
         else if (result is ArrayCollection)
+        {
+            if (!seenBefore)
+            {
+                (result as ArrayCollection).removeAll();
+            }
             result.addItem(value);
+        }
+        
+        return result;
     }
     
 
@@ -676,7 +776,16 @@ public class XObjXMLDecoder
         return {qname: qname, propname: name};
     }
     
-        
+    public function makeCollection(v:*):ArrayCollection
+    {
+        if (v is ArrayCollection)
+            return v;
+        else if (v is Array)
+            return new ArrayCollection(v);
+        else
+            return new ArrayCollection([v]);
+    }
+    
     private var makeObjectsBindable:Boolean;
     private var makeAttributesMeta:Boolean;
 }

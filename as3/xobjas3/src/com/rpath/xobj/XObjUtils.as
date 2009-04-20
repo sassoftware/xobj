@@ -13,14 +13,13 @@
 
 package com.rpath.xobj
 {
+    import flash.utils.getDefinitionByName;
+    import flash.utils.getQualifiedClassName;
+    import flash.xml.XMLNode;
+    
     import mx.collections.ArrayCollection;
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
-
-    import flash.utils.getQualifiedClassName;
-    import flash.utils.getDefinitionByName;
-    import flash.xml.XMLNode;
-    
     import mx.utils.object_proxy;
     use namespace object_proxy;
     
@@ -89,7 +88,19 @@ package com.rpath.xobj
     
             return classReference;
          }    
-         
+
+        /**
+         * Return a Class instance based on a string class name
+         * @private
+          */
+        public static function classOf(obj:*):Class
+        {
+            var className:String = getQualifiedClassName(obj);
+            var classReference:Class = getClassByName(className);
+            
+            return classReference;
+         }    
+                  
         private static var typePropertyCache:Object = {};
     
         public static function isTypeArray(type:Class):Boolean
