@@ -503,7 +503,7 @@ class XobjTest(TestCase):
             l = [ int ]
 
         d = xobj.parse("<top/>", typeMap = { 'top' : Top })
-        assert(d.top.l == [])
+        assert(d.top.l == None)
 
     def testUnion(self):
         class TypeA(xobj.XObj):
@@ -534,7 +534,7 @@ class XobjTest(TestCase):
         assert(s == d.toxml(xml_declaration = False))
 
         d = xobj.parse('<top/>', typeMap = { 'top' : Top } )
-        assert(d.top.items == [])
+        assert(d.top.items == None)
 
     def testObjectTree(self):
         class Top(object):
