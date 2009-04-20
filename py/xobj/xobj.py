@@ -510,13 +510,13 @@ class Document(object):
 
             # anything which is the same as in the class wasn't set in XML, so
             # set it to None
+            # We even set lists to None as it is important to be
+            # able to distinguish between not specifying a list and
+            # specifying the empty list.
             for key, val in xobj.__class__.__dict__.items():
                 if key[0] == '_': continue
                 if getattr(xobj, key) == val:
-                    if type(val) == list:
-                        setattr(xobj, key, [])
-                    else:
-                        setattr(xobj, key, None)
+                    setattr(xobj, key, None)
 
             if parentXObj is not None:
                 if tag in parentUnionTags:
