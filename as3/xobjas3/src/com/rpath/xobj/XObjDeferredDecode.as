@@ -26,7 +26,7 @@ package com.rpath.xobj
 
         public function decodeXMLIntoObject(rootObject:*):Object
         {
-            return decoder.actualDecodeXML(dataNode, null, rootObject);
+            return decoder.actualDecodeXML(dataNode, null, rootObject, true);
         }
         
     }
