@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2008-2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -21,11 +21,21 @@ clean: default-clean
 
 test: default-test
 
+forcetag:
+	hg tag -f xobj-$(VERSION)
+
+tag:
+	hg tag xobj-$(VERSION)
+
+
 
 dist: archive
 
+archive-snapshot:
+	hg archive --exclude .hgignore -t tbz2 xobj-$$(hg id -i).tar.bz2
+
 archive:
-	hg archive --exclude .hgignore -t tbz2 xobj-`hg id -i`.tar.bz2
+	hg archive --exclude .hgignore -t tbz2 xobj-$(VERSION).tar.bz2
 
 
 export TOPDIR=$(shell pwd)

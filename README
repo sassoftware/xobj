@@ -1,7 +1,7 @@
 INTRODUCTION
 ============
 
-The xobj project provides an object reflector between various
+The xobj project provides object reflector interfaces between various
 dynamic languages and XML.  Currently, Python and ActionScript 3
 implementations are available.
 
@@ -9,7 +9,7 @@ These interfaces are intended to allow for concise code for using
 and manipulating XML documents.  For example, using the ElementTree
 Python library, you might write something like this:
 
-    imageItem = [ x for x in parent if x.tag='image' ]
+    imageItem = [ x for x in parent if x.tag == 'image' ]
 
 In this case, imageItem will always be a list, even if it is
 not defined in the XML schema to be a sequence.
