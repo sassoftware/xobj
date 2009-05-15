@@ -191,7 +191,7 @@ package com.rpath.xobj
         /**
          * Use our own version of getClassInfo to support various metadata
          * tags we use.  See ObjectUtil.getClassInfo for more info about
-         * the baisc functionality of this method.
+         * the basic functionality of this method.
          */  
         public static function getClassInfo(obj:Object,
                                             excludes:Array = null,
@@ -422,6 +422,19 @@ package com.rpath.xobj
             return result;
         }
         
+        public static function getSuperclasses(object:*):Array
+        {
+            var result:Array = [];
+            var classInfo:XML = DescribeTypeCache.describeType(object).typeDescription;
+            
+            for each (var superClass:XML in classInfo.extendsClass)
+            {
+                result.push(getClassByName(superClass.@type));
+            }
+            return result;
+        }
+        
+            
         /**
          *  @private
          */
