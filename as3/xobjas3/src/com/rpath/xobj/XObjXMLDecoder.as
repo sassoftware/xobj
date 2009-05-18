@@ -128,25 +128,31 @@ public class XObjXMLDecoder
 
         if (val != null)
         {
+            var testNum:Number = Number(val);
+            var valStr:String = val.toString();
+            var lowerVal:String  = val.toString().toLowerCase();
+            
             //return the value as a string, a boolean or a number.
             //numbers that start with 0 are left as strings
             //bForceObject removed since we'll take care of converting to a String or Number object later
             if (val is String && String(val) == "")
             {
-                result = val.toString();    
+                result = valStr;    
             }
-            else if (isNaN(Number(val)) || (val.charAt(0) == '0') || ((val.charAt(0) == '-') && (val.charAt(1) == '0')) || val.charAt(val.length -1) == 'E')
+            else if (lowerVal == "true")
             {
-                var valStr:String = val.toString();
-
-                //Bug 101205: Also check for boolean
-                var valStrLC:String = valStr.toLowerCase();
-                if (valStrLC == "true")
-                    result = true;
-                else if (valStrLC == "false")
-                    result = false;
-                else
-                    result = valStr;
+                result = true;
+            }
+            else if (lowerVal == "false")
+            {
+                result = false;
+            }
+            else if (!isFinite(testNum) || isNaN(testNum)
+                || (val.charAt(0) == '0') // starts with a leading zero
+                || ((val.charAt(0) == '-') && (val.charAt(1) == '0')) // starts with -0
+                || lowerVal.charAt(lowerVal.length -1) == 'e') // TODO: wtf?
+            {
+                result = valStr;
             }
             else
             {
