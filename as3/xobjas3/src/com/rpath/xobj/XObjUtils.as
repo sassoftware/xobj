@@ -422,6 +422,14 @@ package com.rpath.xobj
             return result;
         }
         
+        public static function getClassHeirarchy(object:*):Array
+        {
+            var result:Array = getSuperclasses(object);
+            
+            result.splice(0,0, classOf(object));
+            return result;
+        }
+        
         public static function getSuperclasses(object:*):Array
         {
             var result:Array = [];
