@@ -13,6 +13,7 @@
 
 package com.rpath.xobj
 {
+    import flash.utils.Dictionary;
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
     import flash.xml.XMLNode;
@@ -101,33 +102,66 @@ package com.rpath.xobj
             return classReference;
          }    
                   
-        private static var typePropertyCache:Object = {};
+        private static var typePropertyCache:Dictionary = new Dictionary(true);
     
-        public static function isTypeArray(type:Class):Boolean
+        private static var arrayTypeCache:Dictionary = new Dictionary(true);
+        private static var arrayCollectionTypeCache:Dictionary = new Dictionary(true);
+        
+        public static function isTypeArray(type:*):Boolean
         {
-            if (type == null)
+            var result:Boolean;
+            
+            if (type == null || type == "")
                 return false;
             
-            var foo:* = new type();
-            return (foo is Array);
+            if (type is String)
+                type = getClassByName(type);
+            
+            result = arrayTypeCache[type];
+            if (arrayTypeCache[type] == undefined)
+            {
+                // TODO: better way to detect an arry subclass?
+                var foo:* = new type();
+                result = (foo is Array);
+                arrayTypeCache[type] = result;
+
+                // do the array collection test while we're here, to save time
+                arrayCollectionTypeCache[type] = (foo is ArrayCollection);
+            }
+            return result;
         }
     
-        public static function isTypeArrayCollection(type:Class):Boolean
+        public static function isTypeArrayCollection(type:*):Boolean
         {
-            if (type == null)
+            var result:Boolean;
+
+            if (type == null || type == "")
                 return false;
+
+            if (type is String)
+                type = getClassByName(type);
     
-            var foo:* = new type();
-            return (foo is ArrayCollection);
+            result = arrayCollectionTypeCache[type];
+            if (arrayCollectionTypeCache[type] == undefined)
+            {
+                // TODO: better way to detect an arry subclass?
+                var foo:* = new type();
+                result = (foo is ArrayCollection);
+                arrayCollectionTypeCache[type] = result;
+
+                // do the array test while we're here, to save time
+                arrayTypeCache[type] = (foo is Array);
+            }
+            return result;
         }
         
-        public static function typeInfoForProperty(object:*, className:String, propName:String):Object
+        public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
         {
             var isArray:Boolean = false;
-            var result:Object = {typeName: null, isArray: false, isArrayCollection: false};
+            var result:XObjTypeInfo;
 
             if (className == "Object" || className == "mx.utils::ObjectProxy")
-                return result;
+                return new XObjTypeInfo();
             
             var propertyCacheKey:String = className + "." + propName;
             var arrayElementType:String;
@@ -136,7 +170,7 @@ package com.rpath.xobj
                 
             if (result == null)
             {
-                result = {typeName: null, isArray: false, isArrayCollection: false};
+                result = new XObjTypeInfo();
                 
                 // go look it up (expensive)
                 // very important to use the instance object here, not the classname
@@ -145,7 +179,11 @@ package com.rpath.xobj
                 var typeDesc:* = DescribeTypeCache.describeType(object);
                 var typeInfo:XML = typeDesc.typeDescription;
                 
-                result.typeName = typeInfo..accessor.(@name == propName).@type.toString().replace( /::/, "." );
+                var accessorList:XMLList = typeInfo..accessor.(@name == propName);
+                
+                if (accessorList.length() > 0)
+                    result.typeName = accessorList[0].@type.toString().replace( /::/, "." );
+                
                 if (result.typeName == null || result.typeName == "")
                 {    
                     result.typeName = typeInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
@@ -154,14 +192,10 @@ package com.rpath.xobj
                 else
                     arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
                 
-                if (result.typeName == "Array")
+                result.isArray = isTypeArray(result.typeName);
+                result.isArrayCollection = isTypeArrayCollection(result.typeName);
+                if (result.isArray || result.isArrayCollection)
                 {
-                    result.isArray = true;
-                    result.typeName = null; // assume generic object unless told otherwise
-                }
-                else if (result.typeName == "mx.collections.ArrayCollection")
-                {
-                    result.isArrayCollection = true;
                     result.typeName = null; // assume generic object unless told otherwise
                 }
                 

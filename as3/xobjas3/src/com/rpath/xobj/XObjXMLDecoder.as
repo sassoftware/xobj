@@ -411,7 +411,7 @@ public class XObjXMLDecoder
                     lastPartName.propname = partName;
 
                     // what type do we want?
-                    var typeInfo:Object = XObjUtils.typeInfoForProperty(result, resultTypeName, partName);
+                    var typeInfo:XObjTypeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, partName);
                     var partTypeName:String = typeInfo.typeName;
                     var propertyIsArray:Boolean = typeInfo.isArray;
                     var propertyIsArrayCollection:Boolean = typeInfo.isArrayCollection;
