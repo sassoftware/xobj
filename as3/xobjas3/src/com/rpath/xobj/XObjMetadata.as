@@ -48,6 +48,7 @@ package com.rpath.xobj
                try
                {
                    target[METADATA_PROPERTY] = new XObjMetadata();
+                   target.setPropertyIsEnumerable(METADATA_PROPERTY, false);
                    result = target[METADATA_PROPERTY];
                }
                catch (e:Error)
