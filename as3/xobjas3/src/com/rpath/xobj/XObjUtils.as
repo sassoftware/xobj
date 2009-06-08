@@ -100,7 +100,13 @@ package com.rpath.xobj
             var classReference:Class = getClassByName(className);
             
             return classReference;
-         }    
+         }
+         
+         public static function getClass(obj:*):Class
+         {
+             return classOf(obj);
+         }
+         
                   
         private static var typePropertyCache:Dictionary = new Dictionary(true);
     

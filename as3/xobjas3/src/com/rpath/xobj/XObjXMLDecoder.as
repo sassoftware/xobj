@@ -327,7 +327,7 @@ public class XObjXMLDecoder
         }
         
         // OK, so now we know what type we want
-        if (rootObject && isRootNode)
+        if (rootObject && !nextNodeIsRoot)
         {
             result = rootObject;
         }
@@ -421,6 +421,27 @@ public class XObjXMLDecoder
                     {
                         var partClass:Class = XObjUtils.getClassByName(partTypeName);
                         
+                        // now, should we decode into a new object, or decode into an existing instance?
+                        if (!nextNodeIsRoot && result.hasOwnProperty(partName))
+                        {
+                            var existing:* = result[partName];
+                            if (existing && (existing is Object)
+                                && !((existing is Array) 
+                                    || (existing is ArrayCollection)
+                                    || (existing is String)
+                                    || (existing is Boolean)
+                                    )
+                                )
+                            {
+                                // reuse it
+                                rootObject = existing;
+                            }
+                            else
+                            {
+                                rootObject = null;
+                            }
+                        }
+                            
                         if (partClass)
                             partObj = actualDecodeXML(partNode, partClass, rootObject, nextNodeIsRoot);
                         else
@@ -657,8 +678,9 @@ public class XObjXMLDecoder
                 
             value = existing;
         }
-        
+
         result[propName] = value;
+
         return result;
     }
     
