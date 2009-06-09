@@ -395,6 +395,10 @@ public class XObjXMLDecoder
                     }
 
                     var partQName:XObjQName = new XObjQName(partNode.namespaceURI, XObjUtils.getNCName(partNode.nodeName));
+                    // TODO: allow type map entries to be full QNames, not just local names
+                    var partName:* = decodePartName(partQName, partNode);
+                    var propertyIsArray:Boolean = false;
+                    var propertyIsArrayCollection:Boolean = false;
 
                     // record the order we see the elements in for encoding purposes
                     // this is an attempt to "fake" XMLSchema sequence constraint of
@@ -406,66 +410,79 @@ public class XObjXMLDecoder
                         elementSet.push(lastPartName);
                     }
                     
-                    // TODO: allow type map entries to be full QNames, not just local names
-                    var partName:* = decodePartName(partQName, partNode);
                     lastPartName.propname = partName;
-
+                  
                     // what type do we want?
-                    var typeInfo:XObjTypeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, partName);
-                    var partTypeName:String = typeInfo.typeName;
-                    var propertyIsArray:Boolean = typeInfo.isArray;
-                    var propertyIsArrayCollection:Boolean = typeInfo.isArrayCollection;
+                    var typeInfo:XObjTypeInfo = null;
+                    var partTypeName:String = null;
+                    var partClass:Class = null;
                     var partObj:*;
-                    
-                    if (partTypeName != null)
-                    {
-                        var partClass:Class = XObjUtils.getClassByName(partTypeName);
-                        
-                        // now, should we decode into a new object, or decode into an existing instance?
-                        if (!nextNodeIsRoot && result.hasOwnProperty(partName))
-                        {
-                            var existing:* = result[partName];
-                            if (existing && (existing is Object)
-                                && !((existing is Array) 
-                                    || (existing is ArrayCollection)
-                                    || (existing is String)
-                                    || (existing is Boolean)
-                                    )
-                                )
-                            {
-                                // reuse it
-                                rootObject = existing;
-                            }
-                            else
-                            {
-                                rootObject = null;
-                            }
-                        }
-                            
-                        if (partClass)
-                            partObj = actualDecodeXML(partNode, partClass, rootObject, nextNodeIsRoot);
-                        else
-                            partObj = actualDecodeXML(partNode, null, rootObject, nextNodeIsRoot);
-                    }
-                    else
-                        partObj = actualDecodeXML(partNode, null, rootObject, nextNodeIsRoot);
-                        
-                    // if we've seen this property before, assume it's an Array
+
+                    // look up characteristics of the result.propName type
+                    typeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, partName);
+                    partTypeName = typeInfo.typeName;
+                    propertyIsArray = typeInfo.isArray;
+                    propertyIsArrayCollection = typeInfo.isArrayCollection;
+
+                    // if we've seen this property before, force it to be an array
                     if (seenProperties[partName])
                     {
                         propertyIsArray = true;
                     }
+                      
+                    // assume we need a new part instance
+                    partObj = null;
                     
+                    // now, should we decode into a new object, or decode into an existing instance?
+                    if (nextNodeIsRoot)
+                    {
+                        // we're about to read the root element
+                        partObj = rootObject;
+                    }
+                    // else should we reuse existing property object?
+                    else if (!propertyIsArray 
+                    
+                        && result.hasOwnProperty(partName))
+                    {
+                        var existing:* = result[partName];
+                        if (existing && (existing is Object)
+                            && !((existing is Array) 
+                                || (existing is ArrayCollection)
+                                || (existing is String)
+                                || (existing is Boolean)
+                                || (existing is Number)
+                                )
+                            )
+                        {
+                            // reuse it
+                            partObj = existing;
+                        }
+                    }
+                    
+                    // if we have a partObj we need to use its class to decode into
+                    if (partObj)
+                    {
+                        partClass = XObjUtils.classOf(partObj);
+                    }
+                    else
+                    {
+                        partClass = XObjUtils.getClassByName(partTypeName);
+                    }
+                    
+                    // now finally, decode the part
+                    partObj = actualDecodeXML(partNode, partClass, partObj, nextNodeIsRoot);
+
+                    // and assign the result property based on array characteristics
                     result = assign(result, partName, partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
                     
+                    seenProperties[partName] = true;
+
                     // should we keep an extra, well-known ref to the object?
                     if (nextNodeIsRoot && !doneRootDupe)
                     {
                         result = assign(result, "root", partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
                         doneRootDupe = true;
                     }
-                    
-                    seenProperties[partName] = true;
                 }
             }
         }

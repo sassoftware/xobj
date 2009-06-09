@@ -78,6 +78,9 @@ package com.rpath.xobj
         {
             var classReference:Class = null;
             
+            if (!className)
+                return null;
+                
             try
             {
                  classReference = getDefinitionByName(className) as Class;
@@ -90,13 +93,19 @@ package com.rpath.xobj
             return classReference;
          }    
 
+        public static function getClassName(obj:*):String
+        {
+            var className:String = getQualifiedClassName(obj);
+            return className;
+        }
+        
         /**
          * Return a Class instance based on a string class name
          * @private
           */
         public static function classOf(obj:*):Class
         {
-            var className:String = getQualifiedClassName(obj);
+            var className:String = getClassName(obj);
             var classReference:Class = getClassByName(className);
             
             return classReference;
