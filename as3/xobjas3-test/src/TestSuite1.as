@@ -24,6 +24,7 @@ package
         {
             addTestCase(new TestBasics());
             addTestCase(new TestTransients());
+            addTestCase(new TestRefresh());
         }
 
     }

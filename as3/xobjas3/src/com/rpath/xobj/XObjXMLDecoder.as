@@ -228,6 +228,16 @@ public class XObjXMLDecoder
             return new XObjDeferredDecode(this, dataNode, propType);
     }
 
+    public function decodeXMLIntoObject(dataNode:XMLNode, rootObject:Object):Object
+    {
+        if (!rootObject)
+            return null;
+        
+        if (!deferred)
+            return actualDecodeXML(dataNode, null, rootObject);
+        else
+            return new XObjDeferredDecode(this, dataNode, null, rootObject);
+    }
 
     public function actualDecodeXML(dataNode:XMLNode, propType:Class = null, rootObject:* = null, isRootNode:Boolean = false):Object
     {
@@ -620,7 +630,7 @@ public class XObjXMLDecoder
                     (existing as Array).splice(0, (existing as Array).length);
                 }
                 
-                existing = (existing as Array).concat(value);
+                (existing as Array).push(value);
             }
             else if (existing is ArrayCollection)
             {
@@ -686,7 +696,7 @@ public class XObjXMLDecoder
                 }
                 else
                 {
-                    existing = (existing as Array).concat(value);
+                    (existing as Array).push(value);
                 }
             }
             

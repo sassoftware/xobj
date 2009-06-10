@@ -16,7 +16,7 @@ package tests.models
     /**
      * A random object for use in validating encoding of objects
      */ 
-    public class TestableObject
+    public dynamic class TestableObject
     {
         public var someVal:String;
         
@@ -27,5 +27,6 @@ package tests.models
         public var xobjTransientVar:String;
         
         public var booleanVar:Boolean;
+        
     }
 }

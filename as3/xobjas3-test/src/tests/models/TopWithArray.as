@@ -13,13 +13,16 @@
 
 package tests.models
 {
-    public dynamic class Top
+    public dynamic class TopWithArray
     {
-        public function Top()
+        public function TopWithArray()
         {
         }
 
         public var middle:Middle;
         public var bottom:Middle;
+        
+        [ArrayElementType("tests.models.TestableObject")]
+        public var testableObject:Array;
     }
 }

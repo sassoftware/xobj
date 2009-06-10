@@ -13,13 +13,18 @@
 
 package tests.models
 {
-    public dynamic class Top
+    import mx.collections.ArrayCollection;
+    
+    public dynamic class TopWithArrayCollection
     {
-        public function Top()
+        public function TopWithArrayCollection()
         {
         }
 
         public var middle:Middle;
         public var bottom:Middle;
+        
+        [ArrayElementType("tests.models.TestableObject")]
+        public var testableObject:ArrayCollection;
     }
 }

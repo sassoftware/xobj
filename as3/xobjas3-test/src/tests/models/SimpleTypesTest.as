@@ -13,13 +13,17 @@
 
 package tests.models
 {
-    public dynamic class Top
+    /**
+     * An object for use in validating encoding of objects
+     */ 
+    public class SimpleTypesTest
     {
-        public function Top()
-        {
-        }
-
-        public var middle:Middle;
-        public var bottom:Middle;
+        public var someVal:String;
+        
+        public var booleanVar:Boolean;
+        
+        public var someNumber:Number;
+        
+        public var anInt:int;
     }
 }

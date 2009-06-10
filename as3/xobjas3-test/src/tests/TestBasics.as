@@ -1,6 +1,6 @@
 /*
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -163,7 +163,7 @@ public class TestBasics extends TestBase
                 '    <tag>123</tag>\n'+
                 '  </middle>\n'+
                 '  <prop>abc</prop>\n'+
-                '</top>\n';
+                  '</top>\n';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
 
@@ -205,7 +205,7 @@ public class TestBasics extends TestBase
         var expectedString:String = 
                 '<obj>\n'+
                 '  <booleanVar>true</booleanVar>\n'+
-                '  <someVal>someval</someVal>\n'+                
+                '  <someVal>someval</someVal>\n'+
                 '</obj>\n';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
