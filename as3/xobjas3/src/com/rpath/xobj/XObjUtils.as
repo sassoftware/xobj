@@ -209,6 +209,7 @@ package com.rpath.xobj
                 
                 result.isArray = isTypeArray(result.typeName);
                 result.isArrayCollection = isTypeArrayCollection(result.typeName);
+                
                 if (result.isArray || result.isArrayCollection)
                 {
                     result.typeName = null; // assume generic object unless told otherwise
@@ -218,6 +219,7 @@ package com.rpath.xobj
                 {
                     // use type specified
                     result.typeName = arrayElementType;
+                    result.arrayElementTypeName = arrayElementType;
                 }
                 
                 if (result.typeName == "Object"

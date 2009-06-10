@@ -1,6 +1,6 @@
 /*
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -11,22 +11,18 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
-package
+package tests.models
 {
-    
-    import net.digitalprimates.fluint.tests.TestSuite;
-    
-    import tests.*;
-
-    public class TestSuite1 extends TestSuite
+    public dynamic class TopWithNestedArray
     {
-        public function TestSuite1()
+        public function TopWithNestedArray()
         {
-            addTestCase(new TestBasics());
-            addTestCase(new TestTransients());
-            addTestCase(new TestRefresh());
-            addTestCase(new TestArrays());
         }
 
+        public var middle:Middle;
+        public var bottom:Middle;
+        
+        [ArrayElementType("tests.models.TestableObject")]
+        public var testableArray:Array;
     }
 }
