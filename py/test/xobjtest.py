@@ -817,7 +817,7 @@ class XobjTest(TestCase):
         s.top.bar = u'\xf6'
         self.assertEquals(s.toxml(),
                 '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
-                '<top bar="&#xF6;">\n  <foo>\xc3\xb6</foo>\n</top>\n')
+                '<top bar="\xc3\xb6">\n  <foo>\xc3\xb6</foo>\n</top>\n')
 
 
     def testLong(self):
