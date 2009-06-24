@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -19,8 +19,6 @@
     <![CDATA[
     import com.rpath.xobj.XObjXMLEncoder;
     import com.rpath.xobj.XObjXMLDecoder;
-    import com.rpath.xobj.SchemaAwareXMLEncoder;
-    import com.rpath.xobj.SchemaAwareXMLDecoder;
     import mx.controls.Alert;
     import test.File;
     import mx.rpc.http.HTTPService;
@@ -48,36 +46,15 @@
     public var decoderChoices:ArrayCollection = new ArrayCollection(
         [
         { label: "Simple", value: "SIMPLE" },
-        { label: "Typed", value: "TYPED" },
-        { label: "Schema Aware", value: "SCHEMA" }
+        { label: "Typed", value: "TYPED" }
         ]
         );
 
-    private var schemaDecoder:SchemaAwareXMLDecoder;
-    private var schemaEncoder:SchemaAwareXMLEncoder;
     private var typeRegistry:SchemaTypeRegistry;
     private var schemaManager:SchemaManager;
     private var schemaMarshaller:SchemaMarshaller;
     private var schemaLoader:SchemaLoader;
 
-    private function setupSchemaHandling():void
-    {
-        schemaDecoder = new SchemaAwareXMLDecoder();
-        schemaDecoder.recordXSIType = true;
-
-        schemaEncoder = new SchemaAwareXMLEncoder();
-        
-        typeRegistry = schemaDecoder.typeRegistry;
-        schemaManager = schemaDecoder.schemaManager;
-        
-        schemaEncoder.schemaManager = schemaManager;
-        
-        schemaMarshaller = schemaManager.schemaMarshaller;
-        schemaLoader = new SchemaLoader();
-
-        schemaLoader.addEventListener(SchemaLoadEvent.LOAD, schemaLoaded);
-    }
-     
     [Bindable]
     public var isValid:Boolean;
     
@@ -113,15 +90,9 @@
     {
         testObject = new TestObject();
         BindingUtils.bindSetter(getInputXMLFromComboBox, filePicker, ["selectedItem"]);
-        
-        setupSchemaHandling();
     }
     
-    private function schemaLoaded(event:SchemaLoadEvent):void
-    {
-        schemaManager.addSchema(event.schema);
-        testObject = schemaDecoder.decode(new XML(inputXML), new QName("http://schemas.dmtf.org/ovf/envelope/1","Envelope"));
-    }
+
     
     public var oldTestObject:*;
 
@@ -181,12 +152,6 @@
                     newObject = typedDecoder.decodeXML(xmlNode);
                     break;
                     
-                    case "SCHEMA":                    
-                    typeRegistry.registerClass(new QName("http://schemas.dmtf.org/ovf/envelope/1","EnvelopeType"), test.Envelope);
-                    typeRegistry.registerClass(new QName("http://schemas.dmtf.org/ovf/envelope/1","DeploymentOptionSection_Type"), test.OVFId);
-                    schemaLoader.load("http://schemas.dmtf.org/ovf/envelope/1/dsp8023.xsd");
-                    newObject = {};
-                    break;
                 }
                     
                 
@@ -232,11 +197,6 @@
             unformattedOutput = xmlNode.firstChild.toString();
             break;
             
-            case "SCHEMA":
-            var schemaEncoder:SchemaAwareXMLEncoder = new SchemaAwareXMLEncoder();
-            xmlList = schemaEncoder.encode(testObject,null, new QName("http://schemas.dmtf.org/ovf/envelope/1","EnvelopeType"), null);
-            unformattedOutput = xmlList.toXMLString();
-            break;
         }
         
         //make the output look nice
