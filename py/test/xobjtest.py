@@ -815,9 +815,13 @@ class XobjTest(TestCase):
         # Good: char string (unicode) for text and attribute
         s.top.foo = u'\xf6'
         s.top.bar = u'\xf6'
+        if etree.__version__ >= "2.2.0":
+            attr = "\xc3\xb6"
+        else:
+            attr = "&#xF6;"
         self.assertEquals(s.toxml(),
                 '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
-                '<top bar="\xc3\xb6">\n  <foo>\xc3\xb6</foo>\n</top>\n')
+                '<top bar="%s">\n  <foo>\xc3\xb6</foo>\n</top>\n' % attr)
 
 
     def testLong(self):
