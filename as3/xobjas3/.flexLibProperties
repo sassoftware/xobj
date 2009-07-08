@@ -6,11 +6,9 @@
 <classEntry path="com.rpath.xobj.XObjDeferredDecode"/>
 <classEntry path="com.rpath.xobj.XObjTypeInfo"/>
 <classEntry path="com.rpath.xobj.XObjString"/>
-<classEntry path="com.rpath.xobj.SchemaAwareXMLDecoder"/>
 <classEntry path="com.rpath.xobj.XObjVersion"/>
 <classEntry path="com.rpath.xobj.XObjQName"/>
 <classEntry path="com.rpath.xobj.XObjMetadata"/>
-<classEntry path="com.rpath.xobj.SchemaAwareXMLEncoder"/>
 <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
 </includeClasses>
 <includeResources/>
