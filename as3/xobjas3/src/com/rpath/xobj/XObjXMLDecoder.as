@@ -148,6 +148,14 @@ public class XObjXMLDecoder
             {
                 result = false;
             }
+            else if (resultType == int)
+            {
+                result = Number(val);
+            }
+            else if (resultType == Number)
+            {
+                result = Number(val);
+            }
             else if (!isFinite(testNum) || isNaN(testNum)
                 || (val.charAt(0) == '0') // starts with a leading zero
                 || ((val.charAt(0) == '-') && (val.charAt(1) == '0')) // starts with -0
