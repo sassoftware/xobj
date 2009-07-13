@@ -223,6 +223,40 @@ public class TestBasics extends TestBase
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
+    public function testNumericStrings():void
+    {
+        var obj:TestableObject = new TestableObject();
+                
+        obj.someVal = "1.0";
+        // make sure someVal is a string so this is a valid test
+        assertTrue(obj.someVal is String);
+        obj.booleanVar = true;
+        var typeMap:* = {obj: TestableObject};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+
+        // neither the Transient nor the xobjTransient vars should be there
+        var expectedString:String = 
+                '<obj>\n'+
+                '  <booleanVar>true</booleanVar>\n'+
+                '  <someVal>1.0</someVal>\n'+
+                '</obj>\n';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        // now decode it and validate
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        assertTrue(o.obj is TestableObject);
+        assertTrue(o.obj.someVal == "1.0");
+        assertTrue(o.obj.booleanVar);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+    }
 }
 }
 

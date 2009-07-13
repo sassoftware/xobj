@@ -122,7 +122,7 @@ public class XObjXMLDecoder
      * 
      * This method is marked public so that the ComplexString type can use it
      */
-    public static function simpleType(val:Object):Object
+    public static function simpleType(val:Object, resultType:Class=null):Object
     {
         var result:Object = val;
 
@@ -134,8 +134,9 @@ public class XObjXMLDecoder
             
             //return the value as a string, a boolean or a number.
             //numbers that start with 0 are left as strings
-            //bForceObject removed since we'll take care of converting to a String or Number object later
-            if (val is String && String(val) == "")
+            //ForceObject removed since we'll take care of converting to a String or Number object later
+            // make sure to check if String here so "1.0" is a String, not the number 1 (RBL-4931)
+            if ((val is String) && ((String(val) == "") || (resultType == String)))
             {
                 result = valStr;    
             }
@@ -365,7 +366,7 @@ public class XObjXMLDecoder
         {
             nullObject = false;
 
-            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue);
+            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultType);
             if (!isSpecifiedType || 
                 (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number) || (result is Boolean))
             {
@@ -529,7 +530,7 @@ public class XObjXMLDecoder
 
             var attrName:String = attrObj.propname;
 
-            var attr:* = XObjXMLDecoder.simpleType(attributes[attribute]);
+            var attr:* = XObjXMLDecoder.simpleType(attributes[attribute], resultType);
             
             if (makeAttributesMeta)
             {
