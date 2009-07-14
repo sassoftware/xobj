@@ -223,6 +223,111 @@ public class TestBasics extends TestBase
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
-}
+    public function testNumericStrings():void
+    {
+        var obj:TestableObject = new TestableObject();
+                
+        obj.someVal = "1.0";
+        // make sure someVal is a string so this is a valid test
+        assertTrue(obj.someVal is String);
+        obj.booleanVar = true;
+        var typeMap:* = {obj: TestableObject};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+
+        // neither the Transient nor the xobjTransient vars should be there
+        var expectedString:String = 
+                '<obj>\n'+
+                '  <booleanVar>true</booleanVar>\n'+
+                '  <someVal>1.0</someVal>\n'+
+                '</obj>\n';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        // now decode it and validate
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        assertTrue(o.obj is TestableObject);
+        assertTrue(o.obj.someVal == "1.0");
+        assertTrue(o.obj.booleanVar);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+    }
+    
+    public function testStringNumerics():void
+    {
+        var obj:TestableNumericObject = new TestableNumericObject();
+                
+        obj.someNumber = 1.1;
+        // make sure someNumber is a Number so this is a valid test
+        assertTrue(obj.someNumber is Number);
+        obj.booleanVar = true;
+        var typeMap:* = {obj: TestableNumericObject};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+
+        // neither the Transient nor the xobjTransient vars should be there
+        var expectedString:String = 
+                '<obj>\n'+
+                '  <booleanVar>true</booleanVar>\n'+
+                '  <someNumber>1.1</someNumber>\n'+
+                '</obj>\n';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        // now decode it and validate
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        assertTrue(o.obj is TestableNumericObject);
+        assertTrue(o.obj.someNumber == 1.1);
+        assertTrue(o.obj.booleanVar);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+    }
+
+    public function testStringNumerics2():void
+    {
+        var obj:TestableNumericObject = new TestableNumericObject();
+                
+        obj.someNumber = 0.5;
+        // make sure someNumber is a Number so this is a valid test
+        assertTrue(obj.someNumber is Number);
+        obj.booleanVar = true;
+        var typeMap:* = {obj: TestableNumericObject};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+
+        // neither the Transient nor the xobjTransient vars should be there
+        var expectedString:String = 
+                '<obj>\n'+
+                '  <booleanVar>true</booleanVar>\n'+
+                '  <someNumber>0.5</someNumber>\n'+
+                '</obj>\n';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        // now decode it and validate
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        assertTrue(o.obj is TestableNumericObject);
+        assertTrue(o.obj.someNumber == 0.5);
+        assertTrue(o.obj.booleanVar);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+    }
+    
+    }
 }
 
