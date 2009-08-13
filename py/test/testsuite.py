@@ -15,12 +15,16 @@ import sys
 import unittest
 
 import bootstrap
-from testrunner import testhelp
-from testrunner import resources, testhandler
+from testrunner import pathManager
 
 #from pychecker import checker
 
 _setupPath = None
+_individual = False
+
+def isIndividual():
+    global _individual
+    return _individual
 
 def setup():
     """
@@ -31,51 +35,58 @@ def setup():
     if _setupPath:
         return _setupPath
 
-    xobjPath = testhelp.getPath('XOBJ_PATH')
-    os.environ['XOBJ_PATH'] = xobjPath
-    for path in xobjPath.split(':'):
-        if not os.path.isdir(path):
-            print 'XOBJ_PATH %s does not exist' %path
-            sys.exit(1)
-    testhelp.insertPath(testhelp.getPath('XOBJ_PATH'), updatePythonPath=True)
+    xobjPath = pathManager.addExecPath('CONARY_PATH')
 
-    from testrunner import testSetup
-    testSetup.setup()
+    xobjPath = pathManager.addExecPath('XOBJ_PATH')
+    xobjTestPath = pathManager.addExecPath('XOBJ_TEST_PATH')
+    pathManager.addExecPath('TEST_PATH',path=xobjTestPath)
 
     from conary.lib import util
     sys.excepthook = util.genExcepthook(True, catchSIGUSR1=False)
 
-    testhelp._conaryDir = resources.conaryDir
-    _setupPath = path
-    return path
+    _setupPath = xobjPath
+    return xobjPath
+
+def getCoverageDirs(handler, environ):
+    return  pathManager.getPathList('XOBJ_PATH')
+
+def getExcludePaths(handler, environ):
+    return ['scripts/.*', 'epdb.py', 'stackutil.py',
+                              'test/.*']
+
+def sortTests(tests):
+    order = {'smoketest': 0, 
+             'unit_test' :1,
+             'functionaltest':2}
+    maxNum = len(order)
+    tests = [ (test, test.index('test')) for test in tests]
+    tests = sorted((order.get(test[:index+4], maxNum), test)
+                   for (test, index) in tests)
+    tests = [ x[1] for x in tests ]
+    return tests
 
 def main(argv=None, individual=True):
-    cfg = resources.cfg
-    cfg.isIndividual = individual
+    global _individual
+    _individual = individual
 
     setup()
 
-    cfg.cleanTestDirs = not individual
-    cfg.coverageExclusions = ['scripts/.*', 'epdb.py', 'stackutil.py',
-                              'test/.*']
-    cfg.coverageDirs = [ os.environ['XOBJ_PATH'] ]
-
     if argv is None:
         argv = list(sys.argv)
-    topdir = testhelp.getTestPath()
-    if topdir not in sys.path:
-        sys.path.insert(0, topdir)
-    cwd = os.getcwd()
-    if cwd != topdir and cwd not in sys.path:
-        sys.path.insert(0, cwd)
-
-
 
     from conary.lib import util
     from conary.lib import coveragehook
     sys.excepthook = util.genExcepthook(True, catchSIGUSR1=False)
 
-    handler = testhandler.TestSuiteHandler(cfg, resources)
+    from testrunner import testhelp
+    handlerClass = testhelp.getHandlerClass(testhelp.ConaryTestSuite,
+                                            getCoverageDirs,
+                                            getExcludePaths,
+                                            sortTests)
+
+    handler = handlerClass(individual=individual, topdir=pathManager.getPath("XOBJ_TEST_PATH"),
+                           testPath=pathManager.getPath("XOBJ_TEST_PATH"), conaryDir=pathManager.getPath("CONARY_PATH"))
+    
     print "This process PID:", os.getpid()
     results = handler.main(argv)
     if results is None:
@@ -83,8 +94,4 @@ def main(argv=None, individual=True):
     sys.exit(not results.wasSuccessful())
 
 if __name__ == '__main__':
-    #testDir = os.path.dirname(__file__)
-    #if not os.path.exists(testDir + '/conarytest/testsetup.py'):
-    #    print "Executing makefile to create required symlinks..."
-    #    os.system('make')
     main(sys.argv, individual=False)
