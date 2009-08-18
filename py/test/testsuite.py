@@ -19,6 +19,9 @@ import bootstrap
 from testrunner import pathManager, testhelp
 
 
+EXCLUDED_PATHS = ['scripts/.*', 'epdb.py', 'stackutil.py', 'test/.*']
+
+
 def setup():
     pathManager.addExecPath('CONARY_PATH')
     xobjPath = pathManager.addExecPath('XOBJ_PATH')
