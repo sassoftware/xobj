@@ -37,7 +37,7 @@ def main(argv=None, individual=True):
     sys.excepthook = util.genExcepthook(True, catchSIGUSR1=False)
 
     handlerClass = testhelp.getHandlerClass(testhelp.ConaryTestSuite,
-            lambda handler, environ: os.getenv('XOBJ_PATH'),
+            lambda handler, environ: os.getenv('XOBJ_PATH') + '/xobj',
             lambda handler, environ: EXCLUDED_PATHS)
 
     handler = handlerClass(individual=individual)
