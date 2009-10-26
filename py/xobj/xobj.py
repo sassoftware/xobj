@@ -177,7 +177,7 @@ class ElementGenerator(object):
 
         tag = addns(tag)
 
-        if type(xobj) in (int, long, float):
+        if type(xobj) in (int, long, float, bool):
             xobj = unicode(xobj)
 
         if type(xobj) == str:
@@ -248,7 +248,7 @@ class ElementGenerator(object):
                         l.append(val)
 
         orderedElements = []
-
+        
         if hasattr(xobj, '_xobj'):
             for name in xobj._xobj.elements:
                 for val in elements.get(name, []):
