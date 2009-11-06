@@ -387,13 +387,18 @@ class Document(object):
 
         def addAttribute(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType)
-            if key not in xobj._xobj.attributes:
-                # preserver any type information we copied in
+            if key not in xobj._xobj.attributes and (key not in
+                                                    xobj._xobj.elements):
+                # preserve any type information we copied in, but only if it
+                # wasn't previously defined (either element or attribute).
                 xobj._xobj.attributes[key] = None
 
         def addElement(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType = xType)
-            if key not in xobj._xobj.elements:
+            if key not in xobj._xobj.elements and (key not in
+                                                    xobj._xobj.attributes):
+                # preserve any type information we copied in, but only if it
+                # wasn't previously defined (either element or attribute).
                 xobj._xobj.elements.append(key)
 
         def setItem(xobj, key, val, xType = None):
