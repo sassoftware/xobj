@@ -1,5 +1,8 @@
 INTRODUCTION
 ============
+This is an initial offering of the xobj interface.  It should not be 
+considered a stable interface and may not be backwards compatiblei 
+with future releases.
 
 The xobj project provides object reflector interfaces between various
 dynamic languages and XML.  Currently, Python and ActionScript 3

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2008 rPath, Inc.
+# Copyright (c) 2008-2009 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -177,7 +177,7 @@ class ElementGenerator(object):
 
         tag = addns(tag)
 
-        if type(xobj) in (int, long, float):
+        if type(xobj) in (int, long, float, bool):
             xobj = unicode(xobj)
 
         if type(xobj) == str:
@@ -248,7 +248,7 @@ class ElementGenerator(object):
                         l.append(val)
 
         orderedElements = []
-
+        
         if hasattr(xobj, '_xobj'):
             for name in xobj._xobj.elements:
                 for val in elements.get(name, []):
@@ -387,13 +387,18 @@ class Document(object):
 
         def addAttribute(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType)
-            if key not in xobj._xobj.attributes:
-                # preserver any type information we copied in
+            if key not in xobj._xobj.attributes and (key not in
+                                                    xobj._xobj.elements):
+                # preserve any type information we copied in, but only if it
+                # wasn't previously defined (either element or attribute).
                 xobj._xobj.attributes[key] = None
 
         def addElement(xobj, key, val, xType = None):
             setItem(xobj, key, val, xType = xType)
-            if key not in xobj._xobj.elements:
+            if key not in xobj._xobj.elements and (key not in
+                                                    xobj._xobj.attributes):
+                # preserve any type information we copied in, but only if it
+                # wasn't previously defined (either element or attribute).
                 xobj._xobj.elements.append(key)
 
         def setItem(xobj, key, val, xType = None):

@@ -834,5 +834,36 @@ class XobjTest(TestCase):
         x = xobj.parse(s, typeMap = { 'foo' : Foo })
         assert(x.foo.i == 1 << 33)
 
+    def testGlobalsPoisoning(self):
+        # RBL-5328
+        class Foo(object):
+            _xobj = xobj.XObjMetadata(attributes = [ ],
+                elements = [ 'elem1', 'elem2' ])
+
+        f = Foo()
+        f.elem1 = 'val1'
+        f.elem2 = 'val2'
+        s = xobj.toxml(f, 'root')
+        self.assertXMLEquals(s,
+            "<root><elem1>val1</elem1><elem2>val2</elem2></root>")
+
+        # Now feed it an XML string that uses attributes instead of elements
+        x = xobj.parse('<root elem1="val1" elem2="val2" />',
+            typeMap = { 'root' : Foo })
+        self.failUnlessEqual(x.root.elem1, f.elem1)
+        self.failUnlessEqual(x.root.elem2, f.elem2)
+
+        # Now serialize f again, elements should continue to be elements
+        s = xobj.toxml(f, 'root')
+        self.assertXMLEquals(s,
+            "<root><elem1>val1</elem1><elem2>val2</elem2></root>")
+
+        # Brand new object
+        f2 = Foo()
+        f2.elem1 = 'val2'
+        s2 = xobj.toxml(f2, 'root')
+        self.assertXMLEquals(s2,
+            "<root><elem1>val2</elem1></root>")
+
 if __name__ == "__main__":
     testsuite.main()
