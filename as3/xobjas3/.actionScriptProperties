@@ -1,36 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-# Copyright (c) 2008-2009 rPath, Inc.
-#
-# This program is distributed under the terms of the MIT License as found 
-# in a file called LICENSE. If it is not present, the license
-# is always available at http://www.opensource.org/licenses/mit-license.php.
-#
-# This program is distributed in the hope that it will be useful, but
-# without any waranty; without even the implied warranty of merchantability
-# or fitness for a particular purpose. See the MIT License for full details.
-#
--->
-<actionScriptProperties mainApplicationPath="xobjas3.as" version="3">
-<compiler additionalCompilerArguments="-keep-as3-metadata+=ArrayElementType,xobjTransient -dump-config=/tmp/foo.xml" copyDependentFiles="false" enableModuleDebug="true" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersion="9.0.124" htmlPlayerVersionCheck="true" outputFolderPath="bin" sourceFolderPath="src" strict="true" useApolloConfig="false" verifyDigests="true" warn="true">
-<compilerSourcePath/>
-<libraryPath defaultLinkType="1">
-<libraryPathEntry kind="4" path="">
-<modifiedEntries>
-<libraryPathEntry kind="3" linkType="4" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" useDefaultLinkType="true">
-<crossDomainRsls>
-<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swz"/>
-<crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.2.0.3958.swf"/>
-</crossDomainRsls>
-</libraryPathEntry>
-</modifiedEntries>
-</libraryPathEntry>
-</libraryPath>
-<sourceAttachmentPath/>
-</compiler>
-<applications>
-<application path="xobjas3.as"/>
-</applications>
-<modules/>
-<buildCSSFiles/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties mainApplicationPath="xobjas3.as" projectUUID="6260d2b2-b348-40a2-87e7-958f53558f88" version="6">
+  <compiler additionalCompilerArguments="-keep-as3-metadata+=ArrayElementType,xobjTransient -dump-config=/tmp/foo.xml" autoRSLOrdering="true" copyDependentFiles="false" flex3CompatMode="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath/>
+    <libraryPath defaultLinkType="1">
+      <libraryPathEntry kind="4" path=""/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="xobjas3.as"/>
+  </applications>
+  <modules/>
+  <buildCSSFiles/>
 </actionScriptProperties>
