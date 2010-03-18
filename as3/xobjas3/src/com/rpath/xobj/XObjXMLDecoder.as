@@ -385,7 +385,13 @@ public class XObjXMLDecoder
             {
                 try
                 {
-                    result.value = temp;
+                    if (result is Date)
+                    {
+                        result = new Date();
+                        result.time = Date.parse(temp);
+                    }
+                    else
+                        result.value = temp;
                 }
                 catch (e:Error)
                 {
