@@ -141,7 +141,7 @@ package com.rpath.xobj
                 arrayTypeCache[type] = result;
 
                 // do the array collection test while we're here, to save time
-                arrayCollectionTypeCache[type] = (foo is ArrayCollection);
+                arrayCollectionTypeCache[type] = (foo is ArrayCollection) || (foo is IXObjCollection);
             }
             return result;
         }
@@ -161,7 +161,7 @@ package com.rpath.xobj
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
-                result = (foo is ArrayCollection);
+                result = (foo is ArrayCollection) || (foo is IXObjCollection);
                 arrayCollectionTypeCache[type] = result;
 
                 // do the array test while we're here, to save time

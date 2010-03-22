@@ -248,7 +248,7 @@ public class XObjXMLDecoder
             return new XObjDeferredDecode(this, dataNode, null, rootObject);
     }
 
-    public function actualDecodeXML(dataNode:XMLNode, propType:Class = null, rootObject:* = null, isRootNode:Boolean = false):Object
+    public function actualDecodeXML(dataNode:XMLNode, propType:Class = null, rootObject:* = null, isRootNode:Boolean = false, collClass:Class = null):Object
     {
         var result:*;
         var nullObject:Boolean;
@@ -472,7 +472,7 @@ public class XObjXMLDecoder
                         var existing:* = result[partName];
                         if (existing && (existing is Object)
                             && !((existing is Array) 
-                                //|| (existing is ArrayCollection)
+                                || (existing is ArrayCollection)
                                 || (existing is String)
                                 || (existing is Boolean)
                                 || (existing is Number)
@@ -484,18 +484,39 @@ public class XObjXMLDecoder
                         }
                     }
                     
+                    var nextCollClass:Class;
+
                     // if we have a partObj we need to use its class to decode into
                     if (partObj)
                     {
+                        if (partObj is IXObjCollection)
+                        {
+                            nextCollClass = XObjUtils.getClassByName(partTypeName);
+                        }
                         partClass = XObjUtils.classOf(partObj);
                     }
                     else
                     {
-                        partClass = XObjUtils.getClassByName(partTypeName);
+                        if (collClass)
+                        {
+                            partClass = collClass;
+                        }
+                        else
+                        {
+                            if (result is IXObjCollection)
+                            {
+                                // ask the IXObjCollection for the type it wants to use
+                                partClass = (result as IXObjCollection).elementType();
+                            }
+                            else
+                            {
+                                partClass = XObjUtils.getClassByName(partTypeName);
+                            }
+                        }
                     }
                     
                     // now finally, decode the part
-                    partObj = actualDecodeXML(partNode, partClass, partObj, nextNodeIsRoot);
+                    partObj = actualDecodeXML(partNode, partClass, partObj, nextNodeIsRoot, nextCollClass);
 
                     // and assign the result property based on array characteristics
                     result = assign(result, partName, partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
@@ -610,6 +631,10 @@ public class XObjXMLDecoder
         if (result == null)
             return result;
         
+        // are we reusing an existing property value?
+        if (result.hasOwnProperty(propName) && result[propName] === value)
+            return result;
+        
         if (makeArray || makeArrayCollection)
         {
             var existing:* = result[propName];
@@ -647,23 +672,24 @@ public class XObjXMLDecoder
                 
                 (existing as Array).push(value);
             }
-            else if (existing is ArrayCollection)
+            else if (existing is ArrayCollection || existing is IXObjCollection)
             {
                 if (!seenBefore)
                 {
-                    (existing as ArrayCollection).removeAll();
+                    existing.removeAll();
                 }
                 
-                if (!(value is Array) && !(value is ArrayCollection))
+                if (!(value is Array) && !(value is ArrayCollection)
+                && !(value is IXObjCollection))
                 {
-                    (existing as ArrayCollection).addItem(value);
+                    existing.addItem(value);
                 }
                 else
                 {
                     value = makeCollection(value);
                     for each (var v1:* in value)
                     {
-                        (existing as ArrayCollection).addItem(v1);
+                        existing.addItem(v1);
                     }
                 }
             }
@@ -740,11 +766,11 @@ public class XObjXMLDecoder
             }
             result.push(value);
         }
-        else if (result is ArrayCollection)
+        else if (result is ArrayCollection || result is IXObjCollection)
         {
             if (!seenBefore)
             {
-                (result as ArrayCollection).removeAll();
+                result.removeAll();
             }
             result.addItem(value);
         }
