@@ -198,9 +198,17 @@ public class XObjXMLDecoder
     public function XObjXMLDecoder(typeMap:* = null, nmMap:* = null,
             makeObjectsBindable:Boolean = false,
             makeAttributesMeta:Boolean = false,
-            defer:Boolean=false)
+            defer:Boolean=false,
+			ignoreWhitespace:Boolean=false)
     {
         super();
+		
+		if (!ignoreWhitespace)
+		{
+			XML.ignoreWhitespace = false;
+			XML.prettyPrinting = false;
+		}
+		
         this.typeMap = typeMap;
                 
         for (var prefix:String in nmMap)

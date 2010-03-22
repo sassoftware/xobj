@@ -11,13 +11,13 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 -->
 
-<mx:Object xmlns:mx="http://www.adobe.com/2006/mxml">
-    
+<mx:Object xmlns:mx="http://www.adobe.com/2006/mxml" >
+
     <mx:XML id="explicitns" source="../../test/explicitns.xml" />
     <mx:XML id="id1" source="../../test/id1.xml" />
     <mx:XML id="id2" source="../../test/id2.xml" />
     <mx:XML id="namespaces" source="../../test/namespaces.xml" />
     <mx:XML id="simple" source="../../test/simple.xml" />
-    <mx:XML id="complex" source="../../test/complex.xml" />
+    <mx:XML id="complex" source="../../test/complex.xml" /> 
         
 </mx:Object>
