@@ -11,6 +11,8 @@
     <classEntry path="com.rpath.xobj.XObjVersion"/>
     <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
     <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
+    <classEntry path="com.rpath.xobj.IXObjFactory"/>
+    <classEntry path="com.rpath.xobj.XObjDefaultFactory"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

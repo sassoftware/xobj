@@ -198,7 +198,8 @@ public class XObjXMLDecoder
     public function XObjXMLDecoder(typeMap:* = null, nmMap:* = null,
             makeObjectsBindable:Boolean = false,
             makeAttributesMeta:Boolean = false,
-            defer:Boolean=false)
+            defer:Boolean=false,
+            objectFactory:IXObjFactory=null)
     {
         super();
         this.typeMap = typeMap;
@@ -212,9 +213,18 @@ public class XObjXMLDecoder
         this.makeObjectsBindable = makeObjectsBindable;
         this.makeAttributesMeta = makeAttributesMeta;
         this.deferred = defer;
+        
+        if (objectFactory == null)
+        {
+            objectFactory = new XObjDefaultFactory();
+        }
+        
+        this.objectFactory = objectFactory;
     }
 
     public var deferred:Boolean;
+    
+    public var objectFactory:IXObjFactory;
     
     //--------------------------------------------------------------------------
     //
@@ -270,6 +280,9 @@ public class XObjXMLDecoder
             
         var children:Array = dataNode.childNodes;
 
+        var resultID:String = dataNode.attributes["id"];
+        
+        
         /* lots of work follows to figure out the type we should really 
         use
         
@@ -352,7 +365,7 @@ public class XObjXMLDecoder
         }
         else
         {
-            result = new resultType();
+            result = objectFactory.newObject(resultType, resultID);
         }
 
         // track whether we actually have any values at all
