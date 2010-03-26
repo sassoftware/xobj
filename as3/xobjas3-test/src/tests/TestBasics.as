@@ -56,7 +56,7 @@ public class TestBasics extends TestBase
         for (var i:int=0; i<o.top.prop.subprop.length; i++)
         {
             assertTrue(o.top.prop.subprop[i] is XObjString);
-            assertTrue(o.top.prop.subprop[i] == ['asdf', 'fdsa'][i]);
+            assertTrue(o.top.prop.subprop[i] == ['asdf', 'fdsa', 'zxcv '][i]);
         }
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
@@ -130,9 +130,9 @@ public class TestBasics extends TestBase
         var xmlOutput:XMLDocument = typedEncoder.encodeObject(o);
 
         var expectedString:String = 
-                '<ns:top xmlns:ns="http://somens.xsd">\n' + 
-                '  <ns:element ns:attr="foo"/>\n' + 
-                '</ns:top>\n';
+                '<ns:top xmlns:ns="http://somens.xsd">' + 
+                '<ns:element ns:attr="foo"/>' + 
+                '</ns:top>';
 
         // check that we remap to original prefixes on the way back out
         assertTrue("encode is fully qualified", compareXMLtoString(xmlOutput, expectedString));
@@ -157,13 +157,13 @@ public class TestBasics extends TestBase
         var xmlOutput:XMLDocument = typedEncoder.encodeObject(t);
 
         var expectedString:String = 
-                '<top>\n'+
-                '  <bottom/>\n'+
-                '  <middle>\n'+
-                '    <tag>123</tag>\n'+
-                '  </middle>\n'+
-                '  <prop>abc</prop>\n'+
-                  '</top>\n';
+                '<top>'+
+                '<bottom/>'+
+                '<middle>'+
+                '<tag>123</tag>'+
+                '</middle>'+
+                '<prop>abc</prop>'+
+                '</top>';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
 
@@ -203,10 +203,10 @@ public class TestBasics extends TestBase
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
-                '<obj>\n'+
-                '  <booleanVar>true</booleanVar>\n'+
-                '  <someVal>someval</someVal>\n'+
-                '</obj>\n';
+                '<obj>'+
+                '<booleanVar>true</booleanVar>'+
+                '<someVal>someval</someVal>'+
+                '</obj>';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
         
@@ -238,10 +238,10 @@ public class TestBasics extends TestBase
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
-                '<obj>\n'+
-                '  <booleanVar>true</booleanVar>\n'+
-                '  <someVal>1.0</someVal>\n'+
-                '</obj>\n';
+                '<obj>'+
+                '<booleanVar>true</booleanVar>'+
+                '<someVal>1.0</someVal>'+
+                '</obj>';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
         
@@ -273,10 +273,10 @@ public class TestBasics extends TestBase
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
-                '<obj>\n'+
-                '  <booleanVar>true</booleanVar>\n'+
-                '  <someNumber>1.1</someNumber>\n'+
-                '</obj>\n';
+                '<obj>'+
+                '<booleanVar>true</booleanVar>'+
+                '<someNumber>1.1</someNumber>'+
+                '</obj>';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
         
@@ -308,10 +308,10 @@ public class TestBasics extends TestBase
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
-                '<obj>\n'+
-                '  <booleanVar>true</booleanVar>\n'+
-                '  <someNumber>0.5</someNumber>\n'+
-                '</obj>\n';
+                '<obj>'+
+                '<booleanVar>true</booleanVar>'+
+                '<someNumber>0.5</someNumber>'+
+                '</obj>';
         
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
         
