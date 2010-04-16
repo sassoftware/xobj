@@ -126,7 +126,7 @@ package com.rpath.xobj
         {
             var result:Boolean;
             
-            if (type == null || type == "")
+            if (type == null || type == "" || type == "*")
                 return false;
             
             if (type is String)
@@ -150,7 +150,7 @@ package com.rpath.xobj
         {
             var result:Boolean;
 
-            if (type == null || type == "")
+            if (type == null || type == "" || type == "*")
                 return false;
 
             if (type is String)
