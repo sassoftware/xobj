@@ -205,8 +205,14 @@ package com.rpath.xobj
                     arrayElementType = typeInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
                 }
                 else
+                {
                     arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
-                
+                    if (!arrayElementType)
+                    {
+                        // maybe it's a specific desired type using xobj metadata marker
+                        arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
+                    }
+                }
                 result.isArray = isTypeArray(result.typeName);
                 result.isArrayCollection = isTypeArrayCollection(result.typeName);
                 
