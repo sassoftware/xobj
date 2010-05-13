@@ -678,19 +678,19 @@ public class XObjXMLDecoder
             }
             else if (existing is Array)
             {
-                if (!seenBefore)
+                /*if (!seenBefore)
                 {
                     (existing as Array).splice(0, (existing as Array).length);
-                }
+                }*/
                 
                 (existing as Array).push(value);
             }
             else if (existing is ArrayCollection || existing is IXObjCollection)
             {
-                if (!seenBefore)
+                /*if (!seenBefore)
                 {
                     existing.removeAll();
-                }
+                }*/
                 
                 if (!(value is Array) && !(value is ArrayCollection)
                 && !(value is IXObjCollection))
@@ -773,18 +773,18 @@ public class XObjXMLDecoder
 
         if (result is Array)
         {
-            if (!seenBefore)
+            /*if (!seenBefore)
             {
                 (result as Array).splice(0, (result as Array).length);
-            }
+            }*/
             result.push(value);
         }
         else if (result is ArrayCollection || result is IXObjCollection)
         {
-            if (!seenBefore)
+            /*if (!seenBefore)
             {
                 result.removeAll();
-            }
+            }*/
             result.addItem(value);
         }
         
