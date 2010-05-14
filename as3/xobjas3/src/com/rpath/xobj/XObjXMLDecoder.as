@@ -520,6 +520,20 @@ public class XObjXMLDecoder
                             {
                                 // ask the IXObjCollection for the type it wants to use
                                 partClass = (result as IXObjCollection).elementType();
+                                if (!partClass)
+                                {
+                                    // fall through to using a typeMap if provided
+                                    var map:Dictionary = (result as IXObjCollection).typeMap();
+                                    if (map)
+                                    {
+                                        partClass = map[dataNode.nodeName];
+                                    }
+                                    else
+                                    {
+                                        // fall all the way back to the global typeMap
+                                        partClass = typeForTag(dataNode.nodeName);
+                                    }
+                                }
                             }
                             else
                             {
