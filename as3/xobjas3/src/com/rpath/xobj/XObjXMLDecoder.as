@@ -502,7 +502,7 @@ public class XObjXMLDecoder
                     // if we have a partObj we need to use its class to decode into
                     if (partObj)
                     {
-                        if (partObj is IXObjCollection)
+                        if (partObj is IXObjReference)
                         {
                             nextCollClass = XObjUtils.getClassByName(partTypeName);
                         }
@@ -516,14 +516,14 @@ public class XObjXMLDecoder
                         }
                         else
                         {
-                            if (result is IXObjCollection)
+                            if (result is IXObjReference)
                             {
-                                // ask the IXObjCollection for the type it wants to use
-                                partClass = (result as IXObjCollection).elementType();
+                                // ask the IXObjReference for the type it wants to use
+                                partClass = (result as IXObjReference).elementType();
                                 if (!partClass)
                                 {
                                     // fall through to using a typeMap if provided
-                                    var map:Dictionary = (result as IXObjCollection).typeMap();
+                                    var map:Dictionary = (result as IXObjReference).typeMap();
                                     if (map)
                                     {
                                         partClass = map[dataNode.nodeName];
