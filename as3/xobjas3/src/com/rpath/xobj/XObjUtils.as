@@ -19,9 +19,12 @@ package com.rpath.xobj
     import flash.xml.XMLNode;
     
     import mx.collections.ArrayCollection;
+    import mx.collections.ArrayList;
+    import mx.collections.ICollectionView;
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
     import mx.utils.object_proxy;
+
     use namespace object_proxy;
     
     public class XObjUtils
@@ -137,11 +140,11 @@ package com.rpath.xobj
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
-                result = (foo is Array);
+                result = (foo is Array || foo is ArrayList || foo is Vector);
                 arrayTypeCache[type] = result;
 
                 // do the array collection test while we're here, to save time
-                arrayCollectionTypeCache[type] = (foo is ArrayCollection) || (foo is IXObjCollection);
+                arrayCollectionTypeCache[type] = (foo is ICollectionView) || (foo is IXObjCollection);
             }
             return result;
         }
@@ -161,7 +164,7 @@ package com.rpath.xobj
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
-                result = (foo is ArrayCollection) || (foo is IXObjCollection);
+                result = (foo is ICollectionView) || (foo is IXObjCollection);
                 arrayCollectionTypeCache[type] = result;
 
                 // do the array test while we're here, to save time

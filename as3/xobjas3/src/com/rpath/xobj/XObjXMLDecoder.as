@@ -53,6 +53,7 @@ import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
 import mx.collections.ArrayCollection;
+import mx.collections.ICollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
 
@@ -485,7 +486,7 @@ public class XObjXMLDecoder
                         var existing:* = result[partName];
                         if (existing && (existing is Object)
                             && !((existing is Array) 
-                                || (existing is ArrayCollection)
+                                || (existing is ICollectionView)
                                 || (existing is String)
                                 || (existing is Boolean)
                                 || (existing is Number)
