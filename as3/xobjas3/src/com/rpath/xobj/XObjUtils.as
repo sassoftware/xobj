@@ -24,6 +24,7 @@ package com.rpath.xobj
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
     import mx.utils.object_proxy;
+    import mx.collections.IList;
 
     use namespace object_proxy;
     
@@ -616,5 +617,72 @@ package com.rpath.xobj
             }
             return key;
         }
+        
+        public static function addItemIfAbsent(set:*, item:*):Boolean
+        {
+            var result:Boolean;
+            var arr:Array = set as Array;
+            var coll:IList = set as IList;
+            var xobjColl:IXObjCollection = set as IXObjCollection;
+            
+            if (arr)
+            {
+                if (arr.indexOf(item) == -1)
+                {
+                    arr.push(item);
+                    result = true;
+                }
+            }
+            else if (coll)
+            {
+                if (coll.getItemIndex(item) == -1)
+                {
+                    coll.addItem(item);
+                    result = true;
+                }
+            }
+            else if (xobjColl)
+            {
+                xobjColl.addItemIfAbsent(item);
+                result = true;
+            }
+            
+            return result;
+        }
+        
+        public static function removeItemIfPresent(set:*, item:*):Boolean
+        {
+            var result:Boolean;
+            var arr:Array = set as Array;
+            var coll:IList = set as IList;
+            var index:int;
+            var xobjColl:IXObjCollection = set as IXObjCollection;
+
+            if (arr)
+            {
+                index = arr.indexOf(item);
+                if (index > -1)
+                {
+                    arr.splice(index,1);
+                    result = true;
+                }
+            }
+            else if (coll)
+            {
+                index = coll.getItemIndex(item);
+                if (index > -1)
+                {
+                    coll.removeItemAt(index);
+                    result = true;
+                }
+            }
+            else if (xobjColl)
+            {
+                xobjColl.removeItemIfPresent(item);
+                result = true;
+            }
+            return result;            
+        }
+        
     }
 }

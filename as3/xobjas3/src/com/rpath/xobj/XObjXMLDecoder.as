@@ -56,6 +56,7 @@ import mx.collections.ArrayCollection;
 import mx.collections.ICollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
+import mx.utils.ArrayUtil;
 
 /**
  * The TypedXMLDecoder class deserializes XML into a graph of ActionScript objects
@@ -698,7 +699,7 @@ public class XObjXMLDecoder
                     (existing as Array).splice(0, (existing as Array).length);
                 }*/
                 
-                (existing as Array).push(value);
+                XObjUtils.addItemIfAbsent(existing, value);
             }
             else if (existing is ArrayCollection || existing is IXObjCollection)
             {
@@ -710,14 +711,14 @@ public class XObjXMLDecoder
                 if (!(value is Array) && !(value is ArrayCollection)
                 && !(value is IXObjCollection))
                 {
-                    existing.addItem(value);
+                    XObjUtils.addItemIfAbsent(existing, value);
                 }
                 else
                 {
                     value = makeCollection(value);
                     for each (var v1:* in value)
                     {
-                        existing.addItem(v1);
+                        XObjUtils.addItemIfAbsent(existing, v1);
                     }
                 }
             }
@@ -792,7 +793,7 @@ public class XObjXMLDecoder
             {
                 (result as Array).splice(0, (result as Array).length);
             }*/
-            result.push(value);
+            XObjUtils.addItemIfAbsent(result, value);
         }
         else if (result is ArrayCollection || result is IXObjCollection)
         {
@@ -800,7 +801,7 @@ public class XObjXMLDecoder
             {
                 result.removeAll();
             }*/
-            result.addItem(value);
+            XObjUtils.addItemIfAbsent(result, value);
         }
         
         return result;
