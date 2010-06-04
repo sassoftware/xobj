@@ -403,12 +403,18 @@ class Document(object):
 
         def setItem(xobj, key, val, xType = None):
             current = getattr(xobj, key, None)
-            if xType and xType.forceList:
-                # force the item to be a list, and use the type inside of
-                # this list as the type of elements of the list
-                if key not in xobj.__dict__:
-                    current = []
+            if xType:
+                if xType.forceList:
+                    # force the item to be a list, and use the type inside of
+                    # this list as the type of elements of the list
+                    if key not in xobj.__dict__:
+                        current = []
                     setattr(xobj, key, current)
+                # Avoid turning things into lists that are not defined as lists
+                # in the type map.
+                elif not isinstance(xobj, XObj):
+                    setattr(xobj, key, val)
+                    return
 
             if xobj.__dict__.get(key, None) is None:
                 # This has not yet been set in the instance (because it's
@@ -489,11 +495,23 @@ class Document(object):
             if not hasattr(xobj, '_xobj'):
                 xobj._xobj = XObjMetadata()
 
+            initialized = set()
+
             # handle children
             for childElement in element.getchildren():
                 if types.BuiltinFunctionType == type(childElement.tag):
                     # this catches comments. this is ugly.
                     continue
+
+                # Initialize values that are defined to be lists in the type
+                # map. This overrides any default values from instantiating the
+                # instance.
+                if childElement.tag not in initialized:
+                    attr = getattr(xobj, childElement.tag, None)
+                    if attr and isinstance(attr, list):
+                        setattr(xobj, childElement.tag, list())
+                    initialized.add(childElement.tag)
+
                 child = parseElement(childElement, parentXType = thisXType,
                                      parentXObj = xobj,
                                      parentUnionTags = unionTags)

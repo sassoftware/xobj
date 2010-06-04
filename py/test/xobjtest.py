@@ -865,5 +865,48 @@ class XobjTest(TestCase):
         self.assertXMLEquals(s2,
             "<root><elem1>val2</elem1></root>")
 
+    def testDefaultValuesSimple(self):
+        class Foo(object):
+            i = int
+            def __init__(self, i=0):
+                self.i = i
+        class Doc(xobj.Document):
+            foo = Foo
+
+        xml = '<foo><i>1</i></foo>'
+
+        doc = xobj.parse(xml, documentClass=Doc)
+        self.failUnless(issubclass(type(doc.foo.i), Foo.i))
+
+        xml2 = '<foo><i>1</i><i>2</i></foo>'
+
+        doc2 = xobj.parse(xml2, documentClass=Doc)
+        self.failUnless(issubclass(type(doc2.foo.i), Foo.i))
+        self.failUnlessEqual(doc2.foo.i, 2)
+
+    def testDefaultValuesComplex(self):
+        class Foo(object):
+            i = int
+            def __init__(self, i=0):
+                self.i = i
+            def __repr__(self):
+                return 'Foo(%s)' % self.i
+            def __cmp__(self, other):
+                return cmp(self.i, other.i)
+        class Bar(object):
+            j = [ Foo ]
+            def __init__(self):
+                self.j = [ Foo(0), Foo(1), Foo(2), ]
+        class BarDoc(xobj.Document):
+            bar = Bar
+
+        xml2 = '<bar><j><i>3</i></j><j><i>4</i></j></bar>'
+
+        doc2 = xobj.parse(xml2, documentClass=BarDoc)
+        self.failUnless(issubclass(type(doc2.bar.j), type(Bar.j)))
+        self.failIfEqual(len(doc2.bar.j), len(Bar().j))
+        self.failUnlessEqual(doc2.bar.j, [Foo(3), Foo(4)])
+
+
 if __name__ == "__main__":
     testsuite.main()
