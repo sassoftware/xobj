@@ -562,7 +562,7 @@ public class XObjXMLEncoder
         prefix = namespaceMap[uri];
         if (!prefix)
         {
-            prefix= node.getPrefixForNamespace(uri);
+            prefix= XObjUtils.safeGetPrefixForNamespace(node, uri);
         }
         return prefix;
     }
@@ -617,7 +617,7 @@ public class XObjXMLEncoder
             // can't find it anywhere..no default. 
         }
         
-        var newPrefix:String = node.getPrefixForNamespace(ns);
+        var newPrefix:String = XObjUtils.safeGetPrefixForNamespace(node, ns);
         
         // assume default namespace
         if (newPrefix == null)

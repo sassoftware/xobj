@@ -22,6 +22,8 @@ package com.rpath.xobj
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
     import mx.utils.object_proxy;
+    import flash.errors.StackOverflowError;
+
     use namespace object_proxy;
     
     public class XObjUtils
@@ -55,12 +57,30 @@ package com.rpath.xobj
             return name;
         }
     
+        public static function safeGetPrefixForNamespace(node:XMLNode, uri:String):String
+        {
+            var result:String;
+            
+            try
+            {
+                result = node.getPrefixForNamespace(uri);
+            }
+            catch (e:StackOverflowError)
+            {
+                // occasional bug in flash runtime???
+                trace("getPrefixForNamespace stack overflow caught");
+                result = "";
+            }
+            
+            return result;
+        }
+        
     
         public static function encodeElementTag(qname:XObjQName, node:XMLNode):String
         {
             var elementTag:String = XObjUtils.getNCName(qname.localName);
             
-            var prefix:String = node.getPrefixForNamespace(qname.uri);
+            var prefix:String = XObjUtils.safeGetPrefixForNamespace(node, qname.uri);
             
             if (prefix)
                 elementTag =  prefix + ":" + elementTag;
