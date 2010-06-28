@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties mainApplicationPath="xobjas3.as" projectUUID="6260d2b2-b348-40a2-87e7-958f53558f88" version="6">
-  <compiler additionalCompilerArguments="-keep-as3-metadata+=ArrayElementType,xobjTransient -dump-config=/tmp/foo.xml" autoRSLOrdering="true" copyDependentFiles="false" flex3CompatMode="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-keep-as3-metadata+=ArrayElementType,xobjTransient -dump-config=/tmp/foo.xml" autoRSLOrdering="true" copyDependentFiles="false" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" sourceFolderPath="src" strict="true" targetPlayerVersion="10.1.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="1">
       <libraryPathEntry kind="4" path=""/>
