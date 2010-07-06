@@ -788,7 +788,7 @@ public class XObjXMLDecoder
         prefix = namespaceMap[uri];
         if (!prefix)
         {
-            prefix= node.getPrefixForNamespace(uri);
+            prefix = XObjUtils.safeGetPrefixForNamespace(node, uri);
         }
         else if (prefix == XObjUtils.DEFAULT_NAMESPACE_PREFIX)
         {
