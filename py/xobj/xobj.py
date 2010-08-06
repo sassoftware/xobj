@@ -367,6 +367,9 @@ class Document(object):
             if getattr(xobj, key) == val:
                 setattr(xobj, key, None)
 
+    def setItemCurrentValue(self, xobj, key, current, val):
+        setattr(xobj, key, [ current, val ])
+
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {},
                         unionTags = {}):
 
@@ -447,7 +450,7 @@ class Document(object):
             elif type(current) == list:
                 current.append(val)
             else:
-                setattr(xobj, key, [ current, val ])
+                self.setItemCurrentVal(xobj, key, current, val)
 
         def parseElement(element, parentXType = None, parentXObj = None,
                          parentUnionTags = {}):
