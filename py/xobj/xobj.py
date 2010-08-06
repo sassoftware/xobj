@@ -203,54 +203,58 @@ class ElementGenerator(object):
 
         attrs = {}
         elements = {}
-        for key, val in xobj.__dict__.iteritems():
-            if key[0] != '_':
-                if key in attrSet:
-                    pythonType = findPythonType(xobj, key)
+        if hasattr(xobj, '__dict__'):
+            for key, val in xobj.__dict__.iteritems():
+                if key[0] != '_':
+                    if key in attrSet:
+                        pythonType = findPythonType(xobj, key)
 
-                    if pythonType and issubclass(pythonType, XIDREF):
-                        idVal = getattr(val, 'id', None)
-                        if idVal is None:
-                            # look for an id name in a different namespace
-                            for idKey, idType in (
-                                        val.__dict__.iteritems()):
-                                if idKey.endswith('_id'):
-                                    idVal = getattr(val, idKey)
-                                    break
+                        if pythonType and issubclass(pythonType, XIDREF):
+                            idVal = getattr(val, 'id', None)
+                            if idVal is None:
+                                # look for an id name in a different namespace
+                                for idKey, idType in (
+                                            val.__dict__.iteritems()):
+                                    if idKey.endswith('_id'):
+                                        idVal = getattr(val, idKey)
+                                        break
 
-                        if idVal is None:
-                            # look for something prorotyped XID
-                            for idKey, idType in (
-                                        val.__class__.__dict__.iteritems()):
-                                if (idKey[0] != '_' and type(idType) == type
-                                                and issubclass(idType, XID)):
-                                    idVal = getattr(val, idKey)
-                                    break
+                            if idVal is None:
+                                # look for something prorotyped XID
+                                for idKey, idType in (
+                                            val.__class__.__dict__.iteritems()):
+                                    if (idKey[0] != '_' and type(idType) == type
+                                                    and issubclass(idType, XID)):
+                                        idVal = getattr(val, idKey)
+                                        break
 
-                        if idVal is None:
-                            raise XObjSerializationException(
-                                    'No id found for element referenced by %s'
-                                    % key)
-                        val = idVal
-                        self.idsNeeded.add(idVal)
-                    elif (key == 'id' or key.endswith('_id') or
-                          (pythonType and issubclass(pythonType, XID))):
-                        self.idsFound.add(val)
+                            if idVal is None:
+                                raise XObjSerializationException(
+                                        'No id found for element referenced by %s'
+                                        % key)
+                            val = idVal
+                            self.idsNeeded.add(idVal)
+                        elif (key == 'id' or key.endswith('_id') or
+                              (pythonType and issubclass(pythonType, XID))):
+                            self.idsFound.add(val)
 
-                    if val is not None:
-                        key = addns(key)
-                        attrs[key] = unicode(val)
-                else:
-                    l = elements.setdefault(key, [])
-                    if type(val) == list:
-                        l.extend(val)
+                        if val is not None:
+                            key = addns(key)
+                            attrs[key] = unicode(val)
                     else:
-                        l.append(val)
+                        l = elements.setdefault(key, [])
+                        if type(val) == list:
+                            l.extend(val)
+                        else:
+                            l.append(val)
 
         orderedElements = []
         
         if hasattr(xobj, '_xobj'):
             for name in xobj._xobj.elements:
+                if not elements.has_key(name):
+                    if hasattr(xobj.__class__, name):
+                        elements[name] = [getattr(xobj.__class__, name)]
                 for val in elements.get(name, []):
                     orderedElements.append((name, val))
             for name in (set(elements) - set(xobj._xobj.elements)):
@@ -346,6 +350,23 @@ class Document(object):
         return gen.tostring(prettyPrint = prettyPrint,
                             xml_declaration = xml_declaration)
 
+    def fillFromClass(self, xobj):
+        # anything which is the same as in the class wasn't set in XML, so
+        # set it to None
+        # We even set lists to None as it is important to be
+        # able to distinguish between not specifying a list and
+        # specifying the empty list.
+        for key, val in xobj.__class__.__dict__.items():
+            if key[0] == '_': continue
+            # Skip the attribute if it has a _transient attr set to True.
+            # We need to actually get the attribute off the class using
+            # getattr, as opposed to using val, this handles classes that
+            # override __get__ (like in django).
+            if getattr(getattr(xobj.__class__, key), '_transient', False):
+                continue
+            if getattr(xobj, key) == val:
+                setattr(xobj, key, None)
+
     def fromElementTree(self, xml, rootXClass = None, nameSpaceMap = {},
                         unionTags = {}):
 
@@ -402,7 +423,14 @@ class Document(object):
                 xobj._xobj.elements.append(key)
 
         def setItem(xobj, key, val, xType = None):
-            current = getattr(xobj, key, None)
+            # Some objects could be implemented in a way to raise exceptions
+            # when you try to access attributes that aren't set (django models
+            # for instance raise a DoesNotExist exception).  Just set
+            # current=None in these cases.
+            try:
+                current = getattr(xobj, key, None)
+            except Exception:
+                current = None
             if xType and xType.forceList:
                 # force the item to be a list, and use the type inside of
                 # this list as the type of elements of the list
@@ -445,7 +473,7 @@ class Document(object):
                 if parentXType:
                     if tag in parentUnionTags:
                         thisPyType = parentUnionTags[tag][1].pythonType
-                    else:
+                    elif not self.typeMap.has_key(tag):
                         thisPyType = getattr(parentXType.pythonType, tag, None)
 
                 if not thisPyType:
@@ -471,7 +499,7 @@ class Document(object):
                 # look for unions
                 for key, val in thisXType.pythonType.__dict__.iteritems():
                     if key[0] == '_': continue
-                    if isinstance(val, list) and isinstance(val[0], dict):
+                    if isinstance(val, list) and val and isinstance(val[0], dict):
                         ut = XUnionType(val[0])
                         for a, b in ut.d.iteritems():
                             unionTags[a] = (key, b)
@@ -513,15 +541,7 @@ class Document(object):
                 if not hasattr(xobj, key):
                     setAttribute(xobj, self, key, val)
 
-            # anything which is the same as in the class wasn't set in XML, so
-            # set it to None
-            # We even set lists to None as it is important to be
-            # able to distinguish between not specifying a list and
-            # specifying the empty list.
-            for key, val in xobj.__class__.__dict__.items():
-                if key[0] == '_': continue
-                if getattr(xobj, key) == val:
-                    setattr(xobj, key, None)
+            self.fillFromClass(xobj)
 
             if parentXObj is not None:
                 if tag in parentUnionTags:
