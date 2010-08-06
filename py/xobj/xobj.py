@@ -450,7 +450,7 @@ class Document(object):
             elif type(current) == list:
                 current.append(val)
             else:
-                self.setItemCurrentVal(xobj, key, current, val)
+                self.setItemCurrentValue(xobj, key, current, val)
 
         def parseElement(element, parentXType = None, parentXObj = None,
                          parentUnionTags = {}):
