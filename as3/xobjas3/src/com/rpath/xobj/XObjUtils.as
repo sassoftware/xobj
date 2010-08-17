@@ -149,6 +149,9 @@ package com.rpath.xobj
             if (type == null || type == "")
                 return false;
             
+            if (type == "*")
+                return true; // unknown type can be array...
+            
             if (type is String)
                 type = getClassByName(type);
             
@@ -172,6 +175,9 @@ package com.rpath.xobj
 
             if (type == null || type == "")
                 return false;
+
+            if (type == "*")
+                return true; // unknown type can be arraycollection too...
 
             if (type is String)
                 type = getClassByName(type);
