@@ -204,6 +204,12 @@ package com.rpath.xobj
             if (className == "Object" || className == "mx.utils::ObjectProxy")
                 return new XObjTypeInfo();
             
+            if (className == "String")
+            {
+                // Simple String doesn't have any properties
+                return new XObjTypeInfo();
+            }
+            
             var propertyCacheKey:String = className + "." + propName;
             var arrayElementType:String;
             
