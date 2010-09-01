@@ -7,7 +7,7 @@
 # is always available at http://www.opensource.org/licenses/mit-license.php.
 #
 # This program is distributed in the hope that it will be useful, but
-# without any waranty; without even the implied warranty of merchantability
+# without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
@@ -203,6 +203,12 @@ package com.rpath.xobj
 
             if (className == "Object" || className == "mx.utils::ObjectProxy")
                 return new XObjTypeInfo();
+            
+            if (className == "String")
+            {
+                // Simple String doesn't have any properties
+                return new XObjTypeInfo();
+            }
             
             var propertyCacheKey:String = className + "." + propName;
             var arrayElementType:String;
