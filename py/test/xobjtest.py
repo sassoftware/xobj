@@ -907,6 +907,38 @@ class XobjTest(TestCase):
         self.failIfEqual(len(doc2.bar.j), len(Bar().j))
         self.failUnlessEqual(doc2.bar.j, [Foo(3), Foo(4)])
 
+    def testCollectionWithAttrs(self):
+        class Foo(object):
+            bar = str
+            _xobj = xobj.XObjMetadata(attributes=('id', ))
+        class Foos(object):
+            foo = [ Foo, ]
+            _xobj = xobj.XObjMetadata(attributes=('id', ))
+        class Doc(xobj.Document):
+            foos = Foos
+
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<foos id="/api/foos">
+    <foo id="/api/foos/1">
+        <bar>a</bar>
+    </foo>
+    <foo id="/api/foos/2">
+        <bar>b</bar>
+    </foo>
+</foos>
+"""
+
+        doc = xobj.parse(xml, documentClass=Doc)
+
+        self.failUnlessEqual(len(doc.foos.foo), 2)
+        self.failUnlessEqual(doc.foos.foo[0].bar, 'a')
+        self.failUnlessEqual(doc.foos.foo[1].bar, 'b')
+
+        xml2 = doc.toxml()
+
+        self.assertXMLEquals(xml, xml2)
+
 
 if __name__ == "__main__":
     testsuite.main()
