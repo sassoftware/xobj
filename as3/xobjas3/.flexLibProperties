@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
-    <classEntry path="com.rpath.xobj.XObjUtils"/>
-    <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
+    <classEntry path="com.rpath.xobj.IXObjCollection"/>
     <classEntry path="com.rpath.xobj.XObjDeferredDecode"/>
-    <classEntry path="com.rpath.xobj.XObjTypeInfo"/>
-    <classEntry path="com.rpath.xobj.XObjString"/>
-    <classEntry path="com.rpath.xobj.XObjVersion"/>
-    <classEntry path="com.rpath.xobj.XObjQName"/>
     <classEntry path="com.rpath.xobj.XObjMetadata"/>
+    <classEntry path="com.rpath.xobj.XObjQName"/>
+    <classEntry path="com.rpath.xobj.XObjString"/>
+    <classEntry path="com.rpath.xobj.XObjTypeInfo"/>
+    <classEntry path="com.rpath.xobj.XObjUtils"/>
+    <classEntry path="com.rpath.xobj.XObjVersion"/>
     <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
+    <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
+    <classEntry path="com.rpath.xobj.IXObjFactory"/>
+    <classEntry path="com.rpath.xobj.XObjDefaultFactory"/>
+    <classEntry path="com.rpath.xobj.IXObjReference"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
