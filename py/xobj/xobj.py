@@ -495,6 +495,9 @@ class Document(object):
             if not hasattr(xobj, '_xobj'):
                 xobj._xobj = XObjMetadata()
 
+            if not xobj._xobj.tag:
+                xobj._xobj.tag = tag
+
             initialized = set()
 
             # handle children
@@ -615,12 +618,15 @@ def parse(s, schemaf = None, documentClass = Document, typeMap = {}):
     s = StringIO(s)
     return parsef(s, schemaf, documentClass = documentClass, typeMap = typeMap)
 
-def toxml(xobj, tag, prettyPrint = True, xml_declaration = True,
+def toxml(xobj, tag = None, prettyPrint = True, xml_declaration = True,
           schemaf = None, nsmap = {}):
     if schemaf:
         schemaObj = etree.XMLSchema(file = schemaf)
     else:
         schemaObj = None
+
+    if tag is None and hasattr(xobj, '_xobj') and xobj._xobj.tag is None:
+        raise TypeError, 'must specify a tag'
 
     gen = ElementGenerator(xobj, tag, schema = schemaObj, nsmap = nsmap)
 

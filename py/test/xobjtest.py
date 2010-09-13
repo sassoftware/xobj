@@ -939,6 +939,33 @@ class XobjTest(TestCase):
 
         self.assertXMLEquals(xml, xml2)
 
+    def testSettingTag(self):
+        class Foo(object):
+            _xobj = xobj.XObjMetadata(tag='foo', attributes='href')
+            href = str
+        class Doc(xobj.Document):
+            foo = Foo
+
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<foo href="http://example.com/api/" />
+"""
+
+        doc = xobj.parse(xml, documentClass=Doc)
+        self.failUnlessEqual(doc.foo._xobj.tag, 'foo')
+
+        doc2 = xobj.parse(xml)
+        self.failUnlessEqual(doc2.foo._xobj.tag, 'foo')
+
+        foo = Foo()
+        foo.href = 'http://example.com/api/'
+        xml2 = xobj.toxml(foo)
+
+        self.assertXMLEquals(xml, xml2)
+
+        doc.foo._xobj.tag = None
+        self.failUnlessRaises(TypeError, xobj.toxml, doc.foo)
+
 
 if __name__ == "__main__":
     testsuite.main()
