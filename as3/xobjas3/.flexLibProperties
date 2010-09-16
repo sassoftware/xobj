@@ -17,6 +17,6 @@
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
-    <namespaceManifestEntry manifest="xobj-manifest.xml" namespace="http://www.rpath.com/2009/xobj"/>
+    <namespaceManifestEntry manifest="xobj-manifest.xml" namespace="http://www.rpath.com/2009/xobj.mxml"/>
   </namespaceManifests>
 </flexLibProperties>
