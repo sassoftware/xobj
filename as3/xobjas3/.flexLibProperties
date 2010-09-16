@@ -16,5 +16,7 @@
     <classEntry path="com.rpath.xobj.IXObjReference"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="xobj-manifest.xml" namespace="http://www.rpath.com/2009/xobj"/>
+  </namespaceManifests>
 </flexLibProperties>
