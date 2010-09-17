@@ -865,5 +865,107 @@ class XobjTest(TestCase):
         self.assertXMLEquals(s2,
             "<root><elem1>val2</elem1></root>")
 
+    def testDefaultValuesSimple(self):
+        class Foo(object):
+            i = int
+            def __init__(self, i=0):
+                self.i = i
+        class Doc(xobj.Document):
+            foo = Foo
+
+        xml = '<foo><i>1</i></foo>'
+
+        doc = xobj.parse(xml, documentClass=Doc)
+        self.failUnless(issubclass(type(doc.foo.i), Foo.i))
+
+        xml2 = '<foo><i>1</i><i>2</i></foo>'
+
+        doc2 = xobj.parse(xml2, documentClass=Doc)
+        self.failUnless(issubclass(type(doc2.foo.i), Foo.i))
+        self.failUnlessEqual(doc2.foo.i, 2)
+
+    def testDefaultValuesComplex(self):
+        class Foo(object):
+            i = int
+            def __init__(self, i=0):
+                self.i = i
+            def __repr__(self):
+                return 'Foo(%s)' % self.i
+            def __cmp__(self, other):
+                return cmp(self.i, other.i)
+        class Bar(object):
+            j = [ Foo ]
+            def __init__(self):
+                self.j = [ Foo(0), Foo(1), Foo(2), ]
+        class BarDoc(xobj.Document):
+            bar = Bar
+
+        xml2 = '<bar><j><i>3</i></j><j><i>4</i></j></bar>'
+
+        doc2 = xobj.parse(xml2, documentClass=BarDoc)
+        self.failUnless(issubclass(type(doc2.bar.j), type(Bar.j)))
+        self.failIfEqual(len(doc2.bar.j), len(Bar().j))
+        self.failUnlessEqual(doc2.bar.j, [Foo(3), Foo(4)])
+
+    def testCollectionWithAttrs(self):
+        class Foo(object):
+            bar = str
+            _xobj = xobj.XObjMetadata(attributes=('id', ))
+        class Foos(object):
+            foo = [ Foo, ]
+            _xobj = xobj.XObjMetadata(attributes=('id', ))
+        class Doc(xobj.Document):
+            foos = Foos
+
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<foos id="/api/foos">
+    <foo id="/api/foos/1">
+        <bar>a</bar>
+    </foo>
+    <foo id="/api/foos/2">
+        <bar>b</bar>
+    </foo>
+</foos>
+"""
+
+        doc = xobj.parse(xml, documentClass=Doc)
+
+        self.failUnlessEqual(len(doc.foos.foo), 2)
+        self.failUnlessEqual(doc.foos.foo[0].bar, 'a')
+        self.failUnlessEqual(doc.foos.foo[1].bar, 'b')
+
+        xml2 = doc.toxml()
+
+        self.assertXMLEquals(xml, xml2)
+
+    def testSettingTag(self):
+        class Foo(object):
+            _xobj = xobj.XObjMetadata(tag='foo', attributes='href')
+            href = str
+        class Doc(xobj.Document):
+            foo = Foo
+
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<foo href="http://example.com/api/" />
+"""
+
+        doc = xobj.parse(xml, documentClass=Doc)
+        self.failUnlessEqual(doc.foo._xobj.tag, 'foo')
+
+        doc2 = xobj.parse(xml)
+        self.failUnlessEqual(doc2.foo._xobj.tag, 'foo')
+
+        foo = Foo()
+        foo.href = 'http://example.com/api/'
+        xml2 = xobj.toxml(foo)
+
+        self.assertXMLEquals(xml, xml2)
+
+        doc.foo._xobj.tag = None
+        self.failUnlessRaises(TypeError, xobj.toxml, doc.foo)
+
+
 if __name__ == "__main__":
     testsuite.main()
