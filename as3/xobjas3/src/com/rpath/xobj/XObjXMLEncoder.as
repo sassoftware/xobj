@@ -58,6 +58,16 @@ public class XObjXMLEncoder
     
     public var simpleEncoderCompatible:Boolean;
     
+    /** encodeNullElements controls whether a null property
+    * is encoded as an empty element 
+    * e.g. <nullable/>
+    * or simply skipped.
+    * 
+    * Default is true to match older behavior of xobj
+    */
+    
+    public var encodeNullElements:Boolean = true;
+    
     /**
      * Used if the object is not typed
      */ 
@@ -248,10 +258,18 @@ public class XObjXMLEncoder
         // TODO: check whether this matches Erik's server-side Python mapping
         if (obj == null)
         {
-            var myElement:XMLNode = xmlDocument.createElement("foo");
-            parentNode.appendChild(myElement);
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
-            return myElement;
+            if (encodeNullElements)
+            {
+                var myElement:XMLNode = xmlDocument.createElement("foo");
+                parentNode.appendChild(myElement);
+                myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
+                return myElement;
+            }
+            else
+            {
+                // skip nulls
+                return parentNode;
+            }
         }
         else if (qname.localName == XObjMetadata.METADATA_PROPERTY)
         {
