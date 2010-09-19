@@ -184,6 +184,52 @@ public class TestBasics extends TestBase
 
     }
 
+    
+    /** testObjectTreeNulls
+     * test that we can construct a new object graph and encode it as XML.
+     * test that we can then decode it and get back a new graph with correctly
+     * typed ActionScript objects.
+     */
+    public function testObjectTreeNulls():void
+    {
+        var t:Top = new Top();
+        t.prop = 'abc';
+        t.middle = new Middle();
+        t.middle.tag = 123;
+        t.bottom = null;
+        var typeMap:* = {top:Top};
+        
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
+        typedEncoder.encodeNullElements = false;
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(t);
+        
+        var expectedString:String = 
+            '<top>'+
+            '<middle>'+
+            '<tag>123</tag>'+
+            '</middle>'+
+            '<prop>abc</prop>'+
+            '</top>';
+        
+        assertTrue(compareXMLtoString(xmlOutput, expectedString));
+        
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
+        var xmlInput:XMLDocument = xmlOutput;
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue(o.top is Top);
+        assertTrue(o.top.middle is Middle);
+        assertTrue(o.top.middle.tag == 123);
+        assertTrue(o.top.middle.foo() == 123);
+        assertTrue(o.top.bottom == null);
+        
+        // reencode and check round-trip
+        xmlOutput = typedEncoder.encodeObject(o);
+        
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+        
+    }
+    
     public function testId():void
     {
     }
