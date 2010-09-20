@@ -369,11 +369,21 @@ public class XObjXMLDecoder
         // so what type did we eventually use?
         var resultTypeName:String = getQualifiedClassName(result);
         
+        var isCollection:Boolean = false;
+        
         // thus, what type of assignment function should we use?
         var assign:Function;
         
-        if (XObjUtils.isTypeArray(resultType) || XObjUtils.isTypeArrayCollection(resultType))
+        if (XObjUtils.isTypeArray(resultType))
+        {
             assign = assignToArray;
+        }
+        else if (XObjUtils.isTypeArrayCollection(resultType))
+        {
+            isCollection = true;
+            assign = assignToArray;
+            (result as ArrayCollection).disableAutoUpdate();
+        }
         else
             assign = assignToProperty;
 
@@ -410,7 +420,9 @@ public class XObjXMLDecoder
                 var seenProperties:Object = {};
                 var lastPartName:Object = {qname: null, propname: null};
                 
-
+                // loop through all children. TODO: break this into async slices 
+                // as we did with FilterIndex creation and maintenance?
+                
                 for (var i:uint = 0; i < children.length; i++)
                 {
                     var partNode:XMLNode = children[i];
@@ -512,6 +524,12 @@ public class XObjXMLDecoder
                     }
                 }
             }
+        }
+        
+        // and turn on change events again once we're done
+        if (isCollection)
+        {
+            (result as ArrayCollection).enableAutoUpdate();
         }
 
         // Cycle through the attributes
