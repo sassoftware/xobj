@@ -19,9 +19,13 @@ package com.rpath.xobj
     import flash.xml.XMLNode;
     
     import mx.collections.ArrayCollection;
+    import mx.collections.ArrayList;
+    import mx.collections.ICollectionView;
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
     import mx.utils.object_proxy;
+    import mx.collections.IList;
+
     import flash.errors.StackOverflowError;
 
     use namespace object_proxy;
@@ -160,11 +164,11 @@ package com.rpath.xobj
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
-                result = (foo is Array);
+                result = (foo is Array || foo is ArrayList || foo is Vector);
                 arrayTypeCache[type] = result;
 
                 // do the array collection test while we're here, to save time
-                arrayCollectionTypeCache[type] = (foo is ArrayCollection);
+                arrayCollectionTypeCache[type] = (foo is ICollectionView) || (foo is IXObjCollection);
             }
             return result;
         }
@@ -187,7 +191,7 @@ package com.rpath.xobj
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
-                result = (foo is ArrayCollection);
+                result = (foo is ICollectionView) || (foo is IXObjCollection);
                 arrayCollectionTypeCache[type] = result;
 
                 // do the array test while we're here, to save time
@@ -237,8 +241,14 @@ package com.rpath.xobj
                     arrayElementType = typeInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
                 }
                 else
+                {
                     arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
-                
+                    if (!arrayElementType)
+                    {
+                        // maybe it's a specific desired type using xobj metadata marker
+                        arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
+                    }
+                }
                 result.isArray = isTypeArray(result.typeName);
                 result.isArrayCollection = isTypeArrayCollection(result.typeName);
                 
@@ -639,5 +649,72 @@ package com.rpath.xobj
             }
             return key;
         }
+        
+        public static function addItemIfAbsent(set:*, item:*):Boolean
+        {
+            var result:Boolean;
+            var arr:Array = set as Array;
+            var coll:IList = set as IList;
+            var xobjColl:IXObjCollection = set as IXObjCollection;
+            
+            if (arr)
+            {
+                if (arr.indexOf(item) == -1)
+                {
+                    arr.push(item);
+                    result = true;
+                }
+            }
+            else if (coll)
+            {
+                if (coll.getItemIndex(item) == -1)
+                {
+                    coll.addItem(item);
+                    result = true;
+                }
+            }
+            else if (xobjColl)
+            {
+                xobjColl.addItemIfAbsent(item);
+                result = true;
+            }
+            
+            return result;
+        }
+        
+        public static function removeItemIfPresent(set:*, item:*):Boolean
+        {
+            var result:Boolean;
+            var arr:Array = set as Array;
+            var coll:IList = set as IList;
+            var index:int;
+            var xobjColl:IXObjCollection = set as IXObjCollection;
+
+            if (arr)
+            {
+                index = arr.indexOf(item);
+                if (index > -1)
+                {
+                    arr.splice(index,1);
+                    result = true;
+                }
+            }
+            else if (coll)
+            {
+                index = coll.getItemIndex(item);
+                if (index > -1)
+                {
+                    coll.removeItemAt(index);
+                    result = true;
+                }
+            }
+            else if (xobjColl)
+            {
+                xobjColl.removeItemIfPresent(item);
+                result = true;
+            }
+            return result;            
+        }
+        
     }
 }
