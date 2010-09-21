@@ -397,7 +397,13 @@ public class XObjXMLDecoder
         {
             isCollection = true;
             assign = assignToArray;
-            (result as ArrayCollection).disableAutoUpdate();
+            try
+            {
+                result.disableAutoUpdate();
+            }
+            catch (e:ReferenceError)
+            {
+            }
         }
         else
             assign = assignToProperty;
@@ -585,7 +591,13 @@ public class XObjXMLDecoder
         // and turn on change events again once we're done
         if (isCollection)
         {
-            (result as ArrayCollection).enableAutoUpdate();
+            try
+            {
+                result.enableAutoUpdate();
+            }
+            catch (e:ReferenceError)
+            {
+            }
         }
 
         // Cycle through the attributes
