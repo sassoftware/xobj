@@ -619,6 +619,13 @@ public class XObjXMLDecoder
         if (nullObject)
             result = null;
             
+        // and finally, give the object a chance to process commitProperties()
+        // if it is IInvalidationAware
+        if (result is IInvalidationAware)
+        {
+            (result as IInvalidationAware).invalidateProperties();
+        }
+        
         return result;
     }
 
