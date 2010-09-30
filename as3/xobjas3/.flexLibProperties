@@ -10,6 +10,7 @@
     <classEntry path="com.rpath.xobj.XObjQName"/>
     <classEntry path="com.rpath.xobj.XObjMetadata"/>
     <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
+    <classEntry path="com.rpath.xobj.IInvalidationAware"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
