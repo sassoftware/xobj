@@ -1,5 +1,6 @@
 /*
-# Copyright (c) 2008-2009 rPath, Inc.
+#
+# Copyright (c) 2008-2010 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -8,19 +9,13 @@
 # This program is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the MIT License for full details.
-#
 */
+
 
 package com.rpath.xobj
 {
-    import mx.rpc.xml.XMLEncoder;
-    
-    public class SchemaAwareXMLEncoder extends XMLEncoder
-    {
-        public function SchemaAwareXMLEncoder()
-        {
-            super();
-        }
-
-    }
+public interface IInvalidationAware
+{
+    function invalidateProperties():void;
+}
 }

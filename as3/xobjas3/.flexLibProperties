@@ -14,6 +14,7 @@
     <classEntry path="com.rpath.xobj.IXObjFactory"/>
     <classEntry path="com.rpath.xobj.XObjDefaultFactory"/>
     <classEntry path="com.rpath.xobj.IXObjReference"/>
+    <classEntry path="com.rpath.xobj.IInvalidationAware"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
