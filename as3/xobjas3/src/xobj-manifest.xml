@@ -26,4 +26,5 @@
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>
     <component id="XObjXMLEncoder" class="com.rpath.xobj.XObjXMLEncoder"/>
     <component id="IXObjCollection" class="com.rpath.xobj.IXObjCollection"/>
+    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
 </componentPackage>
