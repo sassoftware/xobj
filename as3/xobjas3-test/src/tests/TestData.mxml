@@ -19,5 +19,5 @@
     <mx:XML id="namespaces" source="../../test/namespaces.xml" />
     <mx:XML id="simple" source="../../test/simple.xml" />
     <mx:XML id="complex" source="../../test/complex.xml" /> 
-        
+    <mx:XML id="embedded" source="../../test/embedded.xml" />
 </mx:Object>

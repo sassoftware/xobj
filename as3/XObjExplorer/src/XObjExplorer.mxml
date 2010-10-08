@@ -38,7 +38,8 @@
         { label: "garbage", value: "./data/garbage.out.ovf" },
         { label: "images", value: "./data/images.xml" },
         { label: "someovf", value: "./data/someOVF.ovf" },
-        { label: "testnamespaces", value: "./data/testnamespaces.xml" }
+        { label: "testnamespaces", value: "./data/testnamespaces.xml" },
+        { label: "embedded", value: "./data/embedded.xml" }
         ]
         );
 

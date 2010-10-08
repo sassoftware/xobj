@@ -394,7 +394,11 @@ public class XObjXMLDecoder
 
             var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultType);
             if (!isSpecifiedType || 
-                (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number) || (result is Boolean))
+                (result is String) || 
+                (resultTypeName == "com.rpath.xobj.XObjString") 
+                || (result is int) 
+                || (result is Number) 
+                || (result is Boolean))
             {
                 isSimpleType = true;
                 result = temp;
@@ -414,7 +418,7 @@ public class XObjXMLDecoder
         }
         else 
         {
-            if (children.length > 0)
+            if (children.length > 0 && !(result is XML))
             {
                 nullObject = false;
                 var seenProperties:Object = {};
@@ -523,6 +527,15 @@ public class XObjXMLDecoder
                         doneRootDupe = true;
                     }
                 }
+            }
+            else if (children.length > 0 && (result is XML))
+            {
+                // XML needs special handling as "embedded" XML
+                nullObject = false;
+                
+                var tempXML:XML = new XML((children[0] as XMLNode).toString());
+                isSimpleType = true;
+                result = tempXML;
             }
         }
         
