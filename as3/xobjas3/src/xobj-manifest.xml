@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
- Copyright (c) 2009 rPath, Inc.
+ Copyright (c) 2009-2010 rPath, Inc.
 
  This program is distributed under the terms of the MIT License as found 
  in a file called LICENSE. If it is not present, the license
  is always available at http://www.opensource.org/licenses/mit-license.php.
 
  This program is distributed in the hope that it will be useful, but
- without any waranty; without even the implied warranty of merchantability
+ without any warranty; without even the implied warranty of merchantability
  or fitness for a particular purpose. See the MIT License for full details.
 -->
 
 <componentPackage>
-    <component id="SchemaAwareXMLDecoder" class="com.rpath.xobj.SchemaAwareXMLDecoder"/>
-    <component id="SchemaAwareXMLEncoder" class="com.rpath.xobj.SchemaAwareXMLEncoder"/>
     <component id="XObjMetadata" class="com.rpath.xobj.XObjMetadata"/>
     <component id="XObjQName" class="com.rpath.xobj.XObjQName"/>
     <component id="XObjString" class="com.rpath.xobj.XObjString"/>
@@ -22,4 +20,5 @@
     <component id="XObjVersion" class="com.rpath.xobj.XObjVersion"/>
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>
     <component id="XObjXMLEncoder" class="com.rpath.xobj.XObjXMLEncoder"/>
+    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
 </componentPackage>

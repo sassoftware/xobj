@@ -22,6 +22,7 @@ package
     {
         public function TestSuite1()
         {
+            addTestCase(new TestEmbeddedXML());
             addTestCase(new TestBasics());
             addTestCase(new TestTransients());
             addTestCase(new TestRefresh());

@@ -7,7 +7,7 @@
 # is always available at http://www.opensource.org/licenses/mit-license.php.
 #
 # This program is distributed in the hope that it will be useful, but
-# without any waranty; without even the implied warranty of merchantability
+# without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the MIT License for full details.
 */
 
@@ -369,11 +369,21 @@ public class XObjXMLDecoder
         // so what type did we eventually use?
         var resultTypeName:String = getQualifiedClassName(result);
         
+        var isCollection:Boolean = false;
+        
         // thus, what type of assignment function should we use?
         var assign:Function;
         
-        if (XObjUtils.isTypeArray(resultType) || XObjUtils.isTypeArrayCollection(resultType))
+        if (XObjUtils.isTypeArray(resultType))
+        {
             assign = assignToArray;
+        }
+        else if (XObjUtils.isTypeArrayCollection(resultType))
+        {
+            isCollection = true;
+            assign = assignToArray;
+            (result as ArrayCollection).disableAutoUpdate();
+        }
         else
             assign = assignToProperty;
 
@@ -384,7 +394,11 @@ public class XObjXMLDecoder
 
             var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultType);
             if (!isSpecifiedType || 
-                (result is String) || (resultTypeName == "com.rpath.xobj.XObjString") || (result is int) || (result is Number) || (result is Boolean))
+                (result is String) || 
+                (resultTypeName == "com.rpath.xobj.XObjString") 
+                || (result is int) 
+                || (result is Number) 
+                || (result is Boolean))
             {
                 isSimpleType = true;
                 result = temp;
@@ -404,13 +418,15 @@ public class XObjXMLDecoder
         }
         else 
         {
-            if (children.length > 0)
+            if (children.length > 0 && !(result is XML))
             {
                 nullObject = false;
                 var seenProperties:Object = {};
                 var lastPartName:Object = {qname: null, propname: null};
                 
-
+                // loop through all children. TODO: break this into async slices 
+                // as we did with FilterIndex creation and maintenance?
+                
                 for (var i:uint = 0; i < children.length; i++)
                 {
                     var partNode:XMLNode = children[i];
@@ -512,6 +528,21 @@ public class XObjXMLDecoder
                     }
                 }
             }
+            else if (children.length > 0 && (result is XML))
+            {
+                // XML needs special handling as "embedded" XML
+                nullObject = false;
+                
+                var tempXML:XML = new XML((children[0] as XMLNode).toString());
+                isSimpleType = true;
+                result = tempXML;
+            }
+        }
+        
+        // and turn on change events again once we're done
+        if (isCollection)
+        {
+            (result as ArrayCollection).enableAutoUpdate();
         }
 
         // Cycle through the attributes
@@ -601,6 +632,13 @@ public class XObjXMLDecoder
         if (nullObject)
             result = null;
             
+        // and finally, give the object a chance to process commitProperties()
+        // if it is IInvalidationAware
+        if (result is IInvalidationAware)
+        {
+            (result as IInvalidationAware).invalidateProperties();
+        }
+        
         return result;
     }
 

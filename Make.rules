@@ -12,7 +12,7 @@
 
 .SILENT:
 
-export TOPDIR
+export TOPDIR PYONLY
 
 # Default rules
 default-build: subdirs-build
@@ -75,15 +75,21 @@ python-test:
 
 # Actionscript rules
 as-build:
+ifndef PYONLY
 	ANT_OPTS=$(antopts) ant build
+endif
 
 as-install:
 
 as-clean:
+ifndef PYONLY
 	ANT_OPTS=$(antopts) ant clean
+endif
 
 as-test:
+ifndef PYONLY
 	ANT_OPTS=$(antopts) ant test
+endif
 
 
 # testutils rules
