@@ -966,6 +966,60 @@ class XobjTest(TestCase):
         doc.foo._xobj.tag = None
         self.failUnlessRaises(TypeError, xobj.toxml, doc.foo)
 
+    def testNestedLists(self):
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<msis>
+  <msi>
+    <name>Setup</name>
+    <files>
+      <file>foo.exe</file>
+      <file>bar.exe</file>
+    </files>
+  </msi>
+  <msi>
+    <name>Setup2</name>
+    <files>
+      <file>
+        <name>foo.exe</name>
+        <uuid>12345</uuid>
+      </file>
+      <file>
+        <name>bar.exe</name>
+        <uuid>23456</uuid>
+      </file>
+    </files>
+  </msi>
+</msis>
+"""
+
+        doc = xobj.parse(xml)
+
+        self.failUnless(hasattr(doc, 'msis'))
+        self.failUnless(hasattr(doc.msis, 'msi'))
+        self.failUnless(isinstance(doc.msis.msi, list))
+        self.failUnlessEqual(len(doc.msis.msi), 2)
+
+        msi0 = doc.msis.msi[0]
+
+        self.failUnlessEqual(msi0.name, 'Setup')
+        self.failUnless(hasattr(msi0, 'files'))
+        self.failUnless(hasattr(msi0.files, 'file'))
+        self.failUnless(isinstance(msi0.files.file, list))
+        self.failUnlessEqual(len(msi0.files.file), 2)
+
+        msi1 = doc.msis.msi[1]
+
+        self.failUnlessEqual(msi1.name, 'Setup2')
+        self.failUnless(hasattr(msi1, 'files'))
+        self.failUnless(hasattr(msi1.files, 'file'))
+        self.failUnless(isinstance(msi1.files.file, list))
+        self.failUnlessEqual(len(msi1.files.file), 2)
+        self.failUnlessEqual(msi1.files.file[0].name, 'foo.exe')
+        self.failUnlessEqual(msi1.files.file[0].uuid, '12345')
+        self.failUnlessEqual(msi1.files.file[1].name, 'bar.exe')
+        self.failUnlessEqual(msi1.files.file[1].uuid, '23456')
+
 
 if __name__ == "__main__":
     testsuite.main()
