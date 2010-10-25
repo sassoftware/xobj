@@ -1,14 +1,14 @@
 package com.rpath.xobj
 {
+import mx.collections.ICollectionView;
 
 
-public interface IXObjCollection extends IXObjReference
+public interface IXObjCollection extends IXObjReference, ICollectionView
 {
     function removeAll():void;
-    function addItem(value:*):void;
-    function addItemIfAbsent(value:*):void;
+    function addItem(value:Object):void;
+    function addItemIfAbsent(value:Object):Boolean;
     function removeItemIfPresent(object:Object):Boolean;
-    
 }
 
 }

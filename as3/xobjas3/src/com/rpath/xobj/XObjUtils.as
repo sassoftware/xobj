@@ -195,7 +195,7 @@ package com.rpath.xobj
                 arrayCollectionTypeCache[type] = result;
 
                 // do the array test while we're here, to save time
-                arrayTypeCache[type] = (foo is Array);
+                arrayTypeCache[type] = (foo is Array || foo is ArrayList || foo is Vector);
             }
             return result;
         }
@@ -657,7 +657,12 @@ package com.rpath.xobj
             var coll:IList = set as IList;
             var xobjColl:IXObjCollection = set as IXObjCollection;
             
-            if (arr)
+            if (xobjColl)
+            {
+                xobjColl.addItemIfAbsent(item);
+                result = true;
+            }
+            else if (arr)
             {
                 if (arr.indexOf(item) == -1)
                 {
@@ -673,11 +678,7 @@ package com.rpath.xobj
                     result = true;
                 }
             }
-            else if (xobjColl)
-            {
-                xobjColl.addItemIfAbsent(item);
-                result = true;
-            }
+            
             
             return result;
         }

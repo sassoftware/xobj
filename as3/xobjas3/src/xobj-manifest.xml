@@ -13,8 +13,11 @@
 -->
 
 <componentPackage>
+    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
+    <component id="IXObjCollection" class="com.rpath.xobj.IXObjCollection"/>
     <component id="IXObjFactory" class="com.rpath.xobj.IXObjFactory"/>
     <component id="IXObjReference" class="com.rpath.xobj.IXObjReference"/>
+    <component id="URL" class="com.rpath.xobj.URL"/>
     <component id="XObjDefaultFactory" class="com.rpath.xobj.XObjDefaultFactory"/>
     <component id="XObjDeferredDecode" class="com.rpath.xobj.XObjDeferredDecode"/>
     <component id="XObjMetadata" class="com.rpath.xobj.XObjMetadata"/>
@@ -25,6 +28,6 @@
     <component id="XObjVersion" class="com.rpath.xobj.XObjVersion"/>
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>
     <component id="XObjXMLEncoder" class="com.rpath.xobj.XObjXMLEncoder"/>
-    <component id="IXObjCollection" class="com.rpath.xobj.IXObjCollection"/>
-    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
+    <component id="XSmartURLDescriptor" class="com.rpath.xobj.XSmartURLDescriptor"/>
+
 </componentPackage>

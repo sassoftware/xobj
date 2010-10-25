@@ -516,9 +516,11 @@ public class XObjXMLDecoder
                     {
                         var existing:* = result[partName];
                         if (existing && (existing is Object)
-                            && !((existing is Array) 
-                                || (existing is ICollectionView)
-                                || (existing is String)
+                            && !(
+                                //(existing is Array) 
+                                //|| (existing is ICollectionView)
+                                //||
+                                (existing is String)
                                 || (existing is Boolean)
                                 || (existing is Number)
                                 )
