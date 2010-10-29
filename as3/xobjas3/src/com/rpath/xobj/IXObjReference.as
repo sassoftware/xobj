@@ -12,7 +12,6 @@ import flash.utils.Dictionary;
 
 public interface IXObjReference
 {
-    function elementType():Class;
-    function typeMap():Dictionary;
+    function elementTypeForElementName(elementName:String):Class;
 }
 }

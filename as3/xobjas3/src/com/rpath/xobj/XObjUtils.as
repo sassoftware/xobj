@@ -144,7 +144,7 @@ package com.rpath.xobj
         private static var typePropertyCache:Dictionary = new Dictionary(true);
     
         private static var arrayTypeCache:Dictionary = new Dictionary(true);
-        private static var arrayCollectionTypeCache:Dictionary = new Dictionary(true);
+        private static var listCollectionTypeCache:Dictionary = new Dictionary(true);
         
         public static function isTypeArray(type:*):Boolean
         {
@@ -168,12 +168,12 @@ package com.rpath.xobj
                 arrayTypeCache[type] = result;
 
                 // do the array collection test while we're here, to save time
-                arrayCollectionTypeCache[type] = (foo is ICollectionView) || (foo is IXObjCollection);
+                listCollectionTypeCache[type] = (foo is ICollectionView) || (foo is IXObjCollection);
             }
             return result;
         }
     
-        public static function isTypeArrayCollection(type:*):Boolean
+        public static function isTypeCollection(type:*):Boolean
         {
             var result:Boolean;
 
@@ -186,13 +186,13 @@ package com.rpath.xobj
             if (type is String)
                 type = getClassByName(type);
     
-            result = arrayCollectionTypeCache[type];
-            if (arrayCollectionTypeCache[type] == undefined)
+            result = listCollectionTypeCache[type];
+            if (listCollectionTypeCache[type] == undefined)
             {
                 // TODO: better way to detect an arry subclass?
                 var foo:* = new type();
                 result = (foo is ICollectionView) || (foo is IXObjCollection);
-                arrayCollectionTypeCache[type] = result;
+                listCollectionTypeCache[type] = result;
 
                 // do the array test while we're here, to save time
                 arrayTypeCache[type] = (foo is Array || foo is ArrayList || foo is Vector);
@@ -203,7 +203,7 @@ package com.rpath.xobj
         public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
         {
             var isArray:Boolean = false;
-            var result:XObjTypeInfo;
+            var typeInfo:XObjTypeInfo;
 
             if (className == "Object" || className == "mx.utils::ObjectProxy")
                 return new XObjTypeInfo();
@@ -217,68 +217,67 @@ package com.rpath.xobj
             var propertyCacheKey:String = className + "." + propName;
             var arrayElementType:String;
             
-            result = typePropertyCache[propertyCacheKey];
+            typeInfo = typePropertyCache[propertyCacheKey];
                 
-            if (result == null)
+            if (typeInfo == null)
             {
-                result = new XObjTypeInfo();
+                typeInfo = new XObjTypeInfo();
                 
                 // go look it up (expensive)
                 // very important to use the instance object here, not the classname
                 // using the classname results in the typeInfo cache
                 // returning class not instance info later on! Bad cache!
                 var typeDesc:* = DescribeTypeCache.describeType(object);
-                var typeInfo:XML = typeDesc.typeDescription;
+                var typeDescInfo:XML = typeDesc.typeDescription;
                 
-                var accessorList:XMLList = typeInfo..accessor.(@name == propName);
+                var accessorList:XMLList = typeDescInfo..accessor.(@name == propName);
                 
                 if (accessorList.length() > 0)
-                    result.typeName = accessorList[0].@type.toString().replace( /::/, "." );
+                    typeInfo.typeName = accessorList[0].@type.toString().replace( /::/, "." );
                 
-                if (result.typeName == null || result.typeName == "")
+                if (typeInfo.typeName == null || typeInfo.typeName == "")
                 {    
-                    result.typeName = typeInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
-                    arrayElementType = typeInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+                    typeInfo.typeName = typeDescInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
+                    arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
                 }
                 else
                 {
-                    arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+                    arrayElementType = typeDescInfo..accessor.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
                     if (!arrayElementType)
                     {
                         // maybe it's a specific desired type using xobj metadata marker
-                        arrayElementType = typeInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
+                        arrayElementType = typeDescInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
                     }
                 }
-                result.isArray = isTypeArray(result.typeName);
-                result.isArrayCollection = isTypeArrayCollection(result.typeName);
+                typeInfo.isArray = isTypeArray(typeInfo.typeName);
+                typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
                 
-                if (result.isArray || result.isArrayCollection)
+                if (arrayElementType)
                 {
-                    result.typeName = null; // assume generic object unless told otherwise
+                    typeInfo.arrayElementTypeName = arrayElementType;
+                    typeInfo.arrayElementClass = XObjUtils.getClassByName(typeInfo.arrayElementTypeName);
+                }
+
+                if (typeInfo.typeName == "Object"
+                    || typeInfo.typeName == "mx.utils::ObjectProxy"
+                    || typeInfo.typeName == "Undefined"
+                    || typeInfo.typeName == "*"
+                    || typeInfo.typeName == "")
+                {
+                    typeInfo.typeName = null;
                 }
                 
-                if (arrayElementType != "")
+                // and finally, lookup the actual Class object for the typeName
+                if (typeInfo.typeName)
                 {
-                    // use type specified
-                    result.typeName = arrayElementType;
-                    result.arrayElementTypeName = arrayElementType;
+                    typeInfo.type = XObjUtils.getClassByName(typeInfo.typeName);
                 }
-                
-                if (result.typeName == "Object"
-                    || result.typeName == "mx.utils::ObjectProxy"
-                    || result.typeName == "Undefined"
-                    || result.typeName == "*"
-                    || result.typeName == "")
-                {
-                    result.typeName = null;
-                }
-                     
                 // cache the result for next time
-                typePropertyCache[propertyCacheKey] = result;
+                typePropertyCache[propertyCacheKey] = typeInfo;
             }
             
            
-            return result;
+            return typeInfo;
         }
     
         /**

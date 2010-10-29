@@ -52,11 +52,9 @@ import flash.xml.XMLDocument;
 import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
-import mx.collections.ArrayCollection;
-import mx.collections.ICollectionView;
+import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
-import mx.utils.ArrayUtil;
 
 /**
  * The TypedXMLDecoder class deserializes XML into a graph of ActionScript objects
@@ -268,135 +266,132 @@ public class XObjXMLDecoder
             return new XObjDeferredDecode(this, dataNode, null, rootObject);
     }
 
-    public function actualDecodeXML(dataNode:XMLNode, propType:Class = null, rootObject:* = null, isRootNode:Boolean = false, collClass:Class = null):Object
+    /**
+    * 
+    * actualDecodeXML is the workhorse function that does the heavy lifting of 
+    * decoding a given XMLNode
+    * 
+    * In addition to the node, the caller can pass an optional propertyType
+    * that specifies what data type the node should be decoded as.
+    * 
+    * If propType is null, various heuristics, including a typeMap lookup
+    * are used to infer the desired type.
+    * 
+    * memberClass allows you to dictate what type should be used for decoded
+    * child elements if not otherwise computable from result properties
+    * 
+    */
+    
+    public function actualDecodeXML(dataNode:XMLNode, expectedResultClass:Class = null, 
+                                    rootObject:* = null, isRootNode:Boolean = false, 
+                                    memberClass:Class = null):Object
     {
         var result:*;
-        var nullObject:Boolean;
+        var isNullObject:Boolean;
         var isSimpleType:Boolean = false;
         var shouldMakeBindable:Boolean = false;
         var isTypedProperty:Boolean = false;
-        var isTypedNode:Boolean = false;
         var isSpecifiedType:Boolean = false;
         var elementSet:Array = [];
         var attributeSet:Array = [];
         var nextNodeIsRoot:Boolean = false;
         var doneRootDupe:Boolean = false;
-        
+        var resultClass:Class;
+
         if (dataNode == null)
             return null;
         
         if (dataNode is XMLDocument)
             nextNodeIsRoot = true;
             
-        var children:Array = dataNode.childNodes;
-
+        // does the node have an id? If so, we may already know this object
+        // for example, doing a GET into a previously fetched instance
         var resultID:String = dataNode.attributes["id"];
         
+        /* figure out what type the result object should be.
         
-        /* lots of work follows to figure out the type we should really 
-        use
-        
-        It could be from the parent object specifically typing the property we're
-        about to decode (isTypedproperty == true)
-        
-        Or it could be the element name maps to a type in the TypeMap
+        1. did the caller pass in an object to populate via rootObject?
+        2. do we have the object already by ID?
+        3. was a particular type specified by the caller?
+        4. is there a typeMap entry for the object?
         
         */
+        // flag to track whether we were told or not
+        isSpecifiedType = rootObject || expectedResultClass;
         
-        isTypedProperty = (propType != null);
-        
-        var nodeType:Class = typeForTag(dataNode.nodeName);
-        isTypedNode = (nodeType != null);
-
-        //TODO: make sure we don't obscure typeMap entries with
-        // generic Array or ArrayCollection requests
-        if (isTypedNode && 
-            (XObjUtils.isTypeArray(propType) || XObjUtils.isTypeArrayCollection(propType)))
-        {
-            propType = nodeType;
-        }
-        
-        
-        isSpecifiedType = isTypedProperty || isTypedNode;
-        
-        var resultType:Class;
-
-        if (isSpecifiedType) // did we ask for a specific type?
-        {
-            if (isTypedProperty && (nodeType != propType))
-            {
-                // mismatched type expectations. Go with the property since that the type we're
-                // obligated to meet
-                resultType = propType;
-            } 
-            else if (isTypedProperty)
-            {
-                resultType = propType;
-            }
-            else if (isTypedNode)
-            {
-                resultType = nodeType;
-            }
-            
-            // assume we should NEVER make specified types bindable
-            shouldMakeBindable = false;
-        }
-        else // type not specified, so what type *should* we use?
-        {
-            // special case handling of empty terminal nodes (no value)
-            if (children.length == 0)
-            {
-                isSimpleType = true;
-                resultType = XObjString;
-            }
-            else
-            {
-                resultType = Object;
-            }
-            
-            // should we make this bindable?
-            shouldMakeBindable = (makeObjectsBindable 
-                && (nodeType == Object)
-                && !(result is ObjectProxy)
-                && (resultType != String));
-            
-            if (shouldMakeBindable)
-            {                
-                result = new ObjectProxy(result);
-            }
-            
-                    
-        }
-        
-        // OK, so now we know what type we want
         if (rootObject && !nextNodeIsRoot)
         {
             result = rootObject;
         }
         else
         {
-            result = objectFactory.newObject(resultType, resultID);
+            // do we have this already 
+            result = objectFactory.getObjectForId(resultID);
         }
+        
+        // now look up type info if available
+        if (result)
+        {
+            resultClass = XObjUtils.getClass(result);
+            // assume we should NEVER make specified types bindable
+            shouldMakeBindable = false;
+        }
+        else // otherwise, we need to create a new result object
+        {
+            // was a type specified?
+            if (expectedResultClass)
+            {
+                // use what was asked for
+                resultClass = expectedResultClass;
+                // assume we should NEVER make specified types bindable
+                shouldMakeBindable = false;
+            }
+            else
+            {
+                // is there a typeMap entry for this element?
+                var nodeType:Class = typeForTag(dataNode.nodeName);
+                
+                if (nodeType)
+                {
+                    resultClass = nodeType;
+                    // assume we should NEVER make specified types bindable
+                    shouldMakeBindable = false;
+                }
+                else
+                {
+                    // go with plain object, and allow bindable flag to kick in
+                    resultClass = Object;
+                }
+            }
+        }
+        
+        if (!result)
+        {
+            // finally, create the right kind of result object via whatever
+            // factory we were given
+            result = objectFactory.newObject(resultClass, resultID);
 
-        // track whether we actually have any values at all
-        nullObject = true;
+            if (result == null)
+            {
+                throw new Error("Cannot determine which object type to instantiate");
+            }
+        }
         
         // so what type did we eventually use?
         var resultTypeName:String = getQualifiedClassName(result);
-        
+
+        // TODO: pass these in from caller, since we already know them up
+        // there
         var isCollection:Boolean = false;
+        var isArray:Boolean = false;
         
-        // thus, what type of assignment function should we use?
-        var assign:Function;
-        
-        if (XObjUtils.isTypeArray(resultType))
+        if (XObjUtils.isTypeArray(resultClass))
         {
-            assign = assignToArray;
+            isArray = true;
         }
-        else if (XObjUtils.isTypeArrayCollection(resultType))
+        else if (XObjUtils.isTypeCollection(resultClass))
         {
             isCollection = true;
-            assign = assignToArray;
             try
             {
                 result.disableAutoUpdate();
@@ -405,18 +400,22 @@ public class XObjXMLDecoder
             {
             }
         }
-        else
-            assign = assignToProperty;
+
+        // Now start looking at the child XML nodes
+        
+        var children:Array = dataNode.childNodes;
+        
+        // track whether we actually have any values at all
+        isNullObject = true;
 
         // OK. Now we're ready to decode some actual data!
         if ((children.length == 1) && (children[0].nodeType == XMLNodeType.TEXT_NODE))
         {
-            nullObject = false;
+            isNullObject = false;
 
-            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultType);
-            if (!isSpecifiedType || 
-                (result is String) || 
-                (resultTypeName == "com.rpath.xobj.XObjString") 
+            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultClass);
+            if (!isSpecifiedType
+                || (result is String)
                 || (result is int) 
                 || (result is Number) 
                 || (result is Boolean))
@@ -447,28 +446,49 @@ public class XObjXMLDecoder
         {
             if (children.length > 0 && !(result is XML))
             {
-                nullObject = false;
-                var seenProperties:Object = {};
+                var seenProperties:Dictionary = new Dictionary();
                 var lastPartName:Object = {qname: null, propname: null};
-                
                 // loop through all children. TODO: break this into async slices 
                 // as we did with FilterIndex creation and maintenance?
                 
                 for (var i:uint = 0; i < children.length; i++)
                 {
                     var partNode:XMLNode = children[i];
-                    
+                    var typeInfo:XObjTypeInfo = null;
+                    var partClass:Class = null;
+                    var partClassName:String = null;
+                    var nextCollClass:Class = null;
+                    var isMember:Boolean;
+                    var partID:String
+                    var partQName:XObjQName;
+                    var elementName:*;
+                    // assume elementName maps directly to propertyName for now
+                    var propertyName:*;
+                    var propertyIsArray:Boolean
+                    var propertyIsCollection:Boolean;
+                    var partObj:*;
+
                     // skip text nodes, which are part of mixed content
                     if (partNode.nodeType != XMLNodeType.ELEMENT_NODE)
                     {
                         continue;
                     }
 
-                    var partQName:XObjQName = new XObjQName(partNode.namespaceURI, XObjUtils.getNCName(partNode.nodeName));
+                    isNullObject = false;
+                    partID = partNode.attributes["id"];
+
+                    // Step 1: 
+                    // figure out the name of the element and thus, the propertyName
+                    // to use
+                    partQName = new XObjQName(partNode.namespaceURI, XObjUtils.getNCName(partNode.nodeName));
+                    
                     // TODO: allow type map entries to be full QNames, not just local names
-                    var partName:* = decodePartName(partQName, partNode);
-                    var propertyIsArray:Boolean = false;
-                    var propertyIsArrayCollection:Boolean = false;
+                    elementName = decodePartName(partQName, partNode);
+                    
+                    // assume elementName maps directly to propertyName for now
+                    propertyName = elementName;
+                    propertyIsArray = false;
+                    propertyIsCollection = false;
 
                     // record the order we see the elements in for encoding purposes
                     // this is an attempt to "fake" XMLSchema sequence constraint of
@@ -480,41 +500,45 @@ public class XObjXMLDecoder
                         elementSet.push(lastPartName);
                     }
                     
-                    lastPartName.propname = partName;
-                  
-                    // what type do we want?
-                    var typeInfo:XObjTypeInfo = null;
-                    var partTypeName:String = null;
-                    var partClass:Class = null;
-                    var partObj:*;
+                    lastPartName.propname = propertyName;
 
-                    // look up characteristics of the result.propName type
-                    typeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, partName);
-                    partTypeName = typeInfo.typeName;
-                    propertyIsArray = typeInfo.isArray;
-                    propertyIsArrayCollection = typeInfo.isArrayCollection;
+                    // Step 2: check if we have an existing part object to reuse
+                    // (the case where we're reading into an existing object, 
+                    // or where objects create complex members at construction time)
 
-                    // if we've seen this property before, force it to be an array
-                    if (seenProperties[partName])
-                    {
-                        propertyIsArray = true;
-                    }
-                      
                     // assume we need a new part instance
                     partObj = null;
                     
+                    // Get part type information
+                    
+                    // look up characteristics of the result.propertyName type
+                    typeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, propertyName);
+                    partClass = typeInfo.type;
+                    partClassName = typeInfo.typeName;
+                    propertyIsArray = typeInfo.isArray;
+                    propertyIsCollection = typeInfo.isCollection;
+                    
+                    // make sure we can pass on an [ArrayElementType()] metadata
+                    // we observe on this property (which will not be visible
+                    // to recursive calls)
+                    nextCollClass = typeInfo.arrayElementClass;
+
                     // now, should we decode into a new object, or decode into an existing instance?
-                    if (nextNodeIsRoot)
+                    if (rootObject && nextNodeIsRoot)
                     {
                         // we're about to read the root element
                         partObj = rootObject;
+                        partClass = XObjUtils.getClass(partObj);
+                        partClassName = XObjUtils.getClassName(partObj);
+                        propertyIsArray = XObjUtils.isTypeArray(partClass);
+                        propertyIsCollection = XObjUtils.isTypeCollection(partClass);
                     }
-                    // else should we reuse existing property object?
-                    else if (!propertyIsArray 
-                    
-                        && result.hasOwnProperty(partName))
+                    // else should we reuse an existing property object?
+                    else if (result.hasOwnProperty(propertyName))
                     {
-                        var existing:* = result[partName];
+                        var existing:* = result[propertyName];
+                        
+                        // we do not want to reuse simple objects
                         if (existing && (existing is Object)
                             && !(
                                 //(existing is Array) 
@@ -522,84 +546,183 @@ public class XObjXMLDecoder
                                 //||
                                 (existing is String)
                                 || (existing is Boolean)
+                                || (existing is int)
                                 || (existing is Number)
-                                )
+                                || (existing is Date)
                             )
+                        )
                         {
-                            // reuse it
-                            partObj = existing;
+                            // reuse any complex objects provided we don't have
+                            // an ID conflict
+                            if (partID)
+                            {
+                                var existingByID:* = objectFactory.getObjectForId(partID)
+                                if (!existingByID)
+                                {
+                                    partObj = existing;
+                                    if (partObj.hasOwnProperty("id"))
+                                        partObj.id = partID;
+                                }
+                                else if (existing === existingByID)
+                                {
+                                    partObj = existing;
+                                }
+                                else
+                                {
+                                    // ID conflict. Use fresh object!
+                                    partObj = null;
+                                }
+                            }
+                            else // node has no ID, so use whatever we get
+                            {
+                                partObj = existing;
+                            }
                         }
                     }
-                    
-                    var nextCollClass:Class;
 
-                    // if we have a partObj we need to use its class to decode into
-                    if (partObj)
+                    
+                    // Step 3: 
+                    // decide what partClass to use if we don't already know
+                    // from the above
+
+                    // OK. so is this actually a known property? Array elements
+                    // will be uknown property names by definition (have to be
+                    // so since a collection property that matched an element would be 
+                    // assigned to the property, not made a member of the 
+                    // collection)
+
+                    isMember = false;
+
+                    if (!partObj && !partClass)
                     {
-                        if (partObj is IXObjReference)
+                        // important: are we *in* an array or collection object?
+                        
+                        if (isArray || isCollection)
                         {
-                            nextCollClass = XObjUtils.getClassByName(partTypeName);
-                        }
-                        partClass = XObjUtils.classOf(partObj);
-                    }
-                    else
-                    {
-                        if (collClass)
-                        {
-                            partClass = collClass;
+                            // we need to handle collection type objects with special care
+                            // since if the element doesn't map to a property, it's a member
+                            
+                            isMember = true;
+
+                            // we were told what type to use on the way in?
+                            if (memberClass)  
+                            {
+                                // parent object determined type for us. let it trump
+                                partClass = memberClass;
+                            }
+                            
+                            if (!partClass)
+                            {
+                                // if we're an xobj ref, it's supposed to be able to tell
+                                // us what types to use for members
+                                var xobjRef:IXObjReference = result as IXObjReference;
+                                
+                                // XObjRefs can tell us their desired member types
+                                if (xobjRef)
+                                {
+                                    // ask the IXObjReference for the type it wants to use
+                                    partClass = xobjRef.elementTypeForElementName(elementName);
+                                }
+                            }
                         }
                         else
                         {
-                            if (result is IXObjReference)
-                            {
-                                // ask the IXObjReference for the type it wants to use
-                                partClass = (result as IXObjReference).elementType();
-                                if (!partClass)
-                                {
-                                    // fall through to using a typeMap if provided
-                                    var map:Dictionary = (result as IXObjReference).typeMap();
-                                    if (map)
-                                    {
-                                        partClass = map[dataNode.nodeName];
-                                    }
-                                    else
-                                    {
-                                        // fall all the way back to the global typeMap
-                                        partClass = typeForTag(dataNode.nodeName);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                partClass = XObjUtils.getClassByName(partTypeName);
-                            }
+                            // treat as regular property of our result object
                         }
                     }
                     
-                    // now finally, decode the part
+                    if (!partClass)
+                    {
+                        // if we still don't know, fall all the way back to global
+                        // typemap
+                        partClass = typeForTag(elementName);
+                    }
+                    
+                    // now, is the property we're about to decode itself an array
+                    // or a collection?
+                    if (propertyIsArray || propertyIsCollection)
+                    {
+                        // there's a "collapsed" subcase here to handle...
+                        
+                        if (nextCollClass && typeForTag(elementName) == nextCollClass)
+                        {
+                            // this is a pathological case that requires us to
+                            // 'jump' the partClass to be the element type
+                            // of this nested array...
+                            partClass = nextCollClass;
+                            nextCollClass = null;
+                            partObj = null; // force new instance to be created
+                        }
+                    }
+                    else
+                    {
+                        // firstly, auto-promote to array for unknown repeated elements in XML
+                        // if we've seen this property before, force it to be an array
+                        
+                        if (seenProperties[propertyName])
+                        {
+                            if (!((result[propertyName] is Array) || (result[propertyName] is ListCollectionView)))
+                            {
+                                if (shouldMakeBindable)
+                                {
+                                    result[propertyName] = objectFactory.newCollectionFrom(result[propertyName]);
+                                }
+                                else
+                                {
+                                    result[propertyName] = [result[propertyName]];
+                                }
+                            }
+                            partObj = null; // we need a fresh object next element
+                            propertyIsArray = true;
+                        }
+                    }
+
+                    // now finally, decode the part itself, using the type information
+                    // and possibly, the existing partObj to decode into
                     partObj = actualDecodeXML(partNode, partClass, partObj, nextNodeIsRoot, nextCollClass);
 
                     // and assign the result property based on array characteristics
-                    result = assign(result, partName, partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
-                    
-                    seenProperties[partName] = true;
+                    if (isMember)
+                    {
+                        result = assignToArray(result, propertyName, partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
+                    }
+                    else
+                    {
+                        result = assignToProperty(result, propertyName, partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
+                        // and track possible repeated elements
+                        seenProperties[propertyName] = true;
+                        
+                        // we don't want any props on raw arrays to be 
+                        // part of iterating the array members...
+                        if (isArray )
+                        {
+                            // TODO: figure out the clean way to do this. namespace?
+                            // result.setPropertyIsEnumerable(propertyName, false);
+                        }        
+                    }
 
                     // should we keep an extra, well-known ref to the object?
                     if (nextNodeIsRoot && !doneRootDupe)
                     {
-                        result = assign(result, "root", partObj, seenProperties[partName], propertyIsArray, propertyIsArrayCollection, shouldMakeBindable);
+                        result = assignToProperty(result, "root", partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
                         doneRootDupe = true;
                     }
+                    
+                    nextNodeIsRoot = false; // don't use root twice!
                 }
             }
             else if (children.length > 0 && (result is XML))
             {
                 // XML needs special handling as "embedded" XML
-                nullObject = false;
+                isNullObject = false;
                 
                 var tempXML:XML = new XML((children[0] as XMLNode).toString());
                 isSimpleType = true;
                 result = tempXML;
+            }
+            else if (children.length == 0)
+            {
+                // empty node
             }
         }
         
@@ -620,24 +743,24 @@ public class XObjXMLDecoder
         for (var attribute:String in attributes)
         {
             
-            nullObject = false;
             // result can be null if it contains no children.
             if (result == null)
             {
-                result = {};
-                
-                if (shouldMakeBindable)
-                    result = new ObjectProxy(result);
+                result = new XObjString();
+                isSimpleType = false;
             }
-
             // If result is not currently an Object (it is a Number, Boolean,
-            // or String), then convert it to be a ComplexString so that we
-            // can attach attributes to it.  (See comment in ComplexString.as)
-            if (isSimpleType && !(result is XObjString))
+            // or String), or if the object is empty but has attrs
+            // and is of literal type Object (not a typed entity)
+            // then convert it to be an XObjString so that we
+            // can attach attributes to it.  (See comment in XObjString.as)
+            else if (isSimpleType && !(result is XObjString))
             {
                 result = new XObjString(result.toString());
                 isSimpleType = false;
             }
+                
+            isNullObject = false;
 
             var attrObj:* = decodeAttrName(attribute, dataNode);
 
@@ -647,7 +770,7 @@ public class XObjXMLDecoder
 
             var attrName:String = attrObj.propname;
 
-            var attr:* = XObjXMLDecoder.simpleType(attributes[attribute], resultType);
+            var attr:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
             
             if (makeAttributesMeta)
             {
@@ -664,8 +787,21 @@ public class XObjXMLDecoder
                 }
             }
             else
-                result[attrName] = attr;
-                
+            {
+                try
+                {
+                    result[attrName] = attr;
+                    if (isArray)
+                    {
+                        // TODO: figure out the clean way to do this. namespaces?
+                        //result.setPropertyIsEnumerable(attrName, false);
+                    }
+                }
+                catch (e:ReferenceError)
+                {
+                    throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                }
+            }
             
         }
         
@@ -685,7 +821,7 @@ public class XObjXMLDecoder
             
             if (count == 1)
             {
-                if ( partName == "item")
+                if ( elementName == "item")
                     result = result[p];
             }
         }
@@ -697,9 +833,9 @@ public class XObjXMLDecoder
         // stash the order of elements on the result as hidden metadata
         if (elementSet.length > 0)
             XObjMetadata.setElements(result, elementSet);
-        
+
         // so did we actually do anything to the object?
-        if (nullObject)
+        if (isNullObject)
             result = null;
             
         // and finally, give the object a chance to process commitProperties()
@@ -709,13 +845,27 @@ public class XObjXMLDecoder
             (result as IInvalidationAware).invalidateProperties();
         }
         
+        
+        // Last question, should we make this bindable?
+        shouldMakeBindable = 
+            (makeObjectsBindable 
+                && (nodeType == Object)
+                && !(result is ObjectProxy)
+                && (resultClass != String));
+        
+        if (result && shouldMakeBindable)
+        {                
+            result = new ObjectProxy(result);
+        }
+        
         return result;
     }
 
     import flash.utils.flash_proxy;
-
+    
+    
     private function assignToProperty(result:*, propName:String, value:*,
-        seenBefore:Boolean, makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):*
+        seenBefore:Boolean, makeArray:Boolean, makeCollection:Boolean, makeBindable:Boolean):*
     {
         if (result == null)
             return result;
@@ -724,32 +874,34 @@ public class XObjXMLDecoder
         if (result.hasOwnProperty(propName) && result[propName] === value)
             return result;
         
-        if (makeArray || makeArrayCollection)
+        if (makeArray || makeCollection)
         {
             var existing:* = result[propName];
             
             if (existing == null)
             {
-                if (makeArrayCollection)
+                if (makeCollection)
                 {
-                    existing = new ArrayCollection([]);
-                    if (!(value is Array) && !(value is ArrayCollection))
+                    existing = objectFactory.newCollectionFrom([]);
+                    if (!(value is Array) && !(value is ListCollectionView))
                     {
-                        (existing as ArrayCollection).addItem(value);
+                        (existing as ListCollectionView).addItem(value);
                     }
                     else
                     {
-                        value = makeCollection(value);
+                        value = toCollection(value);
                         for each (var v:* in value)
                         {
-                            (existing as ArrayCollection).addItem(v);
+                            (existing as ListCollectionView).addItem(v);
                         }
                     }
                 }
                 else
                 {
-                    existing = [];
-                    existing = (existing as Array).concat(value);
+                    if (value is Array)
+                        existing = value;
+                    else
+                        existing = [value];
                 }
             }
             else if (existing is Array)
@@ -758,24 +910,23 @@ public class XObjXMLDecoder
                 {
                     (existing as Array).splice(0, (existing as Array).length);
                 }*/
-                
                 XObjUtils.addItemIfAbsent(existing, value);
             }
-            else if (existing is ArrayCollection || existing is IXObjCollection)
+            else if (existing is ListCollectionView || existing is IXObjCollection)
             {
                 /*if (!seenBefore)
                 {
                     existing.removeAll();
                 }*/
                 
-                if (!(value is Array) && !(value is ArrayCollection)
-                && !(value is IXObjCollection))
+                if (!(value is Array) && !(value is ListCollectionView)
+                    && !(value is IXObjCollection))
                 {
                     XObjUtils.addItemIfAbsent(existing, value);
                 }
                 else
                 {
-                    value = makeCollection(value);
+                    value = toCollection(value);
                     for each (var v1:* in value)
                     {
                         XObjUtils.addItemIfAbsent(existing, v1);
@@ -787,9 +938,9 @@ public class XObjXMLDecoder
                 if (!seenBefore)
                 {
                     // throw away old, (non decoded) value
-                    if (makeArrayCollection)
+                    if (makeCollection)
                     {
-                        existing = new ArrayCollection([]);
+                        existing = objectFactory.newCollectionFrom([]);
                     }
                     else
                     {
@@ -798,10 +949,10 @@ public class XObjXMLDecoder
                 }
                 else
                 {
-                    // throw away old, (non decoded) value
-                    if (makeArrayCollection)
+                    // tkeep whatever is there now, but promote
+                    if (makeCollection)
                     {
-                        existing = new ArrayCollection([existing]);
+                        existing = objectFactory.newCollectionFrom([existing]);
                     }
                     else
                     {
@@ -809,18 +960,18 @@ public class XObjXMLDecoder
                     }
                 }
 
-                if (makeArrayCollection)
+                if (makeCollection)
                 {
-                    if (!(value is Array) && !(value is ArrayCollection))
+                    if (!(value is Array) && !(value is ListCollectionView))
                     {
-                        (existing as ArrayCollection).addItem(value);
+                        (existing as ListCollectionView).addItem(value);
                     }
                     else
                     {
-                        value = makeCollection(value);
+                        value = toCollection(value);
                         for each (var v2:* in value)
                         {
-                            (existing as ArrayCollection).addItem(v2);
+                            (existing as ListCollectionView).addItem(v2);
                         }
                     }
                 }
@@ -830,8 +981,8 @@ public class XObjXMLDecoder
                 }
             }
             
-            if ((makeArrayCollection || makeBindable) && !(existing is ArrayCollection))
-                existing = new ArrayCollection(existing as Array);
+            if ((makeCollection || makeBindable) && !(existing is ListCollectionView))
+                existing = objectFactory.newCollectionFrom(existing as Array);
                 
             value = existing;
         }
@@ -842,7 +993,7 @@ public class XObjXMLDecoder
     }
     
     private function assignToArray(result:*, propName:String, value:*,
-        seenBefore:Boolean, makeArray:Boolean, makeArrayCollection:Boolean, makeBindable:Boolean):*
+        seenBefore:Boolean, makeArray:Boolean, makeCollection:Boolean, makeBindable:Boolean):*
     {
         if (result == null)
             return result;
@@ -855,7 +1006,7 @@ public class XObjXMLDecoder
             }*/
             XObjUtils.addItemIfAbsent(result, value);
         }
-        else if (result is ArrayCollection || result is IXObjCollection)
+        else if (result is ListCollectionView || result is IXObjCollection)
         {
             /*if (!seenBefore)
             {
@@ -958,14 +1109,14 @@ public class XObjXMLDecoder
         return {qname: qname, propname: name};
     }
     
-    public function makeCollection(v:*):ArrayCollection
+    public function toCollection(v:*):ListCollectionView
     {
-        if (v is ArrayCollection)
+        if (v is ListCollectionView)
             return v;
         else if (v is Array)
-            return new ArrayCollection(v);
+            return objectFactory.newCollectionFrom(v);
         else
-            return new ArrayCollection([v]);
+            return objectFactory.newCollectionFrom([v]);
     }
     
     private var makeObjectsBindable:Boolean;
