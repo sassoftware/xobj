@@ -713,11 +713,24 @@ public class XObjXMLDecoder
             }
             else if (children.length > 0 && (result is XML))
             {
+                var tempXML:XML;
+                
                 // XML needs special handling as "embedded" XML
                 isNullObject = false;
                 
-                var tempXML:XML = new XML((children[0] as XMLNode).toString());
-                isSimpleType = true;
+                if (children.length > 1)
+                {
+                    // if there's more than one child, use the element *itself* 
+                    // as the root node. This will preserve any attributes on it
+                    tempXML = new XML(dataNode);
+                }
+                else
+                {
+                    // otherwise, grab the first child as the root
+                    tempXML = new XML((children[0] as XMLNode).toString());
+                }
+
+                isSimpleType = false;
                 result = tempXML;
             }
             else if (children.length == 0)
