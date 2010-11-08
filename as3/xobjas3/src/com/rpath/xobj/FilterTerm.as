@@ -28,8 +28,19 @@ public class FilterTerm extends EventDispatcher
         this.value = value;
     }
     
+    /**
+     * The field/property to filter on (LHS)
+     */
     public var name:String;
+    
+    /**
+     * The logical operator to apply (see static consts below)
+     */
     public var operator:String;
+    
+    /**
+     * The value to test the field against (RHS)
+     */
     public var value:String;
     
     public static const EQUAL:String = "EQUALS";
@@ -45,6 +56,13 @@ public class FilterTerm extends EventDispatcher
     public static const MATCHING:String = "MATCHING";
     public static const NOT_MATCHING:String = "NOT_MATCHING";
     
+    public static const IS:String = "IS";
+    public static const IS_NOT:String = "IS_NOT";
+    public static const CONTAINS:String = "CONTAINS";
     
+    public static const YES:String = "YES";
+    public static const NO:String = "NO";
+    
+
 }
 }
