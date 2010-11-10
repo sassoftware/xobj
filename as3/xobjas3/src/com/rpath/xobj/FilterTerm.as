@@ -15,7 +15,8 @@ package com.rpath.xobj
 {
 import flash.events.EventDispatcher;
 
-public class FilterTerm extends EventDispatcher
+[Bindable]
+public class FilterTerm
 {
     public function FilterTerm(name:String,
                                value:String,
