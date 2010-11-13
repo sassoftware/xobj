@@ -810,9 +810,10 @@ public class XObjXMLDecoder
                         //result.setPropertyIsEnumerable(attrName, false);
                     }
                 }
-                catch (e:ReferenceError)
+                catch (e:Error)
                 {
-                    throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
             
