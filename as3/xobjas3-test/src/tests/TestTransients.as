@@ -57,7 +57,7 @@ package tests
             assertTrue(o.obj.xobjTransientVar == null);
             
             // reencode and check round-trip
-            xmlOutput = typedEncoder.encodeObject(o);
+            xmlOutput = typedEncoder.encodeObject(o.obj);
             assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
         }
     }

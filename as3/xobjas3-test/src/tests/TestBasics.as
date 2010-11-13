@@ -60,7 +60,7 @@ public class TestBasics extends TestBase
         }
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }        
@@ -82,7 +82,7 @@ public class TestBasics extends TestBase
         assertTrue(o.top.other2_tag.val == '2')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     } 
@@ -102,7 +102,7 @@ public class TestBasics extends TestBase
         assertTrue(o.top.other3_tag.val == '2')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
 
         // check that we remap to original prefixes on the way back out
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
@@ -127,7 +127,7 @@ public class TestBasics extends TestBase
         assertTrue(o.ns_top.ns_element.ns_attr == 'foo')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.ns_top, null, "ns_top", o._xobj.elements[0].qname);
 
         var expectedString:String = 
                 '<ns:top xmlns:ns="http://somens.xsd">' + 
@@ -178,7 +178,7 @@ public class TestBasics extends TestBase
         assertTrue(o.top.bottom == null);
 
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.top);
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
 
@@ -224,7 +224,7 @@ public class TestBasics extends TestBase
         assertTrue(o.top.bottom == null);
         
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.top);
         
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
         
@@ -265,7 +265,7 @@ public class TestBasics extends TestBase
         assertTrue(o.obj.booleanVar);
         
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.obj);
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
@@ -300,7 +300,7 @@ public class TestBasics extends TestBase
         assertTrue(o.obj.booleanVar);
         
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.obj);
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
     
@@ -335,7 +335,7 @@ public class TestBasics extends TestBase
         assertTrue(o.obj.booleanVar);
         
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.obj);
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
@@ -370,7 +370,7 @@ public class TestBasics extends TestBase
         assertTrue(o.obj.booleanVar);
         
         // reencode and check round-trip
-        xmlOutput = typedEncoder.encodeObject(o);
+        xmlOutput = typedEncoder.encodeObject(o.obj);
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
     

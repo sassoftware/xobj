@@ -191,12 +191,12 @@ public class XObjXMLEncoder
      * value.
      */
 
-    public function encodeObject(obj:Object, parentNode:XMLNode=null):XMLDocument
+    public function encodeObject(obj:Object, parentNode:XMLNode=null, rootTag:String=null, rootQName:XObjQName=null):XMLDocument
     {
-        var qname:XObjQName;
+        var qname:XObjQName = rootQName;
         
         // is obj a root holder?
-        if (XObjMetadata.METADATA_PROPERTY in obj)
+        /*if (XObjMetadata.METADATA_PROPERTY in obj)
         {
             var xobj:XObjMetadata = obj[XObjMetadata.METADATA_PROPERTY];
             if (xobj.elements.length == 1)
@@ -204,12 +204,17 @@ public class XObjXMLEncoder
                 obj = obj[xobj.elements[0].propname];
                 qname = xobj.elements[0].qname;
             }
-        }
+        }*/
         
         // we want to make sure the type we use for root node is type of object
         var tag:String = tagForType(obj);
         
         // handle untyped objects
+        if (!tag || tag == "Object")
+        {
+            tag = rootTag;
+        }
+        
         if (!tag)
         {
             tag = defaultTag;
