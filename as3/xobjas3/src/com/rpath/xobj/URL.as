@@ -13,50 +13,71 @@
 
 package com.rpath.xobj
 {
-    import mx.utils.URLUtil;
+import mx.utils.URLUtil;
 
-    /** URL provides more "intelligent" String instances that
-    * wrap up some of the functionality of the URLUtil helper
-    * as well as make URL's more typesafe in general usage
-    */
+/** URL provides more "intelligent" String instances that
+ * wrap up some of the functionality of the URLUtil helper
+ * as well as make URL's more typesafe in general usage
+ */
+
+public class URL
+{
     
-    public class URL
+    public function URL(v:*="", useHTTPS:Boolean=false)
     {
-        public var value:String;
+        super();
         
-        public function URL(v:*="")
+        this.useHTTPS = useHTTPS;
+        if (v is URL)
         {
-            super();
-            
-            if (v is URL)
-            {
-                this.value = (v as URL).value;
-            }
-            else
-            {
-                this.value = v;
-            }
+            this.value = (v as URL).value;
         }
-        
-        public function get isHTTPS():Boolean
+        else
         {
-            return URLUtil.isHttpsURL(value);
+            this.value = v;
         }
-        
-        public function get isHTTP():Boolean
-        {
-            return URLUtil.isHttpURL(value);
-        }
-        
-        public function hasQuery():Boolean
-        {
-            return value.indexOf("?") != -1;
-        }
-        
-        public function toString():String
-        {
-            return value;
-        }
-        
     }
+    
+    public var useHTTPS:Boolean;
+    
+    public function get value():String
+    {
+        return _value;
+    }
+    
+    private var _value:String;
+    
+    public function set value(value:String):void
+    {
+        _value = value;
+        if (_value && useHTTPS && !isHTTPS)
+        {
+            // make the URL HTTPS
+            if (_value.indexOf("http://") == 0)
+            {
+                _value = _value.replace("http://", "https://");
+            }
+        }
+    }
+    public function get isHTTPS():Boolean
+    {
+        return URLUtil.isHttpsURL(value);
+    }
+    
+    public function get isHTTP():Boolean
+    {
+        return URLUtil.isHttpURL(value);
+    }
+    
+    public function hasQuery():Boolean
+    {
+        return value.indexOf("?") != -1;
+    }
+    
+    public function toString():String
+    {
+        return value;
+    }
+    
+}
 }
