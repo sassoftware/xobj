@@ -67,7 +67,7 @@ public class XSmartURL extends URL
     [xobjTransient]
     public var rangeUsingHeaders:Boolean;
     
-    /** searchTerms is an array of (field, operator, value) clauses
+    /** filterTerms is an array of (field, operator, value) clauses
      * that are assumed to be AND clauses
      */
     private var _filterTerms:Array;
