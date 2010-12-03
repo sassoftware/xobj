@@ -198,8 +198,10 @@ public class XSmartURL extends URL
             }
             else
             {
-                params[descriptor.startKey] = startIndex;
-                params[descriptor.limitKey] = limit;
+                if (descriptor.startKey)
+                    params[descriptor.startKey] = startIndex;
+                if (descriptor.limitKey)
+                    params[descriptor.limitKey] = limit;
             }
         }
         

@@ -27,7 +27,7 @@ public class XSmartURLDescriptor
     public var sortConjunction:String = ",";
     public var sortDescMarker:String = "-";
     public var sortAscMarker:String = "";
-    public var rangeUsingHeaders:Boolean = true;
+    public var rangeUsingHeaders:Boolean = false;
     
     public var filterKey:String = "filter_by";
     public var filterTermStart:String = "[";
