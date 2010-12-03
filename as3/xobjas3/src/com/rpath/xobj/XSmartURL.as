@@ -34,6 +34,8 @@ public class XSmartURL extends URL
         baseURL = new URL(this.value);
     }
     
+
+
     public function get baseURL():URL
     {
         return _baseURL;
@@ -52,8 +54,18 @@ public class XSmartURL extends URL
      * which is a poor man's metadata right now
      */
     [xobjTransient]
-    public var descriptor:XSmartURLDescriptor;
+    private var _descriptor:XSmartURLDescriptor;
     
+    public function get descriptor():XSmartURLDescriptor
+    {
+        return _descriptor;
+    }
+    
+    public function set descriptor(value:XSmartURLDescriptor):void
+    {
+        _descriptor = value;
+        recomputeQualifiedURL();
+    }
     
     /** paging support
      */
@@ -173,6 +185,9 @@ public class XSmartURL extends URL
     {
         var params:Dictionary = new Dictionary();
         var query:String = "";
+        
+        if (!descriptor)
+            return query;
         
         if (rangeRequest)
         {
