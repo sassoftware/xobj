@@ -28,6 +28,7 @@
     <component id="XObjVersion" class="com.rpath.xobj.XObjVersion"/>
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>
     <component id="XObjXMLEncoder" class="com.rpath.xobj.XObjXMLEncoder"/>
+    <component id="XSmartURL" class="com.rpath.xobj.XSmartURL"/>
     <component id="XSmartURLDescriptor" class="com.rpath.xobj.XSmartURLDescriptor"/>
     <component id="FilterTerm" class="com.rpath.xobj.FilterTerm"/>
 
