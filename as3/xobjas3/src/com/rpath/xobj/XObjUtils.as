@@ -13,6 +13,7 @@
 
 package com.rpath.xobj
 {
+    import flash.errors.StackOverflowError;
     import flash.utils.Dictionary;
     import flash.utils.getDefinitionByName;
     import flash.utils.getQualifiedClassName;
@@ -21,12 +22,10 @@ package com.rpath.xobj
     import mx.collections.ArrayCollection;
     import mx.collections.ArrayList;
     import mx.collections.ICollectionView;
+    import mx.collections.IList;
     import mx.utils.DescribeTypeCache;
     import mx.utils.ObjectProxy;
     import mx.utils.object_proxy;
-    import mx.collections.IList;
-
-    import flash.errors.StackOverflowError;
 
     use namespace object_proxy;
     
@@ -272,6 +271,13 @@ package com.rpath.xobj
                 {
                     typeInfo.type = XObjUtils.getClassByName(typeInfo.typeName);
                 }
+    
+                // ask if this is a member of not
+                if (object is IXObjCollection)
+                {
+                    typeInfo.isMember = (object as IXObjCollection).isElementMember(propName);
+                }
+
                 // cache the result for next time
                 typePropertyCache[propertyCacheKey] = typeInfo;
             }

@@ -9,6 +9,8 @@ public interface IXObjCollection extends IXObjReference, ICollectionView
     function addItem(value:Object):void;
     function addItemIfAbsent(value:Object):Boolean;
     function removeItemIfPresent(object:Object):Boolean;
+    
+    function isElementMember(propname:String):Boolean;
 }
 
 }

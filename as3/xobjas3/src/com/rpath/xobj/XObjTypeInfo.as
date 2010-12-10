@@ -23,7 +23,8 @@ package com.rpath.xobj
         public var typeName:String;
         public var isArray:Boolean;
         public var isCollection:Boolean;
-
+        public var isMember:Boolean;
+        
         public var arrayElementTypeName:String;
         public var arrayElementClass:Class;
     }

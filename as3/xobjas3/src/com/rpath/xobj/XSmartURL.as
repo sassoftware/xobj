@@ -17,6 +17,7 @@ import mx.collections.Sort;
 import flash.utils.Dictionary;
 import mx.collections.SortField;
 
+[Bindable]
 public class XSmartURL extends URL
 {
     public function XSmartURL(s:*=null)
@@ -34,7 +35,6 @@ public class XSmartURL extends URL
         baseURL = new URL(this.value);
     }
     
-
 
     public function get baseURL():URL
     {
@@ -72,12 +72,37 @@ public class XSmartURL extends URL
     
     [xobjTransient]
     public var rangeRequest:Boolean;
+    
     [xobjTransient]
-    public var startIndex:Number;
+    private var _startIndex:Number;
+    
+    public function get startIndex():Number
+    {
+        return _startIndex;
+    }
+    
+    public function set startIndex(value:Number):void
+    {
+        _startIndex = value;
+        rangeRequest = true;
+        recomputeQualifiedURL();
+    }
+
     [xobjTransient]
-    public var limit:Number;
-    [xobjTransient]
-    public var rangeUsingHeaders:Boolean;
+    private var _limit:Number;
+
+    public function get limit():Number
+    {
+        return _limit;
+    }
+    
+    public function set limit(value:Number):void
+    {
+        _limit = value;
+        rangeRequest = true;
+        recomputeQualifiedURL();
+    }
+    
     
     /** filterTerms is an array of (field, operator, value) clauses
      * that are assumed to be AND clauses
@@ -140,7 +165,6 @@ public class XSmartURL extends URL
     
     // TODO: optimize this via setter/getter pairs on query terms
     [xobjTransient]
-    [Bindable]
     public function get qualifiedURL():String
     {
         return _qualifiedURL;
@@ -166,13 +190,13 @@ public class XSmartURL extends URL
         
         if (queryFrag)
         {
-            if (baseURL.hasQuery())
+            if (fullURL.indexOf(descriptor.paramDelimiter) != -1)
             {
-                fullURL = fullURL + "&" + queryFrag;
+                fullURL = fullURL + descriptor.paramDelimiter + queryFrag;
             }
             else
             {
-                fullURL = fullURL + "?" + queryFrag;
+                fullURL = fullURL + descriptor.paramMarker + queryFrag;
             }
         }
         
@@ -191,18 +215,10 @@ public class XSmartURL extends URL
         
         if (rangeRequest)
         {
-            if (descriptor.rangeUsingHeaders)
-            {
-                // DAMN HTTPService won't pass RANGE header
-                setHeader("X-Range", "rows "+startIndex+"-"+(startIndex+ limit -1));
-            }
-            else
-            {
-                if (descriptor.startKey)
-                    params[descriptor.startKey] = startIndex;
-                if (descriptor.limitKey)
-                    params[descriptor.limitKey] = limit;
-            }
+            if (descriptor.startKey)
+                params[descriptor.startKey] = startIndex;
+            if (descriptor.limitKey)
+                params[descriptor.limitKey] = limit;
         }
         
         // TODO: use descriptor to tell us how to express sort
@@ -263,7 +279,7 @@ public class XSmartURL extends URL
         first = true;
         for (var param:String in params)
         {
-            query = query + (first ? "" : "&") + param + "=" + params[param];
+            query = query + (first ? "" : descriptor.paramDelimiter) + param + "=" + params[param];
             first = false;
         }
         

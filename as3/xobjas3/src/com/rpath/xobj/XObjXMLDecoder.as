@@ -489,7 +489,7 @@ public class XObjXMLDecoder
                     propertyName = elementName;
                     propertyIsArray = false;
                     propertyIsCollection = false;
-
+                    
                     // record the order we see the elements in for encoding purposes
                     // this is an attempt to "fake" XMLSchema sequence constraint of
                     // ordered elements. Collapse sequenced repetitions to a single entry
@@ -517,6 +517,7 @@ public class XObjXMLDecoder
                     partClassName = typeInfo.typeName;
                     propertyIsArray = typeInfo.isArray;
                     propertyIsCollection = typeInfo.isCollection;
+                    isMember = typeInfo.isMember;
                     
                     // make sure we can pass on an [ArrayElementType()] metadata
                     // we observe on this property (which will not be visible
@@ -530,8 +531,8 @@ public class XObjXMLDecoder
                         partObj = rootObject;
                         partClass = XObjUtils.getClass(partObj);
                         partClassName = XObjUtils.getClassName(partObj);
-                        propertyIsArray = XObjUtils.isTypeArray(partClass);
-                        propertyIsCollection = XObjUtils.isTypeCollection(partClass);
+                        //propertyIsArray = XObjUtils.isTypeArray(partClass);
+                        //propertyIsCollection = XObjUtils.isTypeCollection(partClass);
                     }
                     // else should we reuse an existing property object?
                     else if (result.hasOwnProperty(propertyName))
@@ -578,6 +579,16 @@ public class XObjXMLDecoder
                                 partObj = existing;
                             }
                         }
+                        else
+                        {
+                            // we have the property, but no value
+                            if (!partClass)
+                            {
+                                // must be plain old Object, but our TypeInfo
+                                // method ignores them...compensate
+                                partClass = Object;
+                            }
+                        }
                     }
 
                     
@@ -591,39 +602,17 @@ public class XObjXMLDecoder
                     // assigned to the property, not made a member of the 
                     // collection)
 
-                    isMember = false;
-
                     if (!partObj && !partClass)
                     {
-                        // important: are we *in* an array or collection object?
+                        // important: are we *in* an generic array or collection object?
                         
-                        if (isArray || isCollection)
+                        if (!(result is IXObjCollection)
+                            && (isArray || isCollection))
                         {
                             // we need to handle collection type objects with special care
                             // since if the element doesn't map to a property, it's a member
                             
                             isMember = true;
-
-                            // we were told what type to use on the way in?
-                            if (memberClass)  
-                            {
-                                // parent object determined type for us. let it trump
-                                partClass = memberClass;
-                            }
-                            
-                            if (!partClass)
-                            {
-                                // if we're an xobj ref, it's supposed to be able to tell
-                                // us what types to use for members
-                                var xobjRef:IXObjReference = result as IXObjReference;
-                                
-                                // XObjRefs can tell us their desired member types
-                                if (xobjRef)
-                                {
-                                    // ask the IXObjReference for the type it wants to use
-                                    partClass = xobjRef.elementTypeForElementName(elementName);
-                                }
-                            }
                         }
                         else
                         {
@@ -631,6 +620,31 @@ public class XObjXMLDecoder
                         }
                     }
                     
+                    if (isMember)
+                    {
+                        // we were told what type to use on the way in?
+                        if (memberClass)  
+                        {
+                            // parent object determined type for us. let it trump
+                            partClass = memberClass;
+                        }
+                        
+                    }
+                    
+                    if (!partClass)
+                    {
+                        // if we're an xobj ref, it's supposed to be able to tell
+                        // us what types to use for members
+                        var xobjRef:IXObjReference = result as IXObjReference;
+                        
+                        // XObjRefs can tell us their desired member types
+                        if (xobjRef)
+                        {
+                            // ask the IXObjReference for the type it wants to use
+                            partClass = xobjRef.elementTypeForElementName(elementName);
+                        }
+                    }
+
                     if (!partClass)
                     {
                         // if we still don't know, fall all the way back to global
@@ -810,10 +824,20 @@ public class XObjXMLDecoder
                         //result.setPropertyIsEnumerable(attrName, false);
                     }
                 }
+                catch (e:TypeError)
+                {
+                    if ((result[attrName] is IXObjHref)
+                        && (attr is String))
+                    {
+                        result[attrName].id = attr;
+                    }
+                    else 
+                        throw e;
+                }
                 catch (e:Error)
                 {
                     //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". " + e + ". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
             
@@ -875,9 +899,6 @@ public class XObjXMLDecoder
         return result;
     }
 
-    import flash.utils.flash_proxy;
-    
-    
     private function assignToProperty(result:*, propName:String, value:*,
         seenBefore:Boolean, makeArray:Boolean, makeCollection:Boolean, makeBindable:Boolean):*
     {
