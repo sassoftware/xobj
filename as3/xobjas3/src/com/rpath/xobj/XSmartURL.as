@@ -251,7 +251,7 @@ public class XSmartURL extends URL
         
         if (filterTerms)
         {
-            var search:String;
+            var search:String = "";
             first = true;
             for each (var searchTerm:FilterTerm in filterTerms)
             {
