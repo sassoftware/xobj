@@ -13,8 +13,9 @@
 
 package com.rpath.xobj
 {
-import mx.collections.Sort;
 import flash.utils.Dictionary;
+
+import mx.collections.Sort;
 import mx.collections.SortField;
 
 [Bindable]
@@ -186,6 +187,9 @@ public class XSmartURL extends URL
         
         var fullURL:String = baseURL.value;
         
+        if (!fullURL)
+            return;
+        
         var queryFrag:String = queryFragment();
         
         if (queryFrag)
@@ -286,13 +290,23 @@ public class XSmartURL extends URL
         return query;
     }
     
-    [xobjTransient]
     public function addSearchTerm(term:FilterTerm):void
     {
         if (!filterTerms)
             filterTerms = [];
         
         filterTerms.push(term);
+        
+        recomputeQualifiedURL();
+    }
+    
+    public function removeSearchTerm(term:FilterTerm):void
+    {
+        var index:int = filterTerms.indexOf(term);
+        if (index != -1)
+        {
+            filterTerms.splice(index,1);
+        }
         
         recomputeQualifiedURL();
     }
