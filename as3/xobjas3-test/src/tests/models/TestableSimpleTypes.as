@@ -16,14 +16,16 @@ package tests.models
     /**
      * An object for use in validating encoding of objects
      */ 
-    public class SimpleTypesTest
+    public class TestableSimpleTypes
     {
-        public var someVal:String;
+        public var aString:String;
         
-        public var booleanVar:Boolean;
+        public var aBoolean:Boolean;
         
-        public var someNumber:Number;
+        public var aNumber:Number;
         
         public var anInt:int;
+        
+        public var aDate:Date;
     }
 }

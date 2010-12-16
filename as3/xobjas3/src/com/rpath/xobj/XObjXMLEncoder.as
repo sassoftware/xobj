@@ -239,7 +239,7 @@ public class XObjXMLEncoder
         return xmlDocument;
     }
 
-    public function encodeValue(obj:Object, q:*, parentNode:XMLNode):XMLNode
+    public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true):XMLNode
     {
         var qname:XObjQName = new XObjQName();;
         
@@ -297,11 +297,24 @@ public class XObjXMLEncoder
             newNode.nodeName = XObjUtils.encodeElementTag(qname, newNode);
             return newNode;
         }
+        else if (recurse)
+        {
+            if (obj is IXObjReference)
+            {
+                // don't recurse refs
+                return internal_encodeValue(obj, qname, parentNode, false);
+            }
+            else
+                return internal_encodeValue(obj, qname, parentNode);
+        }
         else
-            return internal_encodeValue(obj, qname, parentNode);
+        {
+            // else skip it - likely an XObjRef from earlier
+            return null;
+        }
     }
     
-    protected function internal_encodeValue(obj:Object, qname:XObjQName, parentNode:XMLNode):XMLNode
+    protected function internal_encodeValue(obj:Object, qname:XObjQName, parentNode:XMLNode, recurse:Boolean=true):XMLNode
     {
         var myElement:XMLNode;
         
@@ -390,7 +403,7 @@ public class XObjXMLEncoder
                     continue;
                 
                 var propQName:XObjQName = new XObjQName("", fieldName);
-                encodeValue(obj[fieldName], propQName, myElement);
+                encodeValue(obj[fieldName], propQName, myElement, recurse);
             }
         }
         else if (typeType == XObjXMLEncoder.ARRAY_TYPE)

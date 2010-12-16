@@ -16,13 +16,16 @@ package com.rpath.xobj
     {
         public function XObjTypeInfo()
         {
+            super();
         }
 
         public var type:Class;
         public var typeName:String;
-        public var arrayElementTypeName:String;
         public var isArray:Boolean;
-        public var isArrayCollection:Boolean;
+        public var isCollection:Boolean;
+        public var isMember:Boolean;
         
+        public var arrayElementTypeName:String;
+        public var arrayElementClass:Class;
     }
 }

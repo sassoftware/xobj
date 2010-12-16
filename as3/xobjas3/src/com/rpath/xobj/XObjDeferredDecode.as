@@ -46,7 +46,7 @@ package com.rpath.xobj
         {
             if (!rootObject)
                 return null;
-            
+
             return decoder.actualDecodeXML(dataNode, null, rootObject, false);
         }
         

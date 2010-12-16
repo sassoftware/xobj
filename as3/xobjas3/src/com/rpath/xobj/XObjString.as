@@ -33,7 +33,7 @@ package com.rpath.xobj
  * basically a dynamic version of the String class (other properties can be
  * attached to it).
  *
- * When you try to get the value of a ComplexString, we attempt to convert the
+ * When you try to get the value of a XObjString, we attempt to convert the
  * value to a number or boolean before returning it.
  *
  * @private
