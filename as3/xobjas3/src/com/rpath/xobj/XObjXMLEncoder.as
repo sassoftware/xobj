@@ -13,8 +13,8 @@
 
 package com.rpath.xobj
 {
-    
-    
+
+
 // BASED ON ORIGINAL CODE IN ADOBE'S SimpleXMLDecoder
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ import flash.xml.*;
 import mx.collections.ArrayCollection;
 import mx.utils.*;
 
-    
+
 /**
  * The TypedXMLEncoder class takes ActionScript Objects and encodes them to XML
  * using default serialization informed by a typeMap. This allows specific
@@ -53,18 +53,18 @@ public class XObjXMLEncoder
     public var spacenameMap:Dictionary = new Dictionary();
     
     /** Set simpleEncoderCompatible to true if you want Arrays
-    * encoded as a wrapper element with subelements
-    */
+     * encoded as a wrapper element with subelements
+     */
     
     public var simpleEncoderCompatible:Boolean;
     
     /** encodeNullElements controls whether a null property
-    * is encoded as an empty element 
-    * e.g. <nullable/>
-    * or simply skipped.
-    * 
-    * Default is true to match older behavior of xobj
-    */
+     * is encoded as an empty element 
+     * e.g. <nullable/>
+     * or simply skipped.
+     * 
+     * Default is true to match older behavior of xobj
+     */
     
     public var encodeNullElements:Boolean = true;
     
@@ -77,15 +77,15 @@ public class XObjXMLEncoder
      * @private
      */
     private static const CLASS_INFO_OPTIONS:Object = {includeReadOnly:true, includeTransient:false};
-
+    
     //--------------------------------------------------------------------------
     //
     //  Class Methods
     //
     //--------------------------------------------------------------------------
-
-
-
+    
+    
+    
     /**
      * @private
      */
@@ -93,47 +93,47 @@ public class XObjXMLEncoder
     {
         var s:String = new String();
         var n:Number;
-    
+        
         if (dateType == "dateTime" || dateType == "date")
         {
             s = s.concat(rawDate.getUTCFullYear(), "-");
-    
+            
             n = rawDate.getUTCMonth()+1;
             if (n < 10) s = s.concat("0");
             s = s.concat(n, "-");
-    
+            
             n = rawDate.getUTCDate();
             if (n < 10) s = s.concat("0");
             s = s.concat(n);
         }
-    
+        
         if (dateType == "dateTime")
         {
             s = s.concat("T");
         }
-    
+        
         if (dateType == "dateTime" || dateType == "time")
         {
             n = rawDate.getUTCHours();
             if (n < 10) s = s.concat("0");
             s = s.concat(n, ":");
-    
+            
             n = rawDate.getUTCMinutes();
             if (n < 10) s = s.concat("0");
             s = s.concat(n, ":");
-    
+            
             n = rawDate.getUTCSeconds();
             if (n < 10) s = s.concat("0");
             s = s.concat(n, ".");
-    
+            
             n = rawDate.getUTCMilliseconds();
             if (n < 10) s = s.concat("00");
             else if (n < 100) s = s.concat("0");
             s = s.concat(n);
         }
-    
+        
         s = s.concat("Z");
-    
+        
         return s;
     }
     
@@ -143,7 +143,7 @@ public class XObjXMLEncoder
     //
     //--------------------------------------------------------------------------
     
-
+    
     public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null, myXML:XMLDocument=null)
     {
         super();
@@ -153,9 +153,9 @@ public class XObjXMLEncoder
         
         if (nmMap == null)
             nmMap = {};
-            
+        
         this.typeMap = typeMap;
-
+        
         for (var prefix:String in nmMap)
         {
             namespaceMap[nmMap[prefix]] = prefix;
@@ -164,7 +164,7 @@ public class XObjXMLEncoder
         
         this.xmlDocument = myXML ? myXML : new XMLDocument();
     }
-
+    
     //--------------------------------------------------------------------------
     //
     //  Variables
@@ -190,7 +190,7 @@ public class XObjXMLEncoder
      * @param parentNode An XMLNode under which to put the encoded
      * value.
      */
-
+    
     public function encodeObject(obj:Object, parentNode:XMLNode=null, rootTag:String=null, rootQName:XObjQName=null):XMLDocument
     {
         var qname:XObjQName = rootQName;
@@ -198,12 +198,12 @@ public class XObjXMLEncoder
         // is obj a root holder?
         /*if (XObjMetadata.METADATA_PROPERTY in obj)
         {
-            var xobj:XObjMetadata = obj[XObjMetadata.METADATA_PROPERTY];
-            if (xobj.elements.length == 1)
-            {
-                obj = obj[xobj.elements[0].propname];
-                qname = xobj.elements[0].qname;
-            }
+        var xobj:XObjMetadata = obj[XObjMetadata.METADATA_PROPERTY];
+        if (xobj.elements.length == 1)
+        {
+        obj = obj[xobj.elements[0].propname];
+        qname = xobj.elements[0].qname;
+        }
         }*/
         
         // we want to make sure the type we use for root node is type of object
@@ -238,7 +238,7 @@ public class XObjXMLEncoder
         
         return xmlDocument;
     }
-
+    
     public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true):XMLNode
     {
         var qname:XObjQName = new XObjQName();;
@@ -255,7 +255,7 @@ public class XObjXMLEncoder
             qname.localName == q;
             qname.uri="";
         }
-            
+        
         if (qname.localName == null || qname.localName == "")
             trace("missing qname");
         
@@ -281,7 +281,7 @@ public class XObjXMLEncoder
             // do nothing
             return parentNode;
         }
-        // encoded as meta?
+            // encoded as meta?
         else if (qname.localName == "attributes")
         {
             // do nothing
@@ -320,19 +320,19 @@ public class XObjXMLEncoder
         
         if (obj == null)
             return null;
-    
+        
         // Skip properties that are functions
         var typeType:uint = getDataTypeFromObject(obj);
         if (typeType == XObjXMLEncoder.FUNCTION_TYPE)
             return null;
-    
+        
         if (typeType == XObjXMLEncoder.XML_TYPE)
         {
             myElement = obj.cloneNode(true);
             parentNode.appendChild(myElement);
             return myElement;
         }
-    
+        
         myElement = xmlDocument.createElement("foo");
         
         if (typeType == XObjXMLEncoder.OBJECT_TYPE)
@@ -340,10 +340,10 @@ public class XObjXMLEncoder
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
-
+            
             // do all attributes first in case any are namespaced
             var attrNames:Object = setAttributes(myElement, obj);
-
+            
             myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
             
             // TODO: this is expensive. Can we optimize?
@@ -387,7 +387,7 @@ public class XObjXMLEncoder
                         propsDone[propName] = true;
                     }
                 }
-                    
+                
             }
             var pCount:uint = properties.length;
             
@@ -437,7 +437,7 @@ public class XObjXMLEncoder
             
             // Simple types fall through to here
             var valueString:String;
-    
+            
             if (typeType == XObjXMLEncoder.DATE_TYPE)
             {
                 valueString = encodeDate(obj as Date, "dateTime");
@@ -467,14 +467,14 @@ public class XObjXMLEncoder
             {
                 valueString = obj.toString();
             }
-    
+            
             var valueNode:XMLNode = xmlDocument.createTextNode(valueString);
             myElement.appendChild(valueNode);
         }
-    
+        
         return myElement;
     }
-
+    
     // set the attributes, and return a list of all propNames consumed
     private function setAttributes(node:XMLNode, obj:*):Object
     {
@@ -487,7 +487,7 @@ public class XObjXMLEncoder
         
         if (useMeta)
             attrSource = obj.attributes;
-            
+        
         // get them from the __attributes structure
         if (XObjMetadata.METADATA_PROPERTY in obj)
             attrList = obj[XObjMetadata.METADATA_PROPERTY]["attributes"];
@@ -532,7 +532,7 @@ public class XObjXMLEncoder
                         attributes["xmlns"] = defaultNS;
                         needDefault = false;
                     }
-
+                    
                     // do all the xmlns entries first, then everything else
                     if (attr.propname == "xmlns") // observe the default namespace
                     {
@@ -552,10 +552,10 @@ public class XObjXMLEncoder
                     }
                     else if (count == 0)
                         continue;
-                        
+                    
                     
                     var name:String;
-                                        
+                    
                     // finally, encode the attribute!
                     name = encodeAttrName(attr, node);
                     try
@@ -568,10 +568,10 @@ public class XObjXMLEncoder
                     {
                     }
                 }
-
-            node.attributes = attributes;
-            
-            count++;
+                
+                node.attributes = attributes;
+                
+                count++;
             }
         }
         
@@ -590,7 +590,7 @@ public class XObjXMLEncoder
         
         return partName;
     }
-
+    
     private function getLocalPrefixForNamespace(uri:String, node:XMLNode):String
     {
         var prefix:String;
@@ -602,7 +602,7 @@ public class XObjXMLEncoder
         }
         return prefix;
     }
-        
+    
     private function encodeAttrName(attr:*, node:XMLNode):String
     {
         var name:String = attr.propname;
@@ -621,7 +621,7 @@ public class XObjXMLEncoder
                 prefix = name.substr(0,myPrefixIndex);
             else
                 prefix = "";
-                
+            
             prefix = localPrefixToDocPrefix(prefix, node);
             
             // we need to map the possibly local prefix to the namespace
@@ -643,7 +643,7 @@ public class XObjXMLEncoder
         }
         else 
             ns = spacenameMap[prefix];
-            
+        
         if (ns == null)
         {
             ns = node.getNamespaceForPrefix(prefix);
@@ -658,11 +658,11 @@ public class XObjXMLEncoder
         // assume default namespace
         if (newPrefix == null)
             newPrefix = "";
-            
+        
         return newPrefix;
     }
     
-
+    
     /**
      *  @private
      */
@@ -712,7 +712,7 @@ public class XObjXMLEncoder
     private static const BASE64_BINARY_TYPE:uint = 17;
     private static const HEX_BINARY_TYPE:uint = 18;
     
-        
+    
     private function tagForType(obj:*):String
     {
         if (!typeMap || !obj)
@@ -723,7 +723,7 @@ public class XObjXMLEncoder
         
         if (!obj)
             return null;
-            
+        
         var className:String = getQualifiedClassName(obj);
         var clazz:Class = getDefinitionByName(className) as Class;
         
@@ -740,6 +740,6 @@ public class XObjXMLEncoder
         className = getQualifiedClassName(clazz);
         return className.replace(/.*::/, "");
     }
-
+    
 }
 }

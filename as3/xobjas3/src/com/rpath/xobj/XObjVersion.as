@@ -13,8 +13,8 @@
 
 package com.rpath.xobj
 {    
-    public class XObjVersion
-    {
-        public static const VERSION:String = "@@XOBJ-BUILDVERSION@@";
-    }
+public class XObjVersion
+{
+    public static const VERSION:String = "@@XOBJ-BUILDVERSION@@";
+}
 }

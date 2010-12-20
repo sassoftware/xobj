@@ -36,20 +36,20 @@ public class XSmartURL extends URL
         baseURL = new URL(this.value);
     }
     
-
+    
     public function get baseURL():URL
     {
         return _baseURL;
     }
-
+    
     private var _baseURL:URL;
-
+    
     public function set baseURL(value:URL):void
     {
         _baseURL = value;
         recomputeQualifiedURL();
     }
-
+    
     
     /** descriptor provides the encoding chars to use 
      * which is a poor man's metadata right now
@@ -88,10 +88,10 @@ public class XSmartURL extends URL
         rangeRequest = true;
         recomputeQualifiedURL();
     }
-
+    
     [xobjTransient]
     private var _limit:Number;
-
+    
     public function get limit():Number
     {
         return _limit;

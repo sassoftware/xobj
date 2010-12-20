@@ -13,10 +13,8 @@
 
 package com.rpath.xobj
 {
-    import flash.net.registerClassAlias;
-    import flash.utils.getDefinitionByName;
-    import flash.utils.getQualifiedClassName;
-    
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ADOBE SYSTEMS INCORPORATED
@@ -42,25 +40,25 @@ package com.rpath.xobj
 [RemoteClass]  // tell the compiler we can be deep copied 
 public dynamic class XObjString
 {
-
+    
     [Bindable]
     public var value:String;
-
+    
     public var _xobj:XObjMetadata;
     
     public function XObjString(val:*=null)
     {
         super();
-            
+        
         value = val;
         _xobj = new XObjMetadata();
     }
-
+    
     public function toString():String
     {
         return value;
     }
-
+    
     public function valueOf():Object
     {
         return XObjXMLDecoder.simpleType(value);

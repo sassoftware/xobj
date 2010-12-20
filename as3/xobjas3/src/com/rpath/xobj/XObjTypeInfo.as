@@ -12,20 +12,20 @@
 
 package com.rpath.xobj
 {
-    public class XObjTypeInfo
+public class XObjTypeInfo
+{
+    public function XObjTypeInfo()
     {
-        public function XObjTypeInfo()
-        {
-            super();
-        }
-
-        public var type:Class;
-        public var typeName:String;
-        public var isArray:Boolean;
-        public var isCollection:Boolean;
-        public var isMember:Boolean;
-        
-        public var arrayElementTypeName:String;
-        public var arrayElementClass:Class;
+        super();
     }
+    
+    public var type:Class;
+    public var typeName:String;
+    public var isArray:Boolean;
+    public var isCollection:Boolean;
+    public var isMember:Boolean;
+    
+    public var arrayElementTypeName:String;
+    public var arrayElementClass:Class;
+}
 }
