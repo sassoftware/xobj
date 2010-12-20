@@ -79,5 +79,14 @@ public class URL
         return value;
     }
     
+    public function set url(s:String):void
+    {
+        value = s;
+    }
+    
+    public function get url():String
+    {
+        return value;
+    }
 }
 }
