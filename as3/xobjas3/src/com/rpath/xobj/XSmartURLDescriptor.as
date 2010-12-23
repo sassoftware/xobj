@@ -22,7 +22,7 @@ public class XSmartURLDescriptor
     }
     
     // keys used in constructing URLs
-    public var paramMarker:String = ":";
+    public var paramMarker:String = ";";
     public var paramDelimiter:String = ";";
     
     public var startKey:String = "start_index";
@@ -36,7 +36,7 @@ public class XSmartURLDescriptor
     public var filterKey:String = "filter_by";
     public var filterTermStart:String = "[";
     public var filterTermEnd:String = "]";
-    public var filterTermConjunction:String = "]";
+    public var filterTermConjunction:String = ",";
     public var filterTermSeperator:String = ",";
     
     public var searchKey:String = "search";

@@ -19,7 +19,7 @@ public class FilterTerm
 {
     public function FilterTerm(name:String,
                                value:String,
-                               operator:String = IS)
+                               operator:String = EQUAL)
     {
         super();
         
@@ -43,10 +43,8 @@ public class FilterTerm
      */
     public var value:String;
     
-    //public static const EQUAL:String = "EQUALS";
-    //public static const NOT_EQUAL:String = "NOT_EQUALS";
-    public static const IS:String = "IS";
-    public static const IS_NOT:String = "IS_NOT";
+    public static const EQUAL:String = "EQUAL";
+    public static const NOT_EQUAL:String = "NOT_EQUAL";
     
     public static const LESS_THAN:String = "LESS_THAN";
     public static const LESS_THAN_OR_EQUAL:String = "LESS_THAN_OR_EQUAL";
@@ -58,8 +56,6 @@ public class FilterTerm
     public static const NOT_IN:String = "NOT_IN";
     public static const MATCHING:String = "MATCHING";
     public static const NOT_MATCHING:String = "NOT_MATCHING";
-    
-    public static const CONTAINS:String = "CONTAINS";
     
     public static const YES:String = "YES";
     public static const NO:String = "NO";
