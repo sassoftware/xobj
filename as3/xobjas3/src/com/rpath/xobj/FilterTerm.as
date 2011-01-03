@@ -14,6 +14,7 @@
 package com.rpath.xobj
 {
 
+[RemoteClass]
 [Bindable]
 public class FilterTerm
 {
