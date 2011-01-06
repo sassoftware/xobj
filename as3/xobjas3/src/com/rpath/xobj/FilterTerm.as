@@ -18,13 +18,13 @@ package com.rpath.xobj
 [Bindable]
 public class FilterTerm
 {
-    public function FilterTerm(name:String,
+    public function FilterTerm(field:String,
                                value:String,
                                operator:String = EQUAL)
     {
         super();
         
-        this.name = name;
+        this.field = field;
         this.operator = operator;
         this.value = value;
     }
@@ -32,7 +32,7 @@ public class FilterTerm
     /**
      * The field/property to filter on (LHS)
      */
-    public var name:String;
+    public var field:String;
     
     /**
      * The logical operator to apply (see static consts below)
