@@ -902,7 +902,10 @@ public class XObjXMLDecoder
     private function assignToProperty(result:*, propName:String, value:*,
                                       seenBefore:Boolean, makeArray:Boolean, makeCollection:Boolean, makeBindable:Boolean):*
     {
-        if (result == null)
+        // don't put nulls into arrays or collections.
+        // skip if result empty
+        if (result == null 
+            || ((makeArray || makeCollection) && (value == null)))
             return result;
         
         // are we reusing an existing property value?
