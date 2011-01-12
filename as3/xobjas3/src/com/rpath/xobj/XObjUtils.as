@@ -138,7 +138,13 @@ public class XObjUtils
         return classOf(obj);
     }
     
-    
+    public static function newInstanceOfSameClass(value:*):*
+    {
+        var clazz:Class = XObjUtils.classOf(value);
+        var newObj:Object = new clazz();
+        return newObj;
+    }
+
     private static var typePropertyCache:Dictionary = new Dictionary(true);
     
     private static var arrayTypeCache:Dictionary = new Dictionary(true);
