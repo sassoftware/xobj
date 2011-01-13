@@ -13,28 +13,28 @@
 
 package com.rpath.xobj
 {
-    [RemoteClass]   // tell the compiler we can be deep copied  
-    public class XObjQName
+[RemoteClass]   // tell the compiler we can be deep copied  
+public class XObjQName
+{
+    public function XObjQName(uri:String="", localName:String="")
     {
-        public function XObjQName(uri:String="", localName:String="")
-        {
-            this.uri=uri;
-            this.localName=localName;
-        }
-
-        public var localName:String;
-        
-        public var uri:String;
-        
-        public static function equal(a: XObjQName, b:XObjQName):Boolean
-        {
-            if (a == null || b == null)
-                return false;
-            
-            if ((a.uri == b.uri) && (a.localName == b.localName))
-                return true;
-            
-            return false;
-        }
+        this.uri=uri;
+        this.localName=localName;
     }
+    
+    public var localName:String;
+    
+    public var uri:String;
+    
+    public static function equal(a: XObjQName, b:XObjQName):Boolean
+    {
+        if (a == null || b == null)
+            return false;
+        
+        if ((a.uri == b.uri) && (a.localName == b.localName))
+            return true;
+        
+        return false;
+    }
+}
 }

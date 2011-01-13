@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<images>
+  <image id="https://rbatest01.eng.rpath.com/api/products/mediawiki/images/0">
+    <imageId>0</imageId>
+    <hostname>mediawiki</hostname>
+    <release/>
+    <imageType>VMware (R)</imageType>
+    <name>Mediawiki VMware</name>
+    <troveName>group-mediawiki-appliance</troveName>
+    <troveVersion>/mediawiki.eng.rpath.com@wm:mediawiki-1.13.2-devel/1.13.2-3-1</troveVersion>
+    <trailingVersion>1.13.2-3-1</trailingVersion>
+    <troveFlavor>~!dom0,~!domU,vmware,~!xen is: x86(i486,i586,i686,sse,sse2)</troveFlavor>
+    <troveLastChanged>1238006703</troveLastChanged>
+    <version href="https://rbatest01.eng.rpath.com/api/products/mediawiki/versions/1.13.2"/>
+    <stage href="https://rbatest01.eng.rpath.com/api/products/mediawiki/versions/1.13.2/stages/Development"/>
+    <creator href="https://rbatest01.eng.rpath.com/api/users/bpja"/>
+    <updater/>
+    <timeCreated>1238006701.87</timeCreated>
+    <buildCount>1</buildCount>
+    <status>401</status>
+    <statusMessage>No job</statusMessage>
+    <files>
+      <file>
+        <fileId>111</fileId>
+        <imageId>83</imageId>
+        <title>VMware (R) Image</title>
+        <size>141786486</size>
+        <sha1>1b9cef391aa544fc421df1f0cf61b1405dfb6953</sha1>
+        <url urlType="0">/downloadImage?fileId=122</url>
+      </file>
+    </files>
+  </image>
+  
+  <image id="https://rbatest01.eng.rpath.com/api/products/mediawiki/images/1">
+    <imageId>1</imageId>
+    <hostname>anotherimage</hostname>
+    <release/>
+    <imageType>VMware (R)</imageType>
+    <name>Another VMware</name>
+    <troveName>group-another-appliance</troveName>
+    <troveVersion>/another.eng.rpath.com@wm:another-1.13.2-devel/1.13.2-3-1</troveVersion>
+    <trailingVersion>1.13.2-3-1</trailingVersion>
+    <troveFlavor>~!dom0,~!domU,vmware,~!xen is: x86(i486,i586,i686,sse,sse2)</troveFlavor>
+    <troveLastChanged>1238006703</troveLastChanged>
+    <version href="https://rbatest01.eng.rpath.com/api/products/another/versions/1.13.2"/>
+    <stage href="https://rbatest01.eng.rpath.com/api/products/another/versions/1.13.2/stages/Development"/>
+    <creator href="https://rbatest01.eng.rpath.com/api/users/bpja"/>
+    <updater/>
+    <timeCreated>1238006701.87</timeCreated>
+    <buildCount>1</buildCount>
+    <status>401</status>
+    <statusMessage>No job</statusMessage>
+    <files>
+      <file>
+        <fileId>111</fileId>
+        <imageId>83</imageId>
+        <title>VMware (R) Image</title>
+        <size>141786486</size>
+        <sha1>1b9cef391aa544fc421df1f0cf61b1405dfb6953</sha1>
+        <url urlType="0">/downloadImage?fileId=122</url>
+      </file>
+    </files>
+  </image>
+  
+</images>

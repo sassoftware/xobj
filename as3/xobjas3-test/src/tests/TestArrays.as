@@ -29,6 +29,56 @@ public class TestArrays extends TestBase
     
     private var testValues:Array = [ "a string value 1", "a string value 2"];
 
+    private var arrayCollectionTest1:XML = 
+        <top dyn1="foo" dyn2="bar">
+          <dyn3>baz</dyn3>
+          <simple>simple</simple>
+          <middle>
+            <tag>1</tag>
+          </middle>
+          <bottom tag="2">
+          </bottom>
+            <testableObjects>
+                <testableObject someVal="a string value 1">
+                    <someNumber>2.3</someNumber>
+                </testableObject>
+                <testableObject>
+                    <someVal>a string value 2</someVal>
+                    <someNumber>3.4</someNumber>
+                </testableObject>
+            </testableObjects>
+        </top>
+    
+    
+    public function testArrayCollection():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArrayCollection});
+        var xmlInput:XMLDocument = new XMLDocument(arrayCollectionTest1);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("Top is type Object", o.top is TopWithArrayCollection);
+        assertTrue("top has dynamic property 1 from attribute", o.top.dyn1 == "foo");
+        assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
+        assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
+        
+        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObjects is ArrayCollection);
+        
+        assertTrue("array of testables is correct length", o.top.testableObjects.length == 2);
+        
+        var index:int = 0;
+        
+        for each (var item:* in o.top.testableObjects)
+        {
+            assertTrue(item is TestableObject);
+            
+            var testable:TestableObject = item as TestableObject;
+            
+            assertTrue(testable.someVal == testValues[index]);
+            index++;
+        }
+        
+    }
+
     private var arrayTest1:XML = 
         <top dyn1="foo" dyn2="bar">
           <dyn3>baz</dyn3>
@@ -38,16 +88,18 @@ public class TestArrays extends TestBase
           </middle>
           <bottom tag="2">
           </bottom>
-            <testableObject someVal="a string value 1">
-                <someNumber>2.3</someNumber>
-            </testableObject>
-            <testableObject>
-                <someVal>a string value 2</someVal>
-                <someNumber>3.4</someNumber>
-            </testableObject>
+            <testableObjects link="foobar">
+                <testableObject someVal="a string value 1">
+                    <someNumber>2.3</someNumber>
+                </testableObject>
+                <testableObject>
+                    <someVal>a string value 2</someVal>
+                    <someNumber>3.4</someNumber>
+                </testableObject>
+            </testableObjects>
         </top>
-    
-    
+        
+        
     public function testArray():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArray});
@@ -59,53 +111,23 @@ public class TestArrays extends TestBase
         assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
         assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
         
-        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObject is Array);
+        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObjects is Array);
         
-        assertTrue("array of testables is correct length", o.top.testableObject.length == 2);
-        
+        assertTrue("array of testables is correct length", o.top.testableObjects.length == 2);
+        assertTrue("array of testables has property", o.top.testableObjects["link"] == "foobar");
+
         var index:int = 0;
         
-        for each (var item:* in o.top.testableObject)
+        for (index=0; index < o.top.testableObjects.length; index++)
         {
-            assertTrue(item is TestableObject);
-            
+            var item:* = o.top.testableObjects[index];
+            assertTrue("item is TestableObject", item is TestableObject);
             var testable:TestableObject = item as TestableObject;
-            
             assertTrue(testable.someVal == testValues[index]);
-            index++;
         }
 
     }
 
-
-    public function testArrayCollection():void
-    {
-        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArrayCollection});
-        var xmlInput:XMLDocument = new XMLDocument(arrayTest1);
-        var o:* = typedDecoder.decodeXML(xmlInput);
-        
-        assertTrue("Top is type Object", o.top is TopWithArrayCollection);
-        assertTrue("top has dynamic property 1 from attribute", o.top.dyn1 == "foo");
-        assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
-        assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
-        
-        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObject is ArrayCollection);
-        
-        assertTrue("array of testables is correct length", o.top.testableObject.length == 2);
-        
-        var index:int = 0;
-        
-        for each (var item:* in o.top.testableObject)
-        {
-            assertTrue(item is TestableObject);
-            
-            var testable:TestableObject = item as TestableObject;
-            
-            assertTrue(testable.someVal == testValues[index]);
-            index++;
-        }
-
-    }
 
     private var arrayTest2:XML = 
         <top dyn1="foo" dyn2="bar">

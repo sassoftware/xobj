@@ -13,10 +13,8 @@
 
 package com.rpath.xobj
 {
-    import flash.net.registerClassAlias;
-    import flash.utils.getDefinitionByName;
-    import flash.utils.getQualifiedClassName;
-    
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ADOBE SYSTEMS INCORPORATED
@@ -33,7 +31,7 @@ package com.rpath.xobj
  * basically a dynamic version of the String class (other properties can be
  * attached to it).
  *
- * When you try to get the value of a ComplexString, we attempt to convert the
+ * When you try to get the value of a XObjString, we attempt to convert the
  * value to a number or boolean before returning it.
  *
  * @private
@@ -42,25 +40,25 @@ package com.rpath.xobj
 [RemoteClass]  // tell the compiler we can be deep copied 
 public dynamic class XObjString
 {
-
+    
     [Bindable]
     public var value:String;
-
+    
     public var _xobj:XObjMetadata;
     
     public function XObjString(val:*=null)
     {
         super();
-            
+        
         value = val;
         _xobj = new XObjMetadata();
     }
-
+    
     public function toString():String
     {
         return value;
     }
-
+    
     public function valueOf():Object
     {
         return XObjXMLDecoder.simpleType(value);

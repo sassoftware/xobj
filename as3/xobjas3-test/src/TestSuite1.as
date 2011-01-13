@@ -27,6 +27,8 @@ package
             addTestCase(new TestTransients());
             addTestCase(new TestRefresh());
             addTestCase(new TestArrays());
+            addTestCase(new TestDataTypes());
+            addTestCase(new TestImagesCollection());
         }
 
     }

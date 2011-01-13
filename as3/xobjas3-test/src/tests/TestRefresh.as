@@ -38,13 +38,15 @@ public class TestRefresh extends TestBase
           </middle>
           <bottom tag="2">
           </bottom>
-            <testableObject someVal="a string value 1">
-                <someNumber>2.3</someNumber>
-            </testableObject>
-            <testableObject>
-                <someVal>a string value 2</someVal>
-                <someNumber>3.4</someNumber>
-            </testableObject>
+            <testableObjects>
+                <testableObject someVal="a string value 1">
+                    <someNumber>2.3</someNumber>
+                </testableObject>
+                <testableObject>
+                    <someVal>a string value 2</someVal>
+                    <someNumber>3.4</someNumber>
+                </testableObject>
+            </testableObjects>
         </top>
     
     
@@ -59,13 +61,13 @@ public class TestRefresh extends TestBase
         assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
         assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
         
-        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObject is Array);
+        assertTrue("top has array of TestableObjects from metadata marker", o.top.testableObjects is Array);
         
-        assertTrue("array of testables is correct length", o.top.testableObject.length == 2);
+        assertTrue("array of testables is correct length", o.top.testableObjects.length == 2);
         
         var index:int = 0;
         
-        for each (var item:* in o.top.testableObject)
+        for each (var item:* in o.top.testableObjects)
         {
             assertTrue(item is TestableObject);
             
@@ -97,7 +99,7 @@ public class TestRefresh extends TestBase
         t.dyn1 = "foobarbaz";
         assertTrue("top dyn1 changed", t.dyn1 == "foobarbaz");
         
-        var arr:Array = t.testableObject;
+        var arr:Array = t.testableObjects;
         
         var newObj:*;
         
@@ -112,12 +114,12 @@ public class TestRefresh extends TestBase
         
         assertTrue("top dyn1 refreshed", t.dyn1 == "foo");
         
-        assertTrue("testable array is same instance", t.testableObject === arr);
+        assertTrue("testable array is same instance", t.testableObjects === arr);
         
         // now change the arr instance and reload again
         arr = [];
-        t.testableObject = arr;
-        assertTrue("testable array is empty", t.testableObject.length == 0);
+        t.testableObjects = arr;
+        assertTrue("testable array is empty", t.testableObjects.length == 0);
 
         // now, refresh the object by re-reading XML into itself
         newObj = typedDecoder.decodeXMLIntoObject(xmlInput, t);
@@ -125,8 +127,8 @@ public class TestRefresh extends TestBase
 
         assertTrue("refreshed into same instance object", t === newT);
 
-        assertTrue("testable array is not empty", t.testableObject.length > 0);
-        assertTrue("testable array is same instance", t.testableObject === arr);
+        assertTrue("testable array is not empty", t.testableObjects.length > 0);
+        assertTrue("testable array is same instance", t.testableObjects === arr);
     }
 
 
@@ -150,7 +152,7 @@ public class TestRefresh extends TestBase
         t.dyn1 = "foobarbaz";
         assertTrue("top dyn1 changed", t.dyn1 == "foobarbaz");
         
-        var arr:ArrayCollection = t.testableObject;
+        var arr:ArrayCollection = t.testableObjects;
         
         var newObj:*;
         
@@ -165,12 +167,12 @@ public class TestRefresh extends TestBase
         
         assertTrue("top dyn1 refreshed", t.dyn1 == "foo");
         
-        assertTrue("testable arraycollection is same instance", t.testableObject === arr);
+        assertTrue("testable arraycollection is same instance", t.testableObjects === arr);
         
         // now change the arr instance and reload again
         arr = new ArrayCollection();
-        t.testableObject = arr;
-        assertTrue("testable arraycollection is empty", t.testableObject.length == 0);
+        t.testableObjects = arr;
+        assertTrue("testable arraycollection is empty", t.testableObjects.length == 0);
 
         // now, refresh the object by re-reading XML into itself
         newObj = typedDecoder.decodeXMLIntoObject(xmlInput, t);
@@ -178,8 +180,8 @@ public class TestRefresh extends TestBase
 
         assertTrue("refreshed into same instance object", t === newT);
 
-        assertTrue("testable arraycollection is not empty", t.testableObject.length > 0);
-        assertTrue("testable arraycollection is same instance", t.testableObject === arr);
+        assertTrue("testable arraycollection is not empty", t.testableObjects.length > 0);
+        assertTrue("testable arraycollection is same instance", t.testableObjects === arr);
     }
         
 }
