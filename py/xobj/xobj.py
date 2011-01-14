@@ -151,7 +151,7 @@ class XIDREF(XObj):
     pass
 
 def findPythonType(xobj, key):
-    pc = getattr(xobj.__class__, key, None)
+    pc = xobj.__class__.__dict__.get(key, None)
     if pc is not None:
         return pc
 
