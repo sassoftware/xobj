@@ -262,7 +262,7 @@ public class XSmartURL extends URL
                 search = search 
                     + (first ? "": descriptor.filterTermConjunction)
                     + descriptor.filterTermStart
-                    + searchTerm.name + descriptor.filterTermSeperator+ searchTerm.operator +descriptor.filterTermSeperator + searchTerm.value
+                    + searchTerm.field + descriptor.filterTermSeperator+ searchTerm.operator +descriptor.filterTermSeperator + searchTerm.value
                     + descriptor.filterTermEnd;
                 first = false;
             }
