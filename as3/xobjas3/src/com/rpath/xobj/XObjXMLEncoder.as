@@ -299,14 +299,14 @@ public class XObjXMLEncoder
         }
         else if (recurse)
         {
-            /* TODO: answer the question as to WHY we do not encode refs recursively
-            No longer clear on this use case
+            // TODO: answer the question as to WHY we do not encode refs recursively
+            // No longer clear on this use case
             if (obj is IXObjReference)
             {
                 // don't recurse refs
                 return internal_encodeValue(obj, qname, parentNode, false);
             }
-            else*/
+            else
                 return internal_encodeValue(obj, qname, parentNode);
         }
         else
