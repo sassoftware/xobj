@@ -324,5 +324,9 @@ public class XSmartURL extends URL
         hasHeaders = true;
     }
     
+    public function copy():*
+    {
+        return XObjUtils.shallowCopy(this);
+    }
 }
 }
