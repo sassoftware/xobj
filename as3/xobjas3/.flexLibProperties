@@ -21,6 +21,7 @@
     <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
     <classEntry path="com.rpath.xobj.XSmartURL"/>
     <classEntry path="com.rpath.xobj.XSmartURLDescriptor"/>
+    <classEntry path="com.rpath.xobj.CollectionUtil"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
