@@ -25,6 +25,8 @@ import mx.collections.IList;
 import mx.utils.DescribeTypeCache;
 import mx.utils.ObjectProxy;
 import mx.utils.object_proxy;
+import mx.utils.ArrayUtil;
+import mx.utils.ObjectUtil;
 
 use namespace object_proxy;
 
@@ -727,5 +729,130 @@ public class XObjUtils
         return result;            
     }
     
+    public static function shallowCopy(value:*):*
+    {
+        var clazz:Class = XObjUtils.classOf(value);
+        
+        return copyCast(value, clazz);
+    }
+    
+    public static function copyCast(value:*, clazz:Class):*
+    {
+        var newObj:Object = new clazz();
+        var hasID:Boolean = newObj.hasOwnProperty("id");
+        var tempID:String;
+        
+        // TODO: why did we need this again?
+        if (hasID)
+            tempID = newObj.id
+        
+        XObjUtils.copyProps(newObj, value);
+        
+        if (hasID)
+            newObj.id = tempID;
+        
+        return newObj;
+        
+    }
+    
+    
+    /*
+    CopyProps copies the properties from an object, typically obtained from a remote
+    service, across to a given target object
+    
+    We do this so that non-typed objects from the wire can be marshalled into typed objects
+    locally 
+    */
+    
+    import flash.utils.describeType;
+    
+    static public function copyProps(newObj:*, otherObj:*, copyTransients:Boolean=false) : void
+    {
+        // are these actually the same instance?
+        if (newObj === otherObj)
+            return;
+        
+        // NOTE DO NOT CHANGE THIS TO XOBJUTILS VERSION
+        // we actually WANT xobjTransients copied across in this case
+        // since this method is used for cloning obejcts and when pulling
+        // fresh data off the wire in PUT/GET/POST cases
+        
+        var otarget:Object = ObjectUtil.getClassInfo(newObj);
+        var osource:Object = ObjectUtil.getClassInfo(otherObj);
+        var targetTypeInfo:XML = DescribeTypeCache.describeType(newObj).typeDescription;
+        var sourceTypeInfo:XML = DescribeTypeCache.describeType(otherObj).typeDescription;
+        var access:String;
+        
+        // first copy all the properties defined on the target instance
+        for each (var prop:* in otarget.properties)
+        {
+            try
+            {
+                // NOTE: we use an intermediate var to trip any exception before
+                // attempting to assign to ensure setters aren't called unless prop exists
+                var x:* = otherObj[prop.localName];
+                if (x == undefined) continue;
+                
+                var propType:String = targetTypeInfo..accessor.(@name==prop.localName).@type;
+                if (propType == "")
+                    propType = targetTypeInfo..variable.(@name==prop.localName).@type;
+                
+                var transient:String = targetTypeInfo..accessor.(@name==prop.localName)..metadata.(@name=='Transient').@name;
+                
+                if (!copyTransients && transient != "")
+                    continue;
+                
+                if (propType == "Array")
+                {
+                    if (x is ObjectProxy)
+                        newObj[prop.localName] = ArrayUtil.toArray(x.item);
+                    else
+                        newObj[prop.localName] = ArrayUtil.toArray(x);
+                }
+                else if (propType == "mx.collections::ArrayCollection")
+                {
+                    if (x is ObjectProxy)
+                        newObj[prop.localName] = CollectionUtil.objectToCollection(x.item);
+                    else
+                        newObj[prop.localName] = CollectionUtil.objectToCollection(x);
+                }
+                else
+                    newObj[prop.localName] = x;
+            }
+            catch (exception:Error)
+            {
+                // ignore errors since they're either "no such property" or they are "readonly" 
+                // and it's quicker to simply ignore the exceptions than do all that XML munging
+                // into the classInfo structs
+            }
+        }
+        
+        // the copy all the props from the source instance to pick up dynamic stuff from server
+        for each (var prop2:* in osource.properties)
+        {
+            // yes, we might copy the same prop in both cases, but it's cheap...
+            try
+            {
+                // NOTE: we use an intermediate var to trip any exception before
+                // attempting to assign to ensure setters aren't called unless prop exists
+                var x2:* = otherObj[prop2.localName];
+                if (x2 == undefined) continue;
+                
+                transient = sourceTypeInfo..accessor.(@name==prop2.localName)..metadata.(@name=='Transient').@name;
+                
+                if (!copyTransients && transient != "")
+                    continue;
+                
+                newObj[prop2.localName] = x2;
+            }
+            catch (error:Error)
+            {
+                // again, ignore errors since they're either "no such property" or they are "readonly" 
+                // and it's quicker to simply ignore the exceptions than do all that XML munging
+                // into the classInfo structs
+            }
+        }
+        
+    }
 }
 }
