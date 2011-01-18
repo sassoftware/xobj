@@ -259,6 +259,11 @@ public class XSmartURL extends URL
             first = true;
             for each (var searchTerm:FilterTerm in filterTerms)
             {
+                if (searchTerm.value == null)
+                {
+                    continue;
+                }
+                
                 search = search 
                     + (first ? "": descriptor.filterTermConjunction)
                     + descriptor.filterTermStart
