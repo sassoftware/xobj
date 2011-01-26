@@ -47,6 +47,9 @@ public class FilterTerm
     public static const EQUAL:String = "EQUAL";
     public static const NOT_EQUAL:String = "NOT_EQUAL";
     
+    public static const IS_NULL:String = "IS_NULL";
+    public static const IS_NOT_NULL:String = "IS_NOT_NULL";
+    
     public static const LESS_THAN:String = "LESS_THAN";
     public static const LESS_THAN_OR_EQUAL:String = "LESS_THAN_OR_EQUAL";
     public static const GREATER_THAN:String = "GREATER_THAN";
