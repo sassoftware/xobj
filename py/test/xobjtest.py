@@ -966,6 +966,29 @@ class XobjTest(TestCase):
         doc.foo._xobj.tag = None
         self.failUnlessRaises(TypeError, xobj.toxml, doc.foo)
 
+    def testTextElementWithAttribute(self):
+        class Foo(object):
+            _xobj = xobj.XObjMetadata(tag="foo", attributes=["href"])
+            href = str
+        class Foos(object):
+            foo = [ Foo, ]
+        class Doc(xobj.Document):
+            foos = Foos
+
+        xml = """\
+<?xml version='1.0' encoding='UTF-8'?>
+<foos>
+  <foo href="http://example.com/api/1">value1</foo>
+  <foo href="http://example.com/api/2">value2</foo>
+</foos>
+"""
+        doc = xobj.parse(xml, documentClass=Doc)
+        self.failUnlessEqual(doc.foos._xobj.tag, 'foos')
+        self.failUnlessEqual([ x.href for x in doc.foos.foo ],
+            [ "http://example.com/api/1", "http://example.com/api/2" ])
+        self.failUnlessEqual([ x._xobj.text for x in doc.foos.foo ],
+            [ "value1", "value2" ])
+        self.failUnlessEqual(doc.toxml(), xml)
 
 if __name__ == "__main__":
     testsuite.main()
