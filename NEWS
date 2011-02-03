@@ -1,5 +1,7 @@
 Changes in @NEW@:
   * Added handling for default values. (PFM-705)
+  * Correctly save text for nodes that have attributes and no child elements.
+    (RBL-8293)
 
 Changes in 1.0:
   * Initial public release.
