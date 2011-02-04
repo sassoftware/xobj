@@ -24,6 +24,8 @@ public interface IXObjCollection extends IXObjReference, ICollectionView
     function removeItemIfPresent(object:Object):Boolean;
     
     function isElementMember(propname:String):Boolean;
+    function elementTagForMember(member:*):String;
+
 }
 
 }

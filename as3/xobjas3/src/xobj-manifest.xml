@@ -27,6 +27,7 @@
     <component id="XObjQName" class="com.rpath.xobj.XObjQName"/>
     <component id="XObjString" class="com.rpath.xobj.XObjString"/>
     <component id="XObjTypeInfo" class="com.rpath.xobj.XObjTypeInfo"/>
+    <component id="XObjTypeMap" class="com.rpath.xobj.XObjTypeMap"/>
     <component id="XObjUtils" class="com.rpath.xobj.XObjUtils"/>
     <component id="XObjVersion" class="com.rpath.xobj.XObjVersion"/>
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>

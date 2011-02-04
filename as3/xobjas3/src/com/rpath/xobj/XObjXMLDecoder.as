@@ -55,6 +55,7 @@ import flash.xml.XMLNodeType;
 import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
+import mx.collections.IList;
 
 /**
  * The TypedXMLDecoder class deserializes XML into a graph of ActionScript objects
@@ -326,7 +327,8 @@ public class XObjXMLDecoder
         else
         {
             // do we have this already 
-            result = objectFactory.getObjectForId(resultID);
+            if (resultID)
+                result = objectFactory.getObjectForId(resultID);
         }
         
         // now look up type info if available
@@ -399,6 +401,16 @@ public class XObjXMLDecoder
             catch (e:ReferenceError)
             {
             }
+        }
+        
+        // FLUSH the array/collection to ensure uniqueness of results
+        if (isArray)
+        {
+            (result as Array).splice(0);
+        }
+        else if (isCollection)
+        {
+            (result as IList).removeAll();
         }
         
         // Now start looking at the child XML nodes
@@ -509,6 +521,9 @@ public class XObjXMLDecoder
                     // assume we need a new part instance
                     partObj = null;
                     
+                    // now, do we already know this object?
+                    partObj = objectFactory.getObjectForId(partID);
+                    
                     // Get part type information
                     
                     // look up characteristics of the result.propertyName type
@@ -557,26 +572,36 @@ public class XObjXMLDecoder
                             // an ID conflict
                             if (partID)
                             {
-                                var existingByID:* = objectFactory.getObjectForId(partID)
+                                var existingByID:* = objectFactory.getObjectForId(partID);
                                 if (!existingByID)
                                 {
                                     partObj = existing;
                                     if (partObj.hasOwnProperty("id"))
+                                    {
                                         partObj.id = partID;
+                                        // register it!
+                                        objectFactory.trackObjectById(partObj, partID);
+                                    }
                                 }
                                 else if (existing === existingByID)
                                 {
                                     partObj = existing;
                                 }
-                                else
+                                else if (existing != existingByID)
                                 {
-                                    // ID conflict. Use fresh object!
-                                    partObj = null;
+                                    // ID conflict. Use OLD object!
+                                    partObj = existingByID;
                                 }
                             }
                             else // node has no ID, so use whatever we get
                             {
                                 partObj = existing;
+                                if (partObj.hasOwnProperty("id"))
+                                {
+                                    partID = partObj.id;
+                                    // register it!
+                                    objectFactory.trackObjectById(partObj, partID);
+                                }
                             }
                         }
                         else
@@ -946,7 +971,7 @@ public class XObjXMLDecoder
             {
                 /*if (!seenBefore)
                 {
-                (existing as Array).splice(0, (existing as Array).length);
+                (existing as Array).splice(0);
                 }*/
                 XObjUtils.addItemIfAbsent(existing, value);
             }
@@ -987,7 +1012,7 @@ public class XObjXMLDecoder
                 }
                 else
                 {
-                    // tkeep whatever is there now, but promote
+                    // keep whatever is there now, but promote
                     if (makeCollection)
                     {
                         existing = objectFactory.newCollectionFrom([existing]);
@@ -1040,7 +1065,7 @@ public class XObjXMLDecoder
         {
             /*if (!seenBefore)
             {
-            (result as Array).splice(0, (result as Array).length);
+            (result as Array).splice(0);
             }*/
             XObjUtils.addItemIfAbsent(result, value);
         }
