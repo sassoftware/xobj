@@ -41,7 +41,10 @@ public class XObjDefaultFactory implements IXObjFactory
     
     public function getObjectForId(id:String):Object
     {
-        return idMap[id];
+        if (id)
+            return idMap[id];
+        else
+            return null;
     }
     
     public function trackObjectById(item:Object, id:String):void

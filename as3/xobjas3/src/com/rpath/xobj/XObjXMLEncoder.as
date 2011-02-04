@@ -35,6 +35,7 @@ import flash.xml.*;
 
 import mx.collections.ArrayCollection;
 import mx.utils.*;
+import mx.collections.ICollectionView;
 
 
 /**
@@ -241,7 +242,7 @@ public class XObjXMLEncoder
     
     public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true):XMLNode
     {
-        var qname:XObjQName = new XObjQName();;
+        var qname:XObjQName = new XObjQName();
         
         if (q is XObjQName)
             qname = q;
@@ -299,11 +300,11 @@ public class XObjXMLEncoder
         }
         else if (recurse)
         {
-            // TODO: answer the question as to WHY we do not encode refs recursively
-            // No longer clear on this use case
-            if (obj is IXObjReference)
+            if (obj is IXObjReference && obj["id"] != null)
             {
-                // don't recurse refs
+                // don't recurse refs that have IDs since this means they are
+                // *by reference* uses relationships, not strict containment
+                // relationships.
                 return internal_encodeValue(obj, qname, parentNode, false);
             }
             else
@@ -406,6 +407,25 @@ public class XObjXMLEncoder
                 
                 var propQName:XObjQName = new XObjQName("", fieldName);
                 encodeValue(obj[fieldName], propQName, myElement, recurse);
+            }
+        }
+        else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION)
+        {
+            // link us into the heirarchy so that namespaces
+            // will be resolved up the chain correctly
+            parentNode.appendChild(myElement);
+            setAttributes(myElement, obj);
+            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+            
+            // encode array elements
+            for (var j:int=0; j < obj.length; j++)
+            {
+                var localName:String = "item";  //assume item unless told otherwise
+                var member:* = obj[j];
+                // look up the right qname to use
+                localName = (obj as IXObjCollection).elementTagForMember(member);
+                qname = new XObjQName("", localName);
+                encodeValue(member, qname, myElement);
             }
         }
         else if (typeType == XObjXMLEncoder.ARRAY_TYPE)
@@ -680,9 +700,13 @@ public class XObjXMLEncoder
             return XObjXMLEncoder.XML_TYPE;
         else if (obj is Date)
             return XObjXMLEncoder.DATE_TYPE;
+        else if (obj is IXObjCollection)
+            return XObjXMLEncoder.IXOBJ_COLLECTION;
         else if (obj is Array)
             return XObjXMLEncoder.ARRAY_TYPE;
         else if (obj is ArrayCollection)
+            return XObjXMLEncoder.ARRAY_TYPE;
+        else if (obj is ICollectionView)
             return XObjXMLEncoder.ARRAY_TYPE;
         else if (obj is Function)
             return XObjXMLEncoder.FUNCTION_TYPE;
@@ -713,6 +737,7 @@ public class XObjXMLEncoder
     private static const ELEMENT_TYPE:uint  = 16;
     private static const BASE64_BINARY_TYPE:uint = 17;
     private static const HEX_BINARY_TYPE:uint = 18;
+    private static const IXOBJ_COLLECTION:uint = 19;
     
     
     private function tagForType(obj:*):String
