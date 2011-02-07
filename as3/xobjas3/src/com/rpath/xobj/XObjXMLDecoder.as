@@ -708,7 +708,20 @@ public class XObjXMLDecoder
                                 }
                                 else
                                 {
-                                    result[propertyName] = [result[propertyName]];
+                                    try
+                                    {
+                                        result[propertyName] = [result[propertyName]];
+                                    }
+                                    catch (e:TypeError)
+                                    {
+                                        if (e.errorID == 1034)
+                                        {// must be a non-array thingy. IGNORE
+                                            trace("Ignoring TypeError on promote to Array on" + propertyName);
+                                        }
+                                        else
+                                            throw e;
+                                        
+                                    }
                                 }
                             }
                             partObj = null; // we need a fresh object next element
