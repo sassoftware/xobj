@@ -39,13 +39,21 @@ class UnmatchedIdRef(Exception):
 class XType(object):
 
     def _isComplex(self):
+        attributes = self._getAttributes()
         for key, val in self.pythonType.__dict__.iteritems():
-            if (type(val) != types.FunctionType and 
-                 type(val) != types.MethodType and key[0] != '_'
-                 and key != 'text'):
+            if (not isinstance(val, (types.FunctionType, types.MethodType))
+                  and not key.startswith('_')
+                  and key != 'text'
+                  and key not in attributes):
                 return True
 
         return False
+
+    def _getAttributes(self):
+        xobjMetadata = getattr(self.pythonType, '_xobj', None)
+        if xobjMetadata is None:
+            return {}
+        return xobjMetadata.attributes
 
     def __init__(self, pythonType, forceList = False):
         self.pythonType = pythonType
@@ -470,7 +478,21 @@ class Document(object):
                     text = None
 
                 if text:
-                    xobj = thisXType.pythonType(text)
+                    # If we got here, it's either a simple type, or we have
+                    # attributes and text.
+                    if thisXType._getAttributes():
+                        xobj = thisXType.pythonType()
+                        # We need to create a dedicated metadata object. It
+                        # really is unfortunate that we can't share the
+                        # attributes and elements lists among all objects of
+                        # the same class.
+                        xobj._xobj = XObjMetadata(
+                            tag=xobj._xobj.tag,
+                            attributes=xobj._xobj.attributes,
+                            elements=xobj._xobj.elements,
+                            text=text)
+                    else:
+                        xobj = thisXType.pythonType(text)
                 else:
                     xobj = thisXType.pythonType()
 
