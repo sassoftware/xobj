@@ -409,7 +409,8 @@ public class XObjXMLEncoder
                 encodeValue(obj[fieldName], propQName, myElement, recurse);
             }
         }
-        else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION)
+        else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION
+            || typeType == XObjXMLEncoder.ARRAY_TYPE)
         {
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
@@ -423,34 +424,41 @@ public class XObjXMLEncoder
                 var localName:String = "item";  //assume item unless told otherwise
                 var member:* = obj[j];
                 // look up the right qname to use
-                localName = (obj as IXObjCollection).elementTagForMember(member);
+                if (obj is IXObjCollection)
+                {
+                    localName = (obj as IXObjCollection).elementTagForMember(member);
+                }
+                else
+                {
+                    localName = tagForType(member);
+                }
                 qname = new XObjQName("", localName);
                 encodeValue(member, qname, myElement);
             }
         }
-        else if (typeType == XObjXMLEncoder.ARRAY_TYPE)
-        {
+            /*else if (typeType == XObjXMLEncoder.ARRAY_TYPE)
+            {
             if (simpleEncoderCompatible)
             {
-                // link us into the heirarchy so that namespaces
-                // will be resolved up the chain correctly
-                parentNode.appendChild(myElement);
-                setAttributes(myElement, obj);
-                myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
-                qname = new XObjQName("", "item");
+            // link us into the heirarchy so that namespaces
+            // will be resolved up the chain correctly
+            parentNode.appendChild(myElement);
+            setAttributes(myElement, obj);
+            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+            qname = new XObjQName("", "item");
             }
             else
             {
-                // write array elements directly to the parent (no wrapping element required)
-                myElement = parentNode;
+            // write array elements directly to the parent (no wrapping element required)
+            myElement = parentNode;
             }
             
             // encode array elements as repeated instances of this elem qname
             for (var i:int=0; i < obj.length; i++)
             {
-                encodeValue(obj[i], qname, myElement);
+            encodeValue(obj[i], qname, myElement);
             }
-        }
+            }*/
         else // must be simple type
         {
             parentNode.appendChild(myElement);
