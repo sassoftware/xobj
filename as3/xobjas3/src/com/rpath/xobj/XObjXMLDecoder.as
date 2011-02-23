@@ -329,6 +329,8 @@ public class XObjXMLDecoder
             // do we have this already 
             if (resultID)
                 result = objectFactory.getObjectForId(resultID);
+            if (result)
+                trace("found existing ID "+resultID);
         }
         
         // now look up type info if available
@@ -1002,10 +1004,19 @@ public class XObjXMLDecoder
                 }
                 else
                 {
-                    value = toCollection(value);
-                    for each (var v1:* in value)
+                    // are they type equivalent?
+                    if (value is XObjUtils.classOf(existing))
                     {
-                        XObjUtils.addItemIfAbsent(existing, v1);
+                        // use the new collection, repalcing the old
+                        existing = value;
+                    }
+                    else
+                    {
+                        value = toCollection(value);
+                        for each (var v1:* in value)
+                        {
+                            XObjUtils.addItemIfAbsent(existing, v1);
+                        }
                     }
                 }
             }
