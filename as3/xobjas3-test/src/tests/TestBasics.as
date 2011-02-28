@@ -45,21 +45,21 @@ public class TestBasics extends TestBase
     */
     public function testComplex():void
     {
-        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder();
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({prop: Array});
         var xmlInput:XMLDocument = new XMLDocument(testData.complex);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue(o.top is Object);
-        assertTrue(o.top.prop.subprop is Array);
+        assertTrue(o.top.prop is Array);
         
         // check array content
-        for (var i:int=0; i<o.top.prop.subprop.length; i++)
+        for (var i:int=0; i<o.top.prop.length; i++)
         {
-            assertTrue(o.top.prop.subprop[i] is XObjString);
-            assertTrue(o.top.prop.subprop[i].toString() == ['asdf', 'fdsa', 'zxcv '][i]);
+            assertTrue(o.top.prop[i] is XObjString);
+            assertTrue(o.top.prop[i].toString() == ['asdf', 'fdsa', 'zxcv '][i]);
         }
         
-        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({subprop: XObjString});
         var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
