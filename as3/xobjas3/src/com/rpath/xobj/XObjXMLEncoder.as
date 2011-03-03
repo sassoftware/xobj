@@ -520,12 +520,19 @@ public class XObjXMLEncoder
         
         // get them from the __attributes structure
         if (XObjMetadata.METADATA_PROPERTY in obj)
+        {
             attrList = obj[XObjMetadata.METADATA_PROPERTY]["attributes"];
+        }
         else if (useMeta) // this is for the create case (no __ info available)
         {
             //TODO: synthesize the attrList structure
             
         }
+        else if ("id" in obj) // special case id property in non __attributes case
+        {
+            attrList.push({propname:"id"});
+        }
+        
         
         if (attrList.length > 0)
         {
