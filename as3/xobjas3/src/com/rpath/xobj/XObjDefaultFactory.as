@@ -31,7 +31,7 @@ public class XObjDefaultFactory implements IXObjFactory
         var result:Object;
         
         result = new type();
-        if (id && result.hasOwnProperty("id"))
+        if (id && ("id" in result))
         {
             result.id = id;
             idMap[id] = result;
@@ -51,7 +51,8 @@ public class XObjDefaultFactory implements IXObjFactory
     {
         if (item)
         {
-            item.id = id;
+            if ("id" in item)
+                item.id = id;
             idMap[id] = item;
         }
     }
