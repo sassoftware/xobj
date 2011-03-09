@@ -1232,6 +1232,9 @@ public class XObjXMLDecoder
     
     private function getIDAttr(part:XMLNode):String
     {
+        if (!part)
+            return null;
+        
         if ("id" in part.attributes)
             return part.attributes["id"];
         else if ("href" in part.attributes)
@@ -1242,6 +1245,9 @@ public class XObjXMLDecoder
     
     private function getIDProperty(part:Object):String
     {
+        if (!part)
+            return null;
+        
         if ("id" in part)
             return part["id"];
         else if ("href" in part)
