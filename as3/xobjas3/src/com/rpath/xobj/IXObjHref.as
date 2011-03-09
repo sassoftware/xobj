@@ -16,5 +16,8 @@ package com.rpath.xobj
 public interface IXObjHref
 {
     // marker interface
+    function get href():String;
+    function set href(s:String):void;
+
 }
 }

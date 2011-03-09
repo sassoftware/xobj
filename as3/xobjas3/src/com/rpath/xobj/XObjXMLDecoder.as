@@ -307,7 +307,14 @@ public class XObjXMLDecoder
         
         // does the node have an id? If so, we may already know this object
         // for example, doing a GET into a previously fetched instance
-        var resultID:String = dataNode.attributes["id"];
+        var resultID:String = getIDAttr(dataNode);
+        
+        // see whether we alreadyhave an object with this IDif (resultID)
+        var existingObj:Object;
+        if (resultID)
+        {
+            existingObj = objectFactory.getObjectForId(resultID);
+        }
         
         /* figure out what type the result object should be.
         
@@ -323,14 +330,24 @@ public class XObjXMLDecoder
         if (rootObject && !nextNodeIsRoot)
         {
             result = rootObject;
+            // also track the ID we got, if any, since this may have been a POST
+            if (existingObj)
+            {
+                if (existingObj != result)
+                {
+                    // hmmm. mismatched objects ???
+                    trace("mismatched objects for ID "+resultID);
+                }
+            }
+            else // no old obj
+            {
+                objectFactory.trackObjectById(result, resultID);
+            }
         }
         else
         {
-            // do we have this already 
-            if (resultID)
-                result = objectFactory.getObjectForId(resultID);
-            if (result)
-                trace("found existing ID "+resultID);
+            // use if if we have it
+            result = existingObj;
         }
         
         // now look up type info if available
@@ -489,7 +506,7 @@ public class XObjXMLDecoder
                     }
                     
                     isNullObject = false;
-                    partID = partNode.attributes["id"];
+                    partID = getIDAttr(partNode);
                     
                     // Step 1: 
                     // figure out the name of the element and thus, the propertyName
@@ -1074,7 +1091,11 @@ public class XObjXMLDecoder
             value = existing;
         }
         
-        result[propName] = value;
+        // are we just being asked to point at something?
+        if ((result[propName] is IXObjHref) && !(value is IXObjHref))
+            (result[propName] as IXObjHref).href = getIDProperty(value);
+        else
+            result[propName] = value;
         
         return result;
     }
@@ -1208,6 +1229,28 @@ public class XObjXMLDecoder
     
     private var makeObjectsBindable:Boolean;
     private var makeAttributesMeta:Boolean;
+    
+    private function getIDAttr(part:XMLNode):String
+    {
+        if ("id" in part.attributes)
+            return part.attributes["id"];
+        else if ("href" in part.attributes)
+            return part.attributes["href"];
+        
+        return null;
+    }
+    
+    private function getIDProperty(part:Object):String
+    {
+        if ("id" in part)
+            return part["id"];
+        else if ("href" in part)
+            return part["href"];
+        
+        return null;
+    }
+    
+    
 }
 
 }
