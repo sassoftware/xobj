@@ -595,9 +595,9 @@ public class XObjXMLDecoder
                                 if (!existingByID)
                                 {
                                     partObj = existing;
-                                    if (partObj.hasOwnProperty("id"))
+                                    partID = getIDProperty(partObj);
+                                    if (partID)
                                     {
-                                        partObj.id = partID;
                                         // register it!
                                         objectFactory.trackObjectById(partObj, partID);
                                     }
@@ -615,9 +615,9 @@ public class XObjXMLDecoder
                             else // node has no ID, so use whatever we get
                             {
                                 partObj = existing;
-                                if (partObj.hasOwnProperty("id"))
+                                partID = getIDProperty(partObj);
+                                if (partID)
                                 {
-                                    partID = partObj.id;
                                     // register it!
                                     objectFactory.trackObjectById(partObj, partID);
                                 }
