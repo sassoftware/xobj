@@ -240,7 +240,12 @@ public class XObjXMLEncoder
         return xmlDocument;
     }
     
-    public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true):XMLNode
+    public function encodeReference(obj:Object, q:*, parentNode:XMLNode):XMLNode
+    {
+        return encodeValue(obj, q, parentNode, false, true);
+    }
+    
+    public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false):XMLNode
     {
         var qname:XObjQName = new XObjQName();
         
@@ -298,9 +303,14 @@ public class XObjXMLEncoder
             newNode.nodeName = XObjUtils.encodeElementTag(qname, newNode);
             return newNode;
         }
+        else if (referenceOnly)
+        {
+            return internal_encodeValue(obj, qname, parentNode, false, true);
+        }
         else if (recurse)
         {
-            if (obj is IXObjReference && obj["id"] != null)
+            if (obj is IXObjReference && 
+                ((obj as IXObjReference).isByReference || obj["id"] != null))
             {
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment
@@ -317,7 +327,11 @@ public class XObjXMLEncoder
         }
     }
     
-    protected function internal_encodeValue(obj:Object, qname:XObjQName, parentNode:XMLNode, recurse:Boolean=true):XMLNode
+    protected function internal_encodeValue(obj:Object, 
+                                            qname:XObjQName, 
+                                            parentNode:XMLNode, 
+                                            recurse:Boolean=true, 
+                                            referenceOnly:Boolean=false):XMLNode
     {
         var myElement:XMLNode;
         
@@ -338,7 +352,15 @@ public class XObjXMLEncoder
         
         myElement = xmlDocument.createElement("foo");
         
-        if (typeType == XObjXMLEncoder.OBJECT_TYPE)
+        if (referenceOnly)
+        {
+            // link us into the heirarchy so that namespaces
+            // will be resolved up the chain correctly
+            parentNode.appendChild(myElement);
+            setAttributes(myElement, obj, true);
+            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+        }
+        else if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
@@ -382,7 +404,7 @@ public class XObjXMLEncoder
                                 // remove elements we've handled to speed up the next iteration
                                 // makes a HUGE difference on large collections of objects
                                 properties.splice(k,1);
-                                encodeValue(obj[propName], entry.qname, myElement);
+                                encodeValue(obj[propName], entry.qname, myElement, recurse);
                                 break;
                             }
                         }
@@ -433,7 +455,11 @@ public class XObjXMLEncoder
                     localName = tagForType(member);
                 }
                 qname = new XObjQName("", localName);
-                encodeValue(member, qname, myElement);
+                
+                if (XObjUtils.isByReference(obj))
+                    encodeReference(member, qname, myElement);
+                else
+                    encodeValue(member, qname, myElement, recurse);
             }
         }
             /*else if (typeType == XObjXMLEncoder.ARRAY_TYPE)
@@ -506,7 +532,7 @@ public class XObjXMLEncoder
     }
     
     // set the attributes, and return a list of all propNames consumed
-    private function setAttributes(node:XMLNode, obj:*):Object
+    private function setAttributes(node:XMLNode, obj:*, idOnly:Boolean=false):Object
     {
         var attrNames:Object = {};
         var attributes:Object = {};
@@ -597,6 +623,10 @@ public class XObjXMLEncoder
                     name = encodeAttrName(attr, node);
                     try
                     {
+                        // skip anything other than ID if requested
+                        if (idOnly && attr.propname != "id")
+                            continue;
+                        
                         attributes[name] = attrSource[attr.propname];
                         if (!useMeta)
                             attrNames[attr.propname] = true;

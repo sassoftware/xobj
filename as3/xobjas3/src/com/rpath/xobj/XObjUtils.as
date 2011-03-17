@@ -146,7 +146,7 @@ public class XObjUtils
         var newObj:Object = new clazz();
         return newObj;
     }
-
+    
     private static var typePropertyCache:Dictionary = new Dictionary(true);
     
     private static var arrayTypeCache:Dictionary = new Dictionary(true);
@@ -854,5 +854,11 @@ public class XObjUtils
         }
         
     }
+    
+    public static function isByReference(obj:Object):Boolean
+    {
+        return ((obj is IXObjReference) && (obj as IXObjReference).isByReference);
+    }
+    
 }
 }

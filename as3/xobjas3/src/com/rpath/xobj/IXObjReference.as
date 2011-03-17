@@ -18,5 +18,8 @@ package com.rpath.xobj
 public interface IXObjReference
 {
     function elementTypeForElementName(elementName:String):Class;
+    
+    function get isByReference():Boolean;
+    function set isByReference(b:Boolean):void;
 }
 }
