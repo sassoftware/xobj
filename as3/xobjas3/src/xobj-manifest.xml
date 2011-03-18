@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
- Copyright (c) 2009-2010 rPath, Inc.
+ Copyright (c) 2009-2011 rPath, Inc.
 
  This program is distributed under the terms of the MIT License as found 
  in a file called LICENSE. If it is not present, the license
@@ -13,12 +13,27 @@
 -->
 
 <componentPackage>
+    <component id="CollectionUtil" class="com.rpath.xobj.CollectionUtil"/>
+    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
+    <component id="InvalidationAware" class="com.rpath.xobj.InvalidationAware"/>
+    <component id="IXObjCollection" class="com.rpath.xobj.IXObjCollection"/>
+    <component id="IXObjFactory" class="com.rpath.xobj.IXObjFactory"/>
+    <component id="IXObjReference" class="com.rpath.xobj.IXObjReference"/>
+    <component id="IXObjHref" class="com.rpath.xobj.IXObjHref"/>
+    <component id="URL" class="com.rpath.xobj.URL"/>
+    <component id="XObjDefaultFactory" class="com.rpath.xobj.XObjDefaultFactory"/>
+    <component id="XObjDeferredDecode" class="com.rpath.xobj.XObjDeferredDecode"/>
     <component id="XObjMetadata" class="com.rpath.xobj.XObjMetadata"/>
     <component id="XObjQName" class="com.rpath.xobj.XObjQName"/>
     <component id="XObjString" class="com.rpath.xobj.XObjString"/>
+    <component id="XObjTypeInfo" class="com.rpath.xobj.XObjTypeInfo"/>
+    <component id="XObjTypeMap" class="com.rpath.xobj.XObjTypeMap"/>
     <component id="XObjUtils" class="com.rpath.xobj.XObjUtils"/>
     <component id="XObjVersion" class="com.rpath.xobj.XObjVersion"/>
     <component id="XObjXMLDecoder" class="com.rpath.xobj.XObjXMLDecoder"/>
     <component id="XObjXMLEncoder" class="com.rpath.xobj.XObjXMLEncoder"/>
-    <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
+    <component id="XSmartURL" class="com.rpath.xobj.XSmartURL"/>
+    <component id="XSmartURLDescriptor" class="com.rpath.xobj.XSmartURLDescriptor"/>
+    <component id="FilterTerm" class="com.rpath.xobj.FilterTerm"/>
+
 </componentPackage>

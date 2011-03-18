@@ -23,6 +23,6 @@ package tests.models
         public var bottom:Middle;
         
         [ArrayElementType("tests.models.TestableObject")]
-        public var testableObject:Array;
+        public var testableObjects:Array;
     }
 }

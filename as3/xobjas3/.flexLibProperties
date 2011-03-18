@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" version="1">
   <includeClasses>
-    <classEntry path="com.rpath.xobj.XObjUtils"/>
-    <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
-    <classEntry path="com.rpath.xobj.XObjDeferredDecode"/>
-    <classEntry path="com.rpath.xobj.XObjTypeInfo"/>
-    <classEntry path="com.rpath.xobj.XObjString"/>
-    <classEntry path="com.rpath.xobj.XObjVersion"/>
-    <classEntry path="com.rpath.xobj.XObjQName"/>
-    <classEntry path="com.rpath.xobj.XObjMetadata"/>
-    <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
+    <classEntry path="com.rpath.xobj.FilterTerm"/>
     <classEntry path="com.rpath.xobj.IInvalidationAware"/>
+    <classEntry path="com.rpath.xobj.IXObjCollection"/>
+    <classEntry path="com.rpath.xobj.IXObjFactory"/>
+    <classEntry path="com.rpath.xobj.IXObjHref"/>
+    <classEntry path="com.rpath.xobj.IXObjReference"/>
+    <classEntry path="com.rpath.xobj.InvalidationAware"/>
+    <classEntry path="com.rpath.xobj.URL"/>
+    <classEntry path="com.rpath.xobj.XObjDefaultFactory"/>
+    <classEntry path="com.rpath.xobj.XObjDeferredDecode"/>
+    <classEntry path="com.rpath.xobj.XObjMetadata"/>
+    <classEntry path="com.rpath.xobj.XObjQName"/>
+    <classEntry path="com.rpath.xobj.XObjString"/>
+    <classEntry path="com.rpath.xobj.XObjTypeInfo"/>
+    <classEntry path="com.rpath.xobj.XObjUtils"/>
+    <classEntry path="com.rpath.xobj.XObjVersion"/>
+    <classEntry path="com.rpath.xobj.XObjXMLDecoder"/>
+    <classEntry path="com.rpath.xobj.XObjXMLEncoder"/>
+    <classEntry path="com.rpath.xobj.XSmartURL"/>
+    <classEntry path="com.rpath.xobj.XSmartURLDescriptor"/>
+    <classEntry path="com.rpath.xobj.CollectionUtil"/>
+    <classEntry path="com.rpath.xobj.XObjTypeMap"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="xobj-manifest.xml" namespace="http://www.rpath.com/2009/xobj.mxml"/>
+  </namespaceManifests>
 </flexLibProperties>
