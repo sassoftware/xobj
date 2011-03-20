@@ -258,7 +258,7 @@ public class XObjXMLEncoder
         }
         else if (q is String)
         {
-            qname.localName == q;
+            qname.localName = q;
             qname.uri="";
         }
         
