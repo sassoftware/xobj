@@ -235,17 +235,17 @@ public class XObjXMLEncoder
             parentNode.parentNode = xmlDocument;
         }
         
-        encodeValue(obj, qname, parentNode);
+        encodeValue(obj, qname, parentNode, true, false, true);
         
         return xmlDocument;
     }
     
-    public function encodeReference(obj:Object, q:*, parentNode:XMLNode):XMLNode
+    internal function encodeReference(obj:Object, q:*, parentNode:XMLNode):XMLNode
     {
         return encodeValue(obj, q, parentNode, false, true);
     }
     
-    public function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false):XMLNode
+    internal function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XMLNode
     {
         var qname:XObjQName = new XObjQName();
         
@@ -303,6 +303,10 @@ public class XObjXMLEncoder
             newNode.nodeName = XObjUtils.encodeElementTag(qname, newNode);
             return newNode;
         }
+        else if (isRoot)
+        {
+            return internal_encodeValue(obj, qname, parentNode);
+        }
         else if (referenceOnly)
         {
             return internal_encodeValue(obj, qname, parentNode, false, true);
@@ -310,7 +314,7 @@ public class XObjXMLEncoder
         else if (recurse)
         {
             if (obj is IXObjReference && 
-                ((obj as IXObjReference).isByReference || obj["id"] != null))
+                    ((obj as IXObjReference).isByReference || obj["id"] != null))
             {
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment
@@ -327,7 +331,7 @@ public class XObjXMLEncoder
         }
     }
     
-    protected function internal_encodeValue(obj:Object, 
+    internal function internal_encodeValue(obj:Object, 
                                             qname:XObjQName, 
                                             parentNode:XMLNode, 
                                             recurse:Boolean=true, 
