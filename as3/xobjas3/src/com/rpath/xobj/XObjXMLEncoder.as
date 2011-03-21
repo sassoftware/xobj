@@ -192,9 +192,13 @@ public class XObjXMLEncoder
      * value.
      */
     
-    public function encodeObject(obj:Object, parentNode:XMLNode=null, rootTag:String=null, rootQName:XObjQName=null):XMLDocument
+    private var recursionMap:Dictionary;
+    
+    public function encodeObject(obj:Object, parentNode:XMLNode=null, rootTag:String=null, rootQName:XObjQName=null, referenceOnly:Boolean=false):XMLDocument
     {
         var qname:XObjQName = rootQName;
+        
+        recursionMap = new Dictionary(true);
         
         // is obj a root holder?
         /*if (XObjMetadata.METADATA_PROPERTY in obj)
@@ -235,7 +239,10 @@ public class XObjXMLEncoder
             parentNode.parentNode = xmlDocument;
         }
         
-        encodeValue(obj, qname, parentNode, true, false, true);
+        encodeValue(obj, qname, parentNode, true, referenceOnly, true);
+        
+        // dump the recursionMap at the end
+        recursionMap = null;
         
         return xmlDocument;
     }
@@ -248,7 +255,7 @@ public class XObjXMLEncoder
     internal function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XMLNode
     {
         var qname:XObjQName = new XObjQName();
-        
+
         if (q is XObjQName)
             qname = q;
         else if (q is QName)
@@ -305,7 +312,7 @@ public class XObjXMLEncoder
         }
         else if (isRoot)
         {
-            return internal_encodeValue(obj, qname, parentNode);
+            return internal_encodeValue(obj, qname, parentNode, true, referenceOnly);
         }
         else if (referenceOnly)
         {
@@ -322,7 +329,9 @@ public class XObjXMLEncoder
                 return internal_encodeValue(obj, qname, parentNode, false);
             }
             else
+            {
                 return internal_encodeValue(obj, qname, parentNode);
+            }
         }
         else
         {
@@ -356,8 +365,11 @@ public class XObjXMLEncoder
         
         myElement = xmlDocument.createElement("foo");
         
-        if (referenceOnly)
+        if (referenceOnly || recursionMap[obj])
         {
+            if (recursionMap[obj])
+                trace("recursive encode");
+            
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
@@ -366,6 +378,9 @@ public class XObjXMLEncoder
         }
         else if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
+            // track anything we're actually encoding
+            recursionMap[obj] = true;
+            
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
@@ -466,29 +481,6 @@ public class XObjXMLEncoder
                     encodeValue(member, qname, myElement, recurse);
             }
         }
-            /*else if (typeType == XObjXMLEncoder.ARRAY_TYPE)
-            {
-            if (simpleEncoderCompatible)
-            {
-            // link us into the heirarchy so that namespaces
-            // will be resolved up the chain correctly
-            parentNode.appendChild(myElement);
-            setAttributes(myElement, obj);
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
-            qname = new XObjQName("", "item");
-            }
-            else
-            {
-            // write array elements directly to the parent (no wrapping element required)
-            myElement = parentNode;
-            }
-            
-            // encode array elements as repeated instances of this elem qname
-            for (var i:int=0; i < obj.length; i++)
-            {
-            encodeValue(obj[i], qname, myElement);
-            }
-            }*/
         else // must be simple type
         {
             parentNode.appendChild(myElement);
@@ -558,7 +550,7 @@ public class XObjXMLEncoder
             //TODO: synthesize the attrList structure
             
         }
-        else if ("id" in obj) // special case id property in non __attributes case
+        else if (("id" in obj) && obj["id"]) // special case id property in non __attributes case
         {
             attrList.push({propname:"id"});
         }
