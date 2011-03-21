@@ -56,6 +56,8 @@ import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
 import mx.collections.IList;
+import com.adobe.utils.DateUtil;
+
 
 /**
  * The TypedXMLDecoder class deserializes XML into a graph of ActionScript objects
@@ -460,8 +462,15 @@ public class XObjXMLDecoder
                 {
                     if (result is Date)
                     {
-                        result = new Date();
-                        result.time = Date.parse(temp);
+                        try
+                        {
+                            result = DateUtil.parseW3CDTF(temp);
+                        }
+                        catch (e:Error)
+                        {
+                            result = new Date();
+                            result.time = Date.parse(temp);
+                        }
                     }
                     else
                         result.value = temp;
