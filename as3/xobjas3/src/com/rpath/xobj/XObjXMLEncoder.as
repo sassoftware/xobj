@@ -211,6 +211,12 @@ public class XObjXMLEncoder
         }
         }*/
         
+        // allow for a root object marked byReference only
+        if (!referenceOnly && ("isByReference" in obj))
+        {
+            referenceOnly = obj["isByReference"];
+        }
+        
         // we want to make sure the type we use for root node is type of object
         var tag:String = tagForType(obj);
         
