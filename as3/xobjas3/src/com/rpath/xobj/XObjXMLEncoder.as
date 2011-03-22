@@ -561,6 +561,11 @@ public class XObjXMLEncoder
             attrList.push({propname:"id"});
         }
         
+        // double up on HREF as well as ID as workaround for old servers
+        if (("href" in obj) && obj["href"] && ("isByReference" in obj) && obj["isByReference"]) 
+        {
+            attrList.push({propname:"href"});
+        }
         
         if (attrList.length > 0)
         {
@@ -626,7 +631,7 @@ public class XObjXMLEncoder
                     try
                     {
                         // skip anything other than ID if requested
-                        if (idOnly && attr.propname != "id")
+                        if (idOnly && attr.propname != "id" && attr.propname != "href")
                             continue;
                         
                         attributes[name] = attrSource[attr.propname];
