@@ -92,6 +92,18 @@ public class XObjMetadata
         elements.push(entry);
     }
     
+    public static function addAttrIfAbsent(attrList:Array, attr:String):Array
+    {
+        for each (var entry:Object in attrList)
+        {
+            if (entry.propname == attr)
+                return attrList;
+        }
+        
+        attrList.push({propname: attr});
+        return attrList;
+    }
+    
     
 }
 }
