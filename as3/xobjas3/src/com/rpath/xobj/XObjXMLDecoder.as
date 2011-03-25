@@ -426,13 +426,18 @@ public class XObjXMLDecoder
         }
         
         // FLUSH the array/collection to ensure uniqueness of results
-        if (isArray)
+        if (!XObjUtils.isByReference(result))
         {
-            (result as Array).splice(0);
-        }
-        else if (isCollection)
-        {
-            (result as IList).removeAll();
+            if (isArray)
+            {
+                trace("flushing array");
+                (result as Array).splice(0);
+            }
+            else if (isCollection)
+            {
+                trace("flushing collection");
+                (result as IList).removeAll();
+            }
         }
         
         // Now start looking at the child XML nodes
