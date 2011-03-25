@@ -57,6 +57,7 @@ import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
 import mx.collections.IList;
 import com.adobe.utils.DateUtil;
+import mx.collections.ICollectionView;
 
 
 /**
@@ -986,26 +987,42 @@ public class XObjXMLDecoder
             {
                 if (makeCollection)
                 {
-                    existing = objectFactory.newCollectionFrom([]);
-                    if (!(value is Array) && !(value is ListCollectionView))
+                    if (value is ICollectionView)
                     {
-                        (existing as ListCollectionView).addItem(value);
+                        // use the new one after all
+                        existing = value;
                     }
                     else
                     {
-                        value = toCollection(value);
-                        for each (var v:* in value)
+                        existing = objectFactory.newCollectionFrom([]);
+                        if (!(value is Array) && !(value is ListCollectionView))
                         {
-                            (existing as ListCollectionView).addItem(v);
+                            (existing as ListCollectionView).addItem(value);
+                        }
+                        else
+                        {
+                            value = toCollection(value);
+                            for each (var v:* in value)
+                            {
+                                (existing as ListCollectionView).addItem(v);
+                            }
                         }
                     }
                 }
-                else
+                else if (makeArray)
                 {
                     if (value is Array)
+                    {
+                        // use the new one after all
                         existing = value;
+                    }
                     else
-                        existing = [value];
+                    {
+                        if (value is Array)
+                            existing = value;
+                        else
+                            existing = [value];
+                    }
                 }
             }
             else if (existing is Array)
