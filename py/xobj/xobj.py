@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2008-2009 rPath, Inc.
+# Copyright (c) 2008-2011 rPath, Inc.
 #
 # This program is distributed under the terms of the MIT License as found 
 # in a file called LICENSE. If it is not present, the license
@@ -9,9 +9,11 @@
 # without any waranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the MIT License for full details.
 
-from lxml import etree
 import types
+import inspect
 from StringIO import StringIO
+
+from lxml import etree
 
 DocumentInvalid = etree.DocumentInvalid
 
@@ -150,9 +152,12 @@ class XIDREF(XObj):
 
     pass
 
+def isMethod(func):
+    return inspect.ismethod(func) or inspect.ismethoddescriptor(func)
+
 def findPythonType(xobj, key):
     pc = getattr(xobj.__class__, key, None)
-    if pc is not None:
+    if pc is not None and not isMethod(pc):
         return pc
 
     md = getattr(xobj.__class__, '_xobj', None)
