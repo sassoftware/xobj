@@ -425,8 +425,10 @@ public class XObjXMLDecoder
             }
         }
         
-        // FLUSH the array/collection to ensure uniqueness of results
-        if (!XObjUtils.isByReference(result))
+        // If we're the root object (and a collection)
+        // OR this collection is NOT byReference (i.e. it's embedded)
+        // then FLUSH the array/collection to ensure uniqueness of results
+        if (isRootNode || !XObjUtils.isByReference(result))
         {
             if (isArray)
             {
