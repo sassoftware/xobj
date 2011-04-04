@@ -442,6 +442,7 @@ class Document(object):
                 # It's a complex type, so the text is meaningless.
                 text = None
             else:
+                # import pdb; pdb.set_trace()
                 text = element.text
 
             tag = nsmap(element.tag)
@@ -472,10 +473,11 @@ class Document(object):
 
             unionTags = {}
             if thisXType:
-                if text is not None and thisXType._isComplex():
-                    # This type has child elements, so it's complex, so
-                    # the text is meaningless.
-                    text = None
+                # if text is not None and thisXType._isComplex():
+                #                     # This type has child elements, so it's complex, so
+                #                     # the text is meaningless.
+                #                     import pdb; pdb.set_trace()
+                #                     text = None
 
                 if text:
                     # If we got here, it's either a simple type, or we have
@@ -494,6 +496,7 @@ class Document(object):
                     else:
                         xobj = thisXType.pythonType(text)
                 else:
+                    # import pdb; pdb.set_trace()
                     xobj = thisXType.pythonType()
 
                 # look for unions
