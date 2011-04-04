@@ -857,7 +857,8 @@ public class XObjUtils
     
     public static function isByReference(obj:Object):Boolean
     {
-        return ((obj is IXObjReference) && (obj as IXObjReference).isByReference);
+        return ((obj is IXObjReference) && (obj as IXObjReference).isByReference)
+            || (("isByReference" in obj) && obj["isByReference"]);
     }
     
 }

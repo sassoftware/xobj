@@ -556,15 +556,19 @@ public class XObjXMLEncoder
             //TODO: synthesize the attrList structure
             
         }
-        else if (("id" in obj) && obj["id"]) // special case id property in non __attributes case
+        
+        // always encode ID and HREF as attributes if they are defined on the 
+        // object at all
+        
+        if ("id" in obj) // special case id property in non __attributes case
         {
-            attrList.push({propname:"id"});
+            XObjMetadata.addAttrIfAbsent(attrList, "id");
         }
         
         // double up on HREF as well as ID as workaround for old servers
-        if (("href" in obj) && obj["href"] && ("isByReference" in obj) && obj["isByReference"]) 
+        if ("href" in obj) 
         {
-            attrList.push({propname:"href"});
+            XObjMetadata.addAttrIfAbsent(attrList, "href");
         }
         
         if (attrList.length > 0)
@@ -630,13 +634,20 @@ public class XObjXMLEncoder
                     name = encodeAttrName(attr, node);
                     try
                     {
+                        // note that we're encoding this attr
+                        if (!useMeta)
+                            attrNames[attr.propname] = true;
+
                         // skip anything other than ID if requested
                         if (idOnly && attr.propname != "id" && attr.propname != "href")
                             continue;
                         
+                        // don't encode null id or href
+                        if ((attr.propname == "id" || attr.propname == "href")
+                            && !attrSource[attr.propname])
+                            continue;
+                        
                         attributes[name] = attrSource[attr.propname];
-                        if (!useMeta)
-                            attrNames[attr.propname] = true;
                     }
                     catch (e:ReferenceError)
                     {
