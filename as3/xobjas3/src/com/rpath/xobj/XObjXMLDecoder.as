@@ -430,12 +430,12 @@ public class XObjXMLDecoder
         // then FLUSH the array/collection to ensure uniqueness of results
         if (isRootNode || !XObjUtils.isByReference(result))
         {
-            if (isArray)
+            if (isArray && (result as Array).length > 0)
             {
                 trace("flushing array");
                 (result as Array).splice(0);
             }
-            else if (isCollection)
+            else if (isCollection && (result as IList).length > 0)
             {
                 trace("flushing collection");
                 (result as IList).removeAll();
