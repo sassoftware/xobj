@@ -58,9 +58,10 @@ public class FilterTerm
     public static const NOT_LIKE:String = "NOT_LIKE";
     public static const IN:String = "IN";
     public static const NOT_IN:String = "NOT_IN";
+/*  NOT YET IMPLEMENTED  
     public static const MATCHING:String = "MATCHING";
     public static const NOT_MATCHING:String = "NOT_MATCHING";
-    
+*/    
     public static const YES:String = "YES";
     public static const NO:String = "NO";
     
