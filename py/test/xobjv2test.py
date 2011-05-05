@@ -15,7 +15,6 @@ import types
 
 import testsuite
 testsuite.setup()
-from testrunner import testhelp
 from lxml import etree
 
 from xobj import xobj2
@@ -1213,7 +1212,6 @@ class XobjV2Test(TestCase):
         doc = xobj2.Document(root = Foos())
         doc.root.foo = [ f1, f2 ]
 
-        xmlDecl = "<?xml version='1.0' encoding='UTF-8'?>"
         xml = """
 <foos>
   <foo><a>a1</a><b>b1</b></foo>
