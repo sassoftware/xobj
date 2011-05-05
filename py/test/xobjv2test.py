@@ -11,7 +11,6 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-import os
 import types
 
 import testsuite
@@ -288,57 +287,6 @@ class XobjV2Test(TestCase):
 
         doc = xobj2.Document.fromxml(xml, rootNodes = [ BasicCollection ])
         self.failUnlessEqual(basic.foo, doc.root.data[0].foo)
-
-    def testComplexDictStrGen(self):
-        """
-        Test generating XML from dictionaries of strings.
-        """
-
-        raise testhelp.SkipTestException('dicts not currently supported')
-
-        class Collection(object):
-            data = {str: str}
-        class DocumentClass(xobj.Document):
-            collection = Collection
-
-        collection = Collection()
-        collection.data = {'a': 'A'}
-
-        xml = xobj.toxml(collection, 'collection')
-        doc = xobj.parse(xml, documentClass=DocumentClass)
-        self.failUnlessEqual(collection.data, doc.collection.data)
-
-    def testComplexDictObjGen(self):
-        """
-        Test generating XML from dictionaries of objects.
-        """
-
-        raise testhelp.SkipTestException('dicts not currently supported')
-
-        class Basic(object):
-            foo = str
-        class Collection(object):
-            data = {Basic: Basic}
-        class DocumentClass(xobj.Document):
-            collection = Collection
-
-        basicKey = Basic()
-        basicKey.foo = 'a'
-
-        basicVal = Basic()
-        basicVal.foo = 'A'
-
-        collection = Collection()
-        collection.data = {basicKey: basicVal}
-
-        xml = xobj.toxml(collection, 'collection')
-        doc = xobj.parse(xml, documentClass=DocumentClass)
-
-        key = doc.collection.data.keys()[0]
-        val = doc.colleciton.data[key]
-
-        self.failUnlessEqual(key.foo, basicKey.foo)
-        self.failUnlessEqual(val.foo, basicVal.foo)
 
     def testNamespaces(self):
         xmlString = _xml('namespaces-V2', """\
