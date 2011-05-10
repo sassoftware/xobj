@@ -10,7 +10,7 @@
  without any waranty; without even the implied warranty of merchantability
  or fitness for a particular purpose. See the MIT License for full details.
 -->
-<application xmlns="http://ns.adobe.com/air/application/1.5">
+<application xmlns="http://ns.adobe.com/air/application/2.6">
 
 <!-- Adobe AIR Application Descriptor File Template.
 

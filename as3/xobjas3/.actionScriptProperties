@@ -35,7 +35,6 @@
           </libraryPathEntry>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="3" linkType="2" path="/as3corelib/bin/as3corelib.swc" useDefaultLinkType="true"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
