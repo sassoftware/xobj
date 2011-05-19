@@ -19,7 +19,6 @@ class XObj(PackageRecipe):
         'procps:runtime', 'sun-jdk', 'ant:runtime', 'ant:java',
         'xorg-server:runtime', 'util-linux:runtime', 'lxml:python', 
         'xkeyboard-config', 'xkbcomp', 'xfs', 'group-xorg-fonts',
-        'nss:lib',
     ]
 
     Flags.test = True
