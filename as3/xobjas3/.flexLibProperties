@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses/>
-  <includeResources/>
+  <includeResources>
+    <resourceEntry destPath="metadata.xml" sourcePath="metadata.xml"/>
+  </includeResources>
   <namespaceManifests>
     <namespaceManifestEntry manifest="xobj-manifest.xml" namespace="http://www.rpath.com/2009/xobj"/>
   </namespaceManifests>
