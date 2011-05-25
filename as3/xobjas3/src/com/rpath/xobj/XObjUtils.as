@@ -168,15 +168,41 @@ public class XObjUtils
         result = arrayTypeCache[type];
         if (arrayTypeCache[type] == undefined)
         {
-            // TODO: better way to detect an arry subclass?
-            var foo:* = new type();
-            result = (foo is Array || foo is ArrayList || foo is Vector);
-            arrayTypeCache[type] = result;
+            var typeDesc:* = DescribeTypeCache.describeType(type);
+            var typeDescInfo:XML = typeDesc.typeDescription;
             
-            // do the array collection test while we're here, to save time
-            listCollectionTypeCache[type] = (foo is ICollectionView) || (foo is IXObjCollection);
+            try
+            {
+                // TODO: better way to detect an arry subclass?
+                var foo:* = new type();
+                result = isArray(foo);
+                // do the array collection test while we're here, to save time
+                listCollectionTypeCache[type] = isCollection(foo);
+            }
+            catch (e:VerifyError) // Means we're an non-constructable interface
+            {
+                var impl:XML;
+                var interfaceType:String;
+                
+                for each (impl in typeDescInfo..implementsInterface)
+                {
+                    interfaceType = impl.@type.toString().replace( /::/, "." );
+                    if (isTypeArray(interfaceType))
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            
+            arrayTypeCache[type] = result;
         }
         return result;
+    }
+    
+    public static function isArray(obj:Object):Boolean
+    {
+        return (obj is Array || obj is ArrayList || obj is Vector);
     }
     
     public static function isTypeCollection(type:*):Boolean
@@ -192,18 +218,48 @@ public class XObjUtils
         if (type is String)
             type = getClassByName(type);
         
+        if (type == IXObjCollection || type == ICollectionView)
+            return true;
+        
         result = listCollectionTypeCache[type];
         if (listCollectionTypeCache[type] == undefined)
         {
-            // TODO: better way to detect an arry subclass?
-            var foo:* = new type();
-            result = (foo is ICollectionView) || (foo is IXObjCollection);
+            var typeDesc:* = DescribeTypeCache.describeType(type);
+            var typeDescInfo:XML = typeDesc.typeDescription;
+
+            try
+            {
+                // TODO: better way to detect an arry subclass?
+                var foo:* = new type();
+                result = isCollection(foo);
+                
+                // do the array test while we're here, to save time
+                arrayTypeCache[type] = isArray(foo);
+            }
+            catch (e:VerifyError) // Means we're an non-constructable interface
+            {
+                var impl:XML;
+                var interfaceType:String;
+                
+                for each (impl in typeDescInfo..implementsInterface)
+                {
+                    interfaceType = impl.@type.toString().replace( /::/, "." );
+                    if (isTypeCollection(interfaceType))
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+
             listCollectionTypeCache[type] = result;
-            
-            // do the array test while we're here, to save time
-            arrayTypeCache[type] = (foo is Array || foo is ArrayList || foo is Vector);
         }
         return result;
+    }
+    
+    public static function isCollection(obj:Object):Boolean
+    {
+        return (obj is ICollectionView) || (obj is IXObjCollection);
     }
     
     public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
@@ -255,13 +311,17 @@ public class XObjUtils
                     arrayElementType = typeDescInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
                 }
             }
-            typeInfo.isArray = isTypeArray(typeInfo.typeName);
-            typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
-            
+
             if (arrayElementType)
             {
+                typeInfo.isCollection = true;
                 typeInfo.arrayElementTypeName = arrayElementType;
                 typeInfo.arrayElementClass = XObjUtils.getClassByName(typeInfo.arrayElementTypeName);
+            }
+            else // can't infer, so go ask directly
+            {
+                typeInfo.isArray = isTypeArray(typeInfo.typeName);
+                typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
             }
             
             if (typeInfo.typeName == "Object"

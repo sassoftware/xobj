@@ -409,11 +409,11 @@ public class XObjXMLDecoder
         var isCollection:Boolean = false;
         var isArray:Boolean = false;
         
-        if (XObjUtils.isTypeArray(resultClass))
+        if (XObjUtils.isArray(result))
         {
             isArray = true;
         }
-        else if (XObjUtils.isTypeCollection(resultClass))
+        else if (XObjUtils.isCollection(result))
         {
             isCollection = true;
             try
@@ -582,8 +582,6 @@ public class XObjXMLDecoder
                         partObj = rootObject;
                         partClass = XObjUtils.getClass(partObj);
                         partClassName = XObjUtils.getClassName(partObj);
-                        //propertyIsArray = XObjUtils.isTypeArray(partClass);
-                        //propertyIsCollection = XObjUtils.isTypeCollection(partClass);
                     }
                         // else should we reuse an existing property object?
                     else if (result.hasOwnProperty(propertyName))
