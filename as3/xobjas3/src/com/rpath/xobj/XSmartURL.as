@@ -15,6 +15,7 @@ package com.rpath.xobj
 {
 import flash.utils.Dictionary;
 
+import mx.collections.ISort;
 import mx.collections.Sort;
 import mx.collections.SortField;
 
@@ -126,16 +127,16 @@ public class XSmartURL extends URL
     
     /** sortTerms are an ordered set of (asc, desc) fields to order by
      */
-    private var _sortTerms:Sort;
+    private var _sortTerms:ISort;
     
     [xobjTransient]
-    public function get sortTerms():Sort
+    public function get sortTerms():ISort
     {
         return _sortTerms;
     }
     
     [xobjTransient]
-    public function set sortTerms(value:Sort):void
+    public function set sortTerms(value:ISort):void
     {
         _sortTerms = value;
         recomputeQualifiedURL();
