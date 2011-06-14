@@ -308,8 +308,18 @@ public class XObjXMLEncoder
         }
         else if (obj is XObjString)
         {
+            var newNode:XMLNode;
+            
             // unwrap XObjStrings to their naked value
-            var newNode:XMLNode = encodeValue(obj.value, qname, parentNode);
+            if (obj.value != null || encodeNullElements)
+            {
+                newNode = encodeValue(obj.value, qname, parentNode);
+            }
+            else
+            {
+                // special case this one to avoid parent getting attrs by mistake
+                newNode = xmlDocument.createElement("foo");
+            }
             // encoded as meta ?
             setAttributes(newNode, obj);
             // re-encode the nodename to pick up possible local namespace overrides
