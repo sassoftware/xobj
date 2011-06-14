@@ -22,11 +22,11 @@ import flash.xml.XMLNode;
 import mx.collections.ArrayList;
 import mx.collections.ICollectionView;
 import mx.collections.IList;
+import mx.utils.ArrayUtil;
 import mx.utils.DescribeTypeCache;
 import mx.utils.ObjectProxy;
-import mx.utils.object_proxy;
-import mx.utils.ArrayUtil;
 import mx.utils.ObjectUtil;
+import mx.utils.object_proxy;
 
 use namespace object_proxy;
 
@@ -226,7 +226,7 @@ public class XObjUtils
         {
             var typeDesc:* = DescribeTypeCache.describeType(type);
             var typeDescInfo:XML = typeDesc.typeDescription;
-
+            
             try
             {
                 // TODO: better way to detect an arry subclass?
@@ -251,7 +251,7 @@ public class XObjUtils
                     }
                 }
             }
-
+            
             listCollectionTypeCache[type] = result;
         }
         return result;
@@ -301,6 +301,11 @@ public class XObjUtils
             {    
                 typeInfo.typeName = typeDescInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
                 arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+                if (!arrayElementType)
+                {
+                    // maybe it's a specific desired type using xobj metadata marker
+                    arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
+                }
             }
             else
             {
@@ -311,7 +316,7 @@ public class XObjUtils
                     arrayElementType = typeDescInfo..accessor.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
                 }
             }
-
+            
             if (arrayElementType)
             {
                 typeInfo.isCollection = true;
@@ -918,8 +923,13 @@ public class XObjUtils
     public static function isByReference(obj:Object):Boolean
     {
         return ((obj is IXObjReference) && (obj as IXObjReference).isByReference)
-            || (("isByReference" in obj) && obj["isByReference"]);
+        || (("isByReference" in obj) && obj["isByReference"]);
     }
     
+    public static function isElementMember(obj:Object, propName:String):Boolean
+    {
+        var bMember:Boolean = !obj.hasOwnProperty(propName);
+        return bMember;
+    }
 }
 }

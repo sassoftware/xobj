@@ -81,9 +81,29 @@ public class XObjMetadata
         }
     }
     
+    public static function addAttribute(target:*, entry:*):void
+    {
+        var xobj:XObjMetadata = getMetadata(target);
+        if (xobj)
+        {
+            xobj.addAttribute(entry);
+        }
+    }
+
+    public static function addElement(target:*, entry:*):void
+    {
+        var xobj:XObjMetadata = getMetadata(target);
+        if (xobj)
+        {
+            xobj.addElement(entry);
+        }
+    }
     
     public function addAttribute(entry:*):void
     {
+        if (entry is String)
+            entry = {propname: entry};
+        
         attributes.push(entry);
     }
     

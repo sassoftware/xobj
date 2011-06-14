@@ -327,7 +327,7 @@ public class XObjXMLEncoder
         else if (recurse)
         {
             if (obj is IXObjReference && 
-                    ((obj as IXObjReference).isByReference || obj["id"] != null))
+                    ((obj as IXObjReference).isByReference || (obj.hasOwnProperty("id") && obj["id"] != null)))
             {
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment
