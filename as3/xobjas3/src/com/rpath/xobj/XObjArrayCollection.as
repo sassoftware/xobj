@@ -63,12 +63,17 @@ public class XObjArrayCollection extends ArrayCollection implements IXObjCollect
 
     public function addItemIfAbsent(value:Object):Boolean
     {
-        return XObjUtils.addItemIfAbsent(this, value);
+        if (getItemIndex(value) == -1)
+        {
+            addItem(value);
+            return true;
+        }
+        return false;
     }
     
     public function removeItemIfPresent(object:Object):Boolean
     {
-        return XObjUtils.removeItemIfPresent(this, public);
+        return XObjUtils.removeItemIfPresent(this, object);
     }
 
     public function isElementMember(propName:String):Boolean
