@@ -119,7 +119,8 @@ public class XObjUtils
     
     public static function getClassName(obj:*):String
     {
-        var className:String = getQualifiedClassName(obj);
+        var className:String = (obj == null) ? null : getQualifiedClassName(obj);
+        
         return className;
     }
     
