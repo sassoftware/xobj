@@ -12,6 +12,7 @@ import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 
+[Bindable]
 public class XObjArrayCollection extends ArrayCollection implements IXObjCollection
 {
     public function XObjArrayCollection(source:Array=null, typeMap:*=null)
