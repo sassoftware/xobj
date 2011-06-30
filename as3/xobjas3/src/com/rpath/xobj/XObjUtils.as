@@ -235,8 +235,6 @@ public class XObjUtils
         
         if (typeInfo == null)
         {
-            callCounter++;
-            trace("callCounter "+callCounter);
             typeInfo = new XObjTypeInfo();
             
             // go look it up (expensive)
