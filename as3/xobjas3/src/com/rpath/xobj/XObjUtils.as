@@ -207,6 +207,8 @@ public class XObjUtils
         return result;
     }
     
+    public static var callCounter:int;
+    
     public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
     {
         var isArray:Boolean = false;
@@ -223,13 +225,18 @@ public class XObjUtils
             return new XObjTypeInfo();
         }
         
+        if (!propName)
+            return new XObjTypeInfo();
+        
         var propertyCacheKey:String = className + "." + propName;
         var arrayElementType:String;
         
         typeInfo = typePropertyCache[propertyCacheKey];
         
-        if (typeInfo == null || (propName in object))
+        if (typeInfo == null)
         {
+            callCounter++;
+            trace("callCounter "+callCounter);
             typeInfo = new XObjTypeInfo();
             
             // go look it up (expensive)
@@ -242,7 +249,6 @@ public class XObjUtils
             if (typeDescInfo.@isDynamic == 'true')
             {
                 isDynamic = true;
-                shouldCache = false;
             }
             
             var accessorList:XMLList = typeDescInfo..accessor.(@name == propName);
@@ -266,12 +272,18 @@ public class XObjUtils
                         }
                         else
                         {
-                            // must be dynamic property
+                            // must be dynamic property or simply an error (no such property)
                             typeInfo.typeName = XObjUtils.getClassName(val);
+                            // don't cache if dynamic
+                            if (isDynamic)
+                                shouldCache = false;
                         }
                     }
+                    else
+                    {
+                        // bad request. no such property
+                    }
                 }
-                
                 else
                 {
                     arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
