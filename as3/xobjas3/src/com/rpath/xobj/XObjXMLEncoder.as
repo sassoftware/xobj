@@ -308,8 +308,18 @@ public class XObjXMLEncoder
         }
         else if (obj is XObjString)
         {
+            var newNode:XMLNode;
+            
             // unwrap XObjStrings to their naked value
-            var newNode:XMLNode = encodeValue(obj.value, qname, parentNode);
+            if (obj.value != null || encodeNullElements)
+            {
+                newNode = encodeValue(obj.value, qname, parentNode);
+            }
+            else
+            {
+                // special case this one to avoid parent getting attrs by mistake
+                newNode = xmlDocument.createElement("foo");
+            }
             // encoded as meta ?
             setAttributes(newNode, obj);
             // re-encode the nodename to pick up possible local namespace overrides
@@ -327,7 +337,7 @@ public class XObjXMLEncoder
         else if (recurse)
         {
             if (obj is IXObjReference && 
-                    ((obj as IXObjReference).isByReference || obj["id"] != null))
+                    ((obj as IXObjReference).isByReference || (obj.hasOwnProperty("id") && obj["id"] != null)))
             {
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment

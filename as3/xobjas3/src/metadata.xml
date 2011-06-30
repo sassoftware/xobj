@@ -7,5 +7,14 @@
         <context name="setter" />
 	</metadata>
 
+    <metadata name="ElementType" description="xobj marker">
+        <context name="variable" />
+        <context name="getter" />
+        <context name="setter" />
+
+        <attribute type="Class" required="true" hint="classes" />
+    </metadata>
+    
+    
 </annotations>
 
