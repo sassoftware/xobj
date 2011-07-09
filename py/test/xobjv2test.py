@@ -1258,5 +1258,26 @@ class XobjV2Test(TestCase):
         self.failUnlessEqual([ xobj2.XType.getText(x) for x in doc.root.item ],
             [ 'text1', 'text2'])
 
+    def testChecksum(self):
+        # Class only defines slot b
+        class Item(object):
+            _xobjMeta = xobj2.XObjMetadata(attributes=[ 'b', 'checksum', ],
+                checksumAttribute='checksum')
+            __slots__ = _xobjMeta.getSlots()
+        class Root(object):
+            _xobjMeta = xobj2.XObjMetadata(checksumAttribute='csum',
+                elements=xobj2.Field('item', [ Item ]))
+            __slots__ = _xobjMeta.getSlots()
+
+        xml = '<root><item a="a1" b="b1">text1</item><item a="a2" b="b2">text2</item></root>'
+
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root))
+        ret = doc.toxml()
+        self.assertXMLEquals(ret, """
+<root csum="0860ae70231fca9085e96645ae1f2921f08fc1d4">
+  <item b="b1" checksum="fc5c65f38b7be4f71419913b3e88b90df9edc073"/>
+  <item b="b2" checksum="9e51b4b21eb771c58636405a6c0e8ab61519d62b"/>
+</root>""")
+
 if __name__ == "__main__":
     testsuite.main()

@@ -139,6 +139,13 @@ from StringIO import StringIO
 from lxml import etree
 DocumentInvalid = etree.DocumentInvalid
 
+try:
+    import hashlib
+    SHA1 = hashlib.sha1
+except ImportError:
+    import sha
+    SHA1 = sha.new
+
 class UnmatchedIdRef(Exception):
     """
     Exception raised when idref's cannot be matched with an id during
@@ -319,14 +326,19 @@ class XObjLong(_Native):
 class XObjMetadata(object):
     """
     User-defined metadata at class creation time
+    If the optional checksumAttribute is specified, a sha1 hash for the node
+    will be computed over its XML represetation.
     """
-    __slots__ = [ 'elements', 'attributes', 'tag', '_elementsMap', ]
+    __slots__ = [ 'elements', 'attributes', 'tag', '_elementsMap',
+        'checksumAttribute', ]
 
-    def __init__(self, tag=None, elements=None, attributes=None):
+    def __init__(self, tag=None, elements=None, attributes=None,
+            checksumAttribute=None):
         self.elements = self._toFields(elements)
         self.attributes = self._toAttributes(attributes)
         self.tag = tag
         self._elementsMap = dict((x.name, x) for x in self.elements)
+        self.checksumAttribute = checksumAttribute
 
     def getElement(self, name):
         return self._elementsMap.get(name, None)
@@ -398,6 +410,13 @@ class XObjMetadata(object):
         if isinstance(attributes, (list, tuple)):
             return dict((x, unicode) for x in attributes)
         raise TypeError, "Invalid attribute specification: %s" % (attributes, )
+
+    def getSlots(self):
+        slots = set(self.attributes)
+        slots.update(x.name for x in self.elements)
+        if self.checksumAttribute:
+            slots.add(self.checksumAttribute)
+        return sorted(slots)
 
 class XID(XObj):
     pass
@@ -484,6 +503,11 @@ class ElementGenerator(object):
         for attrName, attrType in meta.attributes.items():
             # Mark this field as already processed
             allFieldNames.discard(attrName)
+            if attrName == meta.checksumAttribute:
+                # If the checksum attribute is part of the regular
+                # attributes, ignore it, we don't want to compute a sha1
+                # of something that will change.
+                continue
 
             val = getattr(xobj, attrName, None)
             if val is None:
@@ -544,6 +568,12 @@ class ElementGenerator(object):
                 continue
             self._getElementTreeForValue(val, fieldName, element, nsmap)
 
+        if meta.checksumAttribute:
+            # We need to checksum the XML node
+            csum = SHA1()
+            csum.update(etree.tostring(element, pretty_print = False,
+                xml_declaration = False, encoding = 'UTF-8'))
+            element.attrib[meta.checksumAttribute] = csum.hexdigest()
         return element
 
     def _getElementTreeForValue(self, value, tag, parentElement, nsmap):
@@ -565,6 +595,7 @@ class ElementGenerator(object):
 class Document(object):
     _UniversalSet = UniversalSet()
     ElementGenerator = ElementGenerator
+    Undefined = object()
     def __init__(self, rootNodes=None, schema=None, root=None, rootName=None):
         self._idsNeeded = []
         self._dynamicClassDict = {}
@@ -579,6 +610,12 @@ class Document(object):
 
     def parse(self, data, schemaf = None):
         return self.fromxml(data, schemaf=schemaf, document=self)
+
+    @classmethod
+    def serialize(cls, root, **kwargs):
+        doc = cls()
+        doc.root = root
+        return doc.toxml(**kwargs)
 
     def toxml(self, prettyPrint=True, xml_declaration=True, nsmap=None):
         if nsmap:
@@ -708,7 +745,8 @@ class Document(object):
             if xType.forceList:
                 # force the item to be a list, and use the type inside of
                 # this list as the type of elements of the list
-                if key not in xobj.__dict__:
+                v = cls._getPropValue(xobj, key)
+                if v is cls.Undefined:
                     current = []
                 setattr(xobj, key, current)
             # Avoid turning things into lists that are not defined as lists
@@ -893,6 +931,10 @@ class Document(object):
         if hasattr(obj, '__dict__'):
             return cls._UniversalSet
         return XType.getClassSlots(obj.__class__)
+
+    @classmethod
+    def _getPropValue(cls, obj, name):
+        return getattr(obj, name, cls.Undefined)
 
 class XObjParseException(Exception):
     pass
