@@ -46,18 +46,19 @@ TODO: add some kind of "Type mapping" memory to the _xobj structure.
 TODO: explore looking up XMLSchema types using simple parsing ?
 */
 
+import com.adobe.utils.DateUtil;
+
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
 import flash.xml.XMLDocument;
 import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
+import mx.collections.ICollectionView;
+import mx.collections.IList;
 import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
-import mx.collections.IList;
-import com.adobe.utils.DateUtil;
-import mx.collections.ICollectionView;
 
 
 /**
@@ -468,7 +469,11 @@ public class XObjXMLDecoder
             {
                 try
                 {
-                    if (result is Date)
+                    if (result is IXObjHref)
+                    {
+                        result.value = temp;
+                    }
+                    else if (result is Date)
                     {
                         try
                         {
@@ -627,6 +632,25 @@ public class XObjXMLDecoder
                                 {
                                     // ID conflict. Use OLD object!
                                     partObj = existingByID;
+                                    
+                                    // hack to support RESTHref pointing to real object
+                                    // related to RBL-8840 where we dropped version and stage
+                                    // since href points to already fetched actual object
+                                    // basically, <stage href="..">name</stage> is BAD form
+                                    // for partial object pointers (named pointers? ewww)
+                                    
+                                    if (existing is IXObjHref)
+                                    {
+                                        try
+                                        {
+                                            existing.value = existingByID.name;
+                                            //existing.referenced = existingByID;
+                                        }
+                                        catch (e:Error)
+                                        {
+                                            // can't pull that swizzle here
+                                        }
+                                    }
                                 }
                             }
                             else // node has no ID, so use whatever we get
