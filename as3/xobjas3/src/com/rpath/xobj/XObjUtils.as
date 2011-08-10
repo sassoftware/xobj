@@ -119,7 +119,8 @@ public class XObjUtils
     
     public static function getClassName(obj:*):String
     {
-        var className:String = getQualifiedClassName(obj);
+        var className:String = (obj == null) ? null : getQualifiedClassName(obj);
+        
         return className;
     }
     
@@ -206,10 +207,14 @@ public class XObjUtils
         return result;
     }
     
+    public static var callCounter:int;
+    
     public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
     {
         var isArray:Boolean = false;
         var typeInfo:XObjTypeInfo;
+        var shouldCache:Boolean = true;
+        var isDynamic:Boolean;
         
         if (className == "Object" || className == "mx.utils::ObjectProxy")
             return new XObjTypeInfo();
@@ -219,6 +224,9 @@ public class XObjUtils
             // Simple String doesn't have any properties
             return new XObjTypeInfo();
         }
+        
+        if (!propName)
+            return new XObjTypeInfo();
         
         var propertyCacheKey:String = className + "." + propName;
         var arrayElementType:String;
@@ -236,15 +244,53 @@ public class XObjUtils
             var typeDesc:* = DescribeTypeCache.describeType(object);
             var typeDescInfo:XML = typeDesc.typeDescription;
             
+            if (typeDescInfo.@isDynamic == 'true')
+            {
+                isDynamic = true;
+            }
+            
             var accessorList:XMLList = typeDescInfo..accessor.(@name == propName);
             
             if (accessorList.length() > 0)
                 typeInfo.typeName = accessorList[0].@type.toString().replace( /::/, "." );
             
-            if (typeInfo.typeName == null || typeInfo.typeName == "")
+            if (!typeInfo.typeName)
             {    
                 typeInfo.typeName = typeDescInfo..variable.(@name == propName).@type.toString().replace( /::/, "." );
-                arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+                
+                if (!typeInfo.typeName)
+                {
+                    // neither accessor nor variable. It's either a function or a dynamic property
+                    if (propName in object)
+                    {
+                        var val:* = object[propName];
+                        if (val is Function)
+                        {
+                            // can't handle these...
+                        }
+                        else
+                        {
+                            // must be dynamic property or simply an error (no such property)
+                            typeInfo.typeName = XObjUtils.getClassName(val);
+                            // don't cache if dynamic
+                            if (isDynamic)
+                                shouldCache = false;
+                        }
+                    }
+                    else
+                    {
+                        // bad request. no such property
+                    }
+                }
+                else
+                {
+                    arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ArrayElementType').arg.@value.toString().replace( /::/, "." );
+                    if (!arrayElementType)
+                    {
+                        // maybe it's a specific desired type using xobj metadata marker
+                        arrayElementType = typeDescInfo..variable.(@name == propName).metadata.(@name == 'ElementType').arg.@value.toString().replace( /::/, "." );
+                    }
+                }
             }
             else
             {
@@ -286,7 +332,8 @@ public class XObjUtils
             }
             
             // cache the result for next time
-            typePropertyCache[propertyCacheKey] = typeInfo;
+            if (shouldCache)
+                typePropertyCache[propertyCacheKey] = typeInfo;
         }
         
         
