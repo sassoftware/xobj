@@ -1,0 +1,8 @@
+
+<top attr1="anattr" attr2="another">
+    <!-- comment -->
+    <prop>something</prop>
+    <subelement subattr="2">
+        <subsub>1</subsub>
+    </subelement>
+</top>
