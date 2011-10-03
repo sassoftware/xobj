@@ -433,12 +433,12 @@ public class XObjXMLDecoder
         {
             if (isArray && (result as Array).length > 0)
             {
-                trace("flushing array");
+                //trace("flushing array");
                 (result as Array).splice(0);
             }
             else if (isCollection && (result as IList).length > 0)
             {
-                trace("flushing collection");
+                //trace("flushing collection");
                 (result as IList).removeAll();
             }
         }
@@ -776,7 +776,7 @@ public class XObjXMLDecoder
                                     {
                                         if (e.errorID == 1034)
                                         {// must be a non-array thingy. IGNORE
-                                            trace("Ignoring TypeError on promote to Array on" + propertyName);
+                                            //trace("Ignoring TypeError on promote to Array on" + propertyName);
                                         }
                                         else
                                             throw e;
