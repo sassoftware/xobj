@@ -11,6 +11,7 @@
 
 import types
 import inspect
+from decimal import Decimal
 from StringIO import StringIO
 
 from lxml import etree
@@ -78,6 +79,8 @@ def XTypeFromXObjectType(xObjectType):
     elif xObjectType == long:
         return XType(XObjLong)
     elif xObjectType == float:
+        return XType(XObjFloat)
+    elif xObjectType == Decimal:
         return XType(XObjFloat)
     elif type(xObjectType) == list:
         assert(len(xObjectType) == 1)
@@ -189,7 +192,7 @@ class ElementGenerator(object):
 
         tag = addns(tag)
 
-        if type(xobj) in (int, long, float, bool):
+        if type(xobj) in (int, long, float, bool, Decimal):
             xobj = unicode(xobj)
 
         if type(xobj) == str:
