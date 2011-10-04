@@ -340,7 +340,7 @@ public class XObjXMLDecoder
                 if (existingObj != result)
                 {
                     // hmmm. mismatched objects ???
-                    /**TRACEDISABLE:trace("mismatched objects for ID "+resultID);*/
+                    trace("mismatched objects for ID "+resultID);
                 }
             }
             else // no old obj
@@ -433,12 +433,12 @@ public class XObjXMLDecoder
         {
             if (isArray && (result as Array).length > 0)
             {
-                /**TRACEDISABLE:trace("flushing array");*/
+                //trace("flushing array");
                 (result as Array).splice(0);
             }
             else if (isCollection && (result as IList).length > 0)
             {
-                /**TRACEDISABLE:trace("flushing collection");*/
+                //trace("flushing collection");
                 (result as IList).removeAll();
             }
         }
@@ -776,7 +776,7 @@ public class XObjXMLDecoder
                                     {
                                         if (e.errorID == 1034)
                                         {// must be a non-array thingy. IGNORE
-                                            /**TRACEDISABLE:trace("Ignoring TypeError on promote to Array on" + propertyName);*/
+                                            //trace("Ignoring TypeError on promote to Array on" + propertyName);
                                         }
                                         else
                                             throw e;
@@ -935,7 +935,7 @@ public class XObjXMLDecoder
                 catch (e:Error)
                 {
                     //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    /**TRACEDISABLE:trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". " + e + ". Check that class is dynamic or attribute name is spelled correctly");*/
+                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
             
@@ -1148,11 +1148,19 @@ public class XObjXMLDecoder
             value = existing;
         }
         
-        // are we just being asked to point at something?
-        if ((result[propName] is IXObjHref) && !(value is IXObjHref))
-            (result[propName] as IXObjHref).href = getIDProperty(value);
-        else
-            result[propName] = value;
+        try
+        {
+            // are we just being asked to point at something?
+            if ((result[propName] is IXObjHref) && !(value is IXObjHref))
+                (result[propName] as IXObjHref).href = getIDProperty(value);
+            else
+                result[propName] = value;
+        }
+        catch (e:ReferenceError)
+        {
+            //throw new Error("Failed to set property "+propName+"("+value+") on "+ XObjUtils.getClassName(result)+". Check that class is dynamic or property name is spelled correctly");
+            trace("Failed to set property "+propName+"("+value+") on "+ XObjUtils.getClassName(result)+". Check that class is dynamic or property name is spelled correctly");
+        }
         
         return result;
     }
