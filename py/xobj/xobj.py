@@ -218,6 +218,11 @@ class ElementGenerator(object):
 
         attrs = {}
         elements = {}
+
+        if getattr(xobj, '__dict__',None) is None:
+            # be tolerant of invalid input, ideally we would log this
+            return
+ 
         for key, val in xobj.__dict__.iteritems():
             if key[0] != '_':
                 if key in attrSet:
