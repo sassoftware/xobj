@@ -760,32 +760,39 @@ public class XObjXMLDecoder
                         
                         if (seenProperties[propertyName])
                         {
-                            if (!((result[propertyName] is Array) || (result[propertyName] is ListCollectionView)))
+                            try
                             {
-                                if (shouldMakeBindable)
+                                if (!((result[propertyName] is Array) || (result[propertyName] is ListCollectionView)))
                                 {
-                                    result[propertyName] = objectFactory.newCollectionFrom(result[propertyName]);
-                                }
-                                else
-                                {
-                                    try
+                                    if (shouldMakeBindable)
                                     {
-                                        result[propertyName] = [result[propertyName]];
+                                        result[propertyName] = objectFactory.newCollectionFrom(result[propertyName]);
                                     }
-                                    catch (e:TypeError)
+                                    else
                                     {
-                                        if (e.errorID == 1034)
-                                        {// must be a non-array thingy. IGNORE
-                                            //trace("Ignoring TypeError on promote to Array on" + propertyName);
+                                        try
+                                        {
+                                            result[propertyName] = [result[propertyName]];
                                         }
-                                        else
-                                            throw e;
-                                        
+                                        catch (e:TypeError)
+                                        {
+                                            if (e.errorID == 1034)
+                                            {// must be a non-array thingy. IGNORE
+                                                //trace("Ignoring TypeError on promote to Array on" + propertyName);
+                                            }
+                                            else
+                                                throw e;
+                                            
+                                        }
                                     }
                                 }
+                                partObj = null; // we need a fresh object next element
+                                propertyIsArray = true;
                             }
-                            partObj = null; // we need a fresh object next element
-                            propertyIsArray = true;
+                            catch (e:ReferenceError)
+                            {
+                                trace("Property "+propertyName+" not found on "+ XObjUtils.getClassName(result) +". Check dynamic or missing prop");
+                            }
                         }
                     }
                     
