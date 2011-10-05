@@ -836,10 +836,13 @@ public class XObjXMLEncoder
         var metadata:Object;
         var result:Boolean;
         
-        metadata = classInfo.metadata;
-        if (propName in metadata)
+        if (classInfo)
         {
-            result = ("xobjByReference" in metadata[propName]);
+            metadata = classInfo.metadata;
+            if (propName && metadata && (propName in metadata))
+            {
+                result = ("xobjByReference" in metadata[propName]);
+            }
         }
         
         return result;
