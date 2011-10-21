@@ -429,7 +429,7 @@ public class XObjXMLEncoder
                                 // remove elements we've handled to speed up the next iteration
                                 // makes a HUGE difference on large collections of objects
                                 properties.splice(k,1);
-                                encodeValue(obj[propName], entry.qname, myElement, recurse, isPropByRef(classInfo, propName));
+                                encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName));
                                 break;
                             }
                         }
@@ -453,7 +453,7 @@ public class XObjXMLEncoder
                     continue;
                 
                 var propQName:XObjQName = new XObjQName("", fieldName);
-                encodeValue(obj[fieldName], propQName, myElement, recurse, isPropByRef(classInfo, fieldName));
+                encodeValue(obj[fieldName], propQName, myElement, recurse, XObjMetadata.isPropByRef(classInfo, fieldName));
             }
         }
         else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION
@@ -830,23 +830,6 @@ public class XObjXMLEncoder
         className = getQualifiedClassName(clazz);
         return className.replace(/.*::/, "");
     }
-    
-    private function isPropByRef(classInfo:Object, propName:String):Boolean
-    {
-        var metadata:Object;
-        var result:Boolean;
-        
-        if (classInfo)
-        {
-            metadata = classInfo.metadata;
-            if (propName && metadata && (propName in metadata))
-            {
-                result = ("xobjByReference" in metadata[propName]);
-            }
-        }
-        
-        return result;
-    }
-    
+
 }
 }

@@ -429,6 +429,11 @@ public class XObjXMLDecoder
         // If we're the root object (and a collection)
         // OR this collection is NOT byReference (i.e. it's embedded)
         // then FLUSH the array/collection to ensure uniqueness of results
+        
+        // TODO: consider role of [xobjByReference] metadata tag on parent
+        // object to detemrine isByReference in this case. QuerySet is a 
+        // good case study in why this may be more consistent
+        
         if (isRootNode || !XObjUtils.isByReference(result))
         {
             if (isArray && (result as Array).length > 0)
