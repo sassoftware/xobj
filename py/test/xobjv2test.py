@@ -74,6 +74,27 @@ class XobjV2Test(TestCase):
         xml = obj.toxml()
         self.assertXmlEqual(xml, xmlstring)
 
+    def testSerializeDictionary(self):
+        # Only one non-null item, to make sure we don't have ordering issues
+        d = dict(a=1, c=None)
+        doc = xobj2.Document(root=d, rootName="blabbedy")
+        xml = doc.toxml(xml_declaration=False, prettyPrint=False)
+        self.failUnlessEqual(xml, "<blabbedy><a>1</a></blabbedy>")
+
+        # more than one item
+        d = dict(a=1, b=2, c=None)
+        doc = xobj2.Document(root=d, rootName="blabbedy")
+        xml = doc.toxml(xml_declaration=False, prettyPrint=False)
+
+        class Blabbedy(object):
+            _xobjMeta = xobj2.XObjMetadata(
+                tag = 'blabbedy',
+            )
+
+        document = xobj2.Document.fromxml(xml, rootNodes=[Blabbedy])
+        self.failUnlessEqual(document.root.a, '1')
+        self.failUnlessEqual(document.root.b, '2')
+
     def failUnlessStartsWith(self, obj, prefix):
         self.failUnless(obj.startswith(prefix), obj)
 

@@ -206,6 +206,10 @@ class ElementGenerator(object):
             element.text = xobj
             return element
 
+        if isinstance(xobj, etree._Element):
+            if parentElement is not None:
+                parentElement.append(xobj)
+            return xobj
 
         if hasattr(xobj, '_xobj'):
             attrSet = xobj._xobj.attributes

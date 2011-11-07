@@ -450,6 +450,7 @@ def findPythonType(xobj, key):
     return md.attributes.get(key, None)
 
 class ElementGenerator(object):
+    _UNDEFINED = object()
 
     def __init__(self, xobj, tag, nsmap = {}, schema = None):
         self.idsNeeded = set()
@@ -480,7 +481,13 @@ class ElementGenerator(object):
 
         meta = getattr(xobj.__class__, '_xobjMeta', None)
         if meta is None:
-            meta = xobj.__class__._xobjMeta = XObjMetadata()
+            meta = XObjMetadata()
+            try:
+                xobj.__class__._xobjMeta = meta
+            except TypeError:
+                # Base types like dict don't allow for extra attributes
+                # to be added
+                pass
         return self._fromMeta(xobj, tag, meta, parentElement, nsmap)
 
     def tostring(self, prettyPrint = True, xml_declaration = True):
@@ -494,7 +501,9 @@ class ElementGenerator(object):
 
         # Store all field names for this xobj, so we can catch things we
         # haven't defined in the metadata
-        if hasattr(xobj, '__dict__'):
+        if isinstance(xobj, dict):
+            allFieldNames = xobj.keys()
+        elif hasattr(xobj, '__dict__'):
             allFieldNames = set(xobj.__dict__)
         else:
             allFieldNames = XType.getClassSlots(xobj.__class__)
@@ -509,7 +518,7 @@ class ElementGenerator(object):
                 # of something that will change.
                 continue
 
-            val = getattr(xobj, attrName, None)
+            val = self._getattr(xobj, attrName, None)
             if val is None:
                 continue
             if XType.issubclass(attrType, XIDREF):
@@ -524,7 +533,7 @@ class ElementGenerator(object):
                     if fieldName is None:
                         raise XObjSerializationException(
                             'No id found for element referenced by %s' % attrName)
-                    idVal = getattr(val, fieldName, None)
+                    idVal = self._getattr(val, fieldName, None)
                     if idVal is None:
                         raise XObjSerializationException(
                             'Empty ID field %s for element referenced by %s' %
@@ -554,7 +563,7 @@ class ElementGenerator(object):
             # Mark this field as already processed
             allFieldNames.discard(field.name)
 
-            val = getattr(xobj, field.name, None)
+            val = self._getattr(xobj, field.name, None)
             if val is None:
                 continue
             self._getElementTreeForValue(val, field.name, element, nsmap)
@@ -563,7 +572,7 @@ class ElementGenerator(object):
         for fieldName in allFieldNames:
             if fieldName.startswith('_'):
                 continue
-            val = getattr(xobj, fieldName, None)
+            val = self._getattr(xobj, fieldName, None)
             if val is None:
                 continue
             self._getElementTreeForValue(val, fieldName, element, nsmap)
@@ -575,6 +584,19 @@ class ElementGenerator(object):
                 xml_declaration = False, encoding = 'UTF-8'))
             element.attrib[meta.checksumAttribute] = csum.hexdigest()
         return element
+
+    @classmethod
+    def _getattr(cls, obj, attrName, defVal=_UNDEFINED):
+        # Class attributes take priority
+        val = getattr(obj, attrName, cls._UNDEFINED)
+        if val is not cls._UNDEFINED:
+            return val
+        if hasattr(obj, 'get'):
+            val = obj.get(attrName, cls._UNDEFINED)
+        if val is not cls._UNDEFINED:
+            return val
+        # XXX should probably try  __getitem__ too
+        return defVal
 
     def _getElementTreeForValue(self, value, tag, parentElement, nsmap):
         if not isinstance(value, list):
@@ -618,6 +640,11 @@ class Document(object):
         return doc.toxml(**kwargs)
 
     def toxml(self, prettyPrint=True, xml_declaration=True, nsmap=None):
+        et = self.getElementTree(nsmap=nsmap)
+        return et.tostring(prettyPrint = prettyPrint,
+                           xml_declaration = xml_declaration)
+
+    def getElementTree(self, nsmap=None):
         if nsmap:
             map = nsmap
         else:
@@ -627,12 +654,11 @@ class Document(object):
             map = map.copy()
             del map[None]
 
-        return self._toxml(self.root, self.rootName, prettyPrint=prettyPrint,
-                xml_declaration=xml_declaration, schemaf=self.schema, nsmap=map)
+        return self._getElementTree(self.root, self.rootName,
+                schemaf=self.schema, nsmap=map)
 
     @classmethod
-    def _toxml(cls, xobj, tag = None, prettyPrint = True, xml_declaration = True,
-              schemaf = None, nsmap = {}):
+    def _getElementTree(cls, xobj, tag, schemaf=None, nsmap=None):
         if schemaf:
             schemaObj = etree.XMLSchema(file = schemaf)
         else:
@@ -645,9 +671,7 @@ class Document(object):
             tag = meta.tag
 
         gen = cls.ElementGenerator(xobj, tag, schema = schemaObj, nsmap = nsmap)
-
-        return gen.tostring(prettyPrint = prettyPrint,
-                            xml_declaration = xml_declaration)
+        return gen
 
 
     def fromElementTree(self, xml, rootXClass=None):
