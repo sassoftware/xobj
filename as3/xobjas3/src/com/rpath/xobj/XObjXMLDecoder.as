@@ -668,6 +668,13 @@ public class XObjXMLDecoder
                                     objectFactory.trackObjectById(partObj, partID);
                                 }
                             }
+                            
+                            // use whatever class info we were given
+                            if (partObj)
+                            {
+                                partClass = XObjUtils.getClass(partObj);
+                                partClassName = XObjUtils.getClassName(partObj);
+                            }
                         }
                         else
                         {
