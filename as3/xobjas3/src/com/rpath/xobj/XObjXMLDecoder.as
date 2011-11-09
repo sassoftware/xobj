@@ -669,12 +669,22 @@ public class XObjXMLDecoder
                                 }
                             }
                             
-                            // use whatever class info we were given
-                            if (partObj)
-                            {
-                                partClass = XObjUtils.getClass(partObj);
-                                partClassName = XObjUtils.getClassName(partObj);
-                            }
+                            /*
+                            REMOVING until reviewed by bpja...
+                            causing xml decodes to "drop" some objects
+                            eg. AllPlatformsController (serverRetrievedPlatforms)
+                            2 platforms properly mapped to object, the rest were not...
+                            
+                            jb
+                            
+                            
+//                           */ 
+//                            // use whatever class info we were given
+//                            if (partObj)
+//                            {
+//                                partClass = XObjUtils.getClass(partObj);
+//                                partClassName = XObjUtils.getClassName(partObj);
+//                            }
                         }
                         else
                         {
