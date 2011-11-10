@@ -121,6 +121,7 @@ public class XObjUtils
     {
         var className:String = (obj == null) ? null : getQualifiedClassName(obj);
         
+        className = className.replace( /::/, "." );
         return className;
     }
     

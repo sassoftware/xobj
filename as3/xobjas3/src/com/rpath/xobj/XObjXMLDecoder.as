@@ -595,8 +595,11 @@ public class XObjXMLDecoder
                         //propertyIsArray = XObjUtils.isTypeArray(partClass);
                         //propertyIsCollection = XObjUtils.isTypeCollection(partClass);
                     }
-                        // else should we reuse an existing property object?
-                    else if (result.hasOwnProperty(propertyName))
+                    // else should we reuse an existing property object?
+                    // NOTE: do not reuse if this is an implied array 
+                    // (hence seenProperties test)
+                    else if (!seenProperties[propertyName]
+                        && result.hasOwnProperty(propertyName))
                     {
                         var existing:* = result[propertyName];
                         
@@ -668,23 +671,13 @@ public class XObjXMLDecoder
                                     objectFactory.trackObjectById(partObj, partID);
                                 }
                             }
-                            
-                            /*
-                            REMOVING until reviewed by bpja...
-                            causing xml decodes to "drop" some objects
-                            eg. AllPlatformsController (serverRetrievedPlatforms)
-                            2 platforms properly mapped to object, the rest were not...
-                            
-                            jb
-                            
-                            
-//                           */ 
-//                            // use whatever class info we were given
-//                            if (partObj)
-//                            {
-//                                partClass = XObjUtils.getClass(partObj);
-//                                partClassName = XObjUtils.getClassName(partObj);
-//                            }
+
+                            // use whatever class info we were given
+                            if (partObj)
+                            {
+                                partClass = XObjUtils.getClass(partObj);
+                                partClassName = XObjUtils.getClassName(partObj);
+                            }
                         }
                         else
                         {
