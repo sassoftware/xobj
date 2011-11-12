@@ -482,7 +482,7 @@ public class XObjXMLDecoder
                     {
                         try
                         {
-                            result = DateUtil.parseRPATHWHACKYDATETIME(temp);
+                            result = parseRPATHWHACKYDATETIME(temp);
                         }
                         catch (e:Error)
                         {
@@ -1358,7 +1358,17 @@ public class XObjXMLDecoder
         return null;
     }
     
+    /** whacky rPath datetime format which is ISO8601 with the 
+     * required 'T' element replaced with a SPACE
+     */
     
+    public function parseRPATHWHACKYDATETIME(str:String):Date
+    {
+        var newStr:String = str.replace(" ","T");
+        
+        return DateUtil.parseW3CDTF(newStr);
+    }
+
 }
 
 }
