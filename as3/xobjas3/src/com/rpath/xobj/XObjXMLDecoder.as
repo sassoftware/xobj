@@ -482,12 +482,26 @@ public class XObjXMLDecoder
                     {
                         try
                         {
-                            result = DateUtil.parseW3CDTF(temp);
+                            result = DateUtil.parseRPATHWHACKYDATETIME(temp);
                         }
                         catch (e:Error)
                         {
-                            result = new Date();
-                            result.time = Date.parse(temp);
+                            try
+                            {
+                                result = DateUtil.parseW3CDTF(temp);
+                            }
+                            catch (e:Error)
+                            {
+                                try
+                                {
+                                    result = DateUtil.parseRFC822(temp);
+                                }
+                                catch (e:Error)
+                                {
+                                    result = new Date();
+                                    result.time = Date.parse(temp);
+                                }
+                            }
                         }
                     }
                     else
@@ -595,9 +609,9 @@ public class XObjXMLDecoder
                         //propertyIsArray = XObjUtils.isTypeArray(partClass);
                         //propertyIsCollection = XObjUtils.isTypeCollection(partClass);
                     }
-                    // else should we reuse an existing property object?
-                    // NOTE: do not reuse if this is an implied array 
-                    // (hence seenProperties test)
+                        // else should we reuse an existing property object?
+                        // NOTE: do not reuse if this is an implied array 
+                        // (hence seenProperties test)
                     else if (!seenProperties[propertyName]
                         && result.hasOwnProperty(propertyName))
                     {
@@ -671,7 +685,7 @@ public class XObjXMLDecoder
                                     objectFactory.trackObjectById(partObj, partID);
                                 }
                             }
-
+                            
                             // use whatever class info we were given
                             if (partObj)
                             {
@@ -681,8 +695,9 @@ public class XObjXMLDecoder
                         }
                         else
                         {
-                            // we have the property, but no value
-                            if (!partClass)
+                            // we have the property, but no value.
+                            // NB: ObjectProxy always says yes to hasOwnProperty()
+                            if (!partClass && !(result is ObjectProxy))
                             {
                                 // must be plain old Object, but our TypeInfo
                                 // method ignores them...compensate
