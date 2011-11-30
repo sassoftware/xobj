@@ -154,6 +154,10 @@ class XObjMetadata(object):
         self.tag = tag
         self.text = text
 
+    def copy(self):
+        return self.__class__(elements=self.elements,
+            attributes=self.attributes, text=self.text, tag=self.tag)
+
 class XID(XObj):
 
     pass

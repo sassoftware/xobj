@@ -990,7 +990,7 @@ class XobjTest(TestCase):
             [ "value1", "value2" ])
         self.failUnlessEqual(doc.toxml(), xml)
 
-def testNestedLists(self):
+    def testNestedLists(self):
         xml = """\
 <?xml version='1.0' encoding='UTF-8'?>
 <msis>
@@ -1044,8 +1044,25 @@ def testNestedLists(self):
         self.failUnlessEqual(msi1.files.file[1].name, 'bar.exe')
         self.failUnlessEqual(msi1.files.file[1].uuid, '23456')
 
+    def testMixedCollection(self):
+        class Foo1(object):
+            _xobj = xobj.XObjMetadata(tag="foo1")
+        class Foo2(object):
+            _xobj = xobj.XObjMetadata(tag="foo2")
+        class Foo3(object):
+            _xobj = xobj.XObjMetadata(tag="foo3")
 
+        class Root(object):
+            _xobj = xobj.XObjMetadata(tag="root")
 
+        class Doc(xobj.Document):
+            root = Root
+
+        d = Doc()
+        d.root = Root()
+        d.root.collection = [ Foo1(), Foo2(), Foo3() ]
+        self.failUnlessEqual(d.toxml(prettyPrint=False, xml_declaration=False),
+            '<root><foo1/><foo2/><foo3/></root>')
 
 if __name__ == "__main__":
     testsuite.main()
