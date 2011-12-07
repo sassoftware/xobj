@@ -470,15 +470,21 @@ public class XObjXMLEncoder
             {
                 var localName:String = "item";  //assume item unless told otherwise
                 var member:* = obj[j];
-                // look up the right qname to use
-                if (obj is IXObjCollection)
+                
+                // force use of item for local name if simpleEncoderCompatible is true
+                if (!simpleEncoderCompatible)
                 {
-                    localName = (obj as IXObjCollection).elementTagForMember(member);
+                    // look up the right qname to use
+                    if (obj is IXObjCollection)
+                    {
+                        localName = (obj as IXObjCollection).elementTagForMember(member);
+                    }
+                    else
+                    {
+                        localName = tagForType(member);
+                    }
                 }
-                else
-                {
-                    localName = tagForType(member);
-                }
+                
                 qname = new XObjQName("", localName);
                 
                 if (XObjUtils.isByReference(obj))
