@@ -74,6 +74,27 @@ class XobjV2Test(TestCase):
         xml = obj.toxml()
         self.assertXmlEqual(xml, xmlstring)
 
+    def testSerializeDictionary(self):
+        # Only one non-null item, to make sure we don't have ordering issues
+        d = dict(a=1, c=None)
+        doc = xobj2.Document(root=d, rootName="blabbedy")
+        xml = doc.toxml(xml_declaration=False, prettyPrint=False)
+        self.failUnlessEqual(xml, "<blabbedy><a>1</a></blabbedy>")
+
+        # more than one item
+        d = dict(a=1, b=2, c=None)
+        doc = xobj2.Document(root=d, rootName="blabbedy")
+        xml = doc.toxml(xml_declaration=False, prettyPrint=False)
+
+        class Blabbedy(object):
+            _xobjMeta = xobj2.XObjMetadata(
+                tag = 'blabbedy',
+            )
+
+        document = xobj2.Document.fromxml(xml, rootNodes=[Blabbedy])
+        self.failUnlessEqual(document.root.a, '1')
+        self.failUnlessEqual(document.root.b, '2')
+
     def failUnlessStartsWith(self, obj, prefix):
         self.failUnless(obj.startswith(prefix), obj)
 
@@ -1257,6 +1278,27 @@ class XobjV2Test(TestCase):
             [ False, False ])
         self.failUnlessEqual([ xobj2.XType.getText(x) for x in doc.root.item ],
             [ 'text1', 'text2'])
+
+    def testChecksum(self):
+        # Class only defines slot b
+        class Item(object):
+            _xobjMeta = xobj2.XObjMetadata(attributes=[ 'b', 'checksum', ],
+                checksumAttribute='checksum')
+            __slots__ = _xobjMeta.getSlots()
+        class Root(object):
+            _xobjMeta = xobj2.XObjMetadata(checksumAttribute='csum',
+                elements=xobj2.Field('item', [ Item ]))
+            __slots__ = _xobjMeta.getSlots()
+
+        xml = '<root><item a="a1" b="b1">text1</item><item a="a2" b="b2">text2</item></root>'
+
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root))
+        ret = doc.toxml()
+        self.assertXMLEquals(ret, """
+<root csum="0860ae70231fca9085e96645ae1f2921f08fc1d4">
+  <item b="b1" checksum="fc5c65f38b7be4f71419913b3e88b90df9edc073"/>
+  <item b="b2" checksum="9e51b4b21eb771c58636405a6c0e8ab61519d62b"/>
+</root>""")
 
 if __name__ == "__main__":
     testsuite.main()

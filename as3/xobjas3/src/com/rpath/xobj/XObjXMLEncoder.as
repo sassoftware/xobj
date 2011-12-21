@@ -34,8 +34,8 @@ import flash.utils.*;
 import flash.xml.*;
 
 import mx.collections.ArrayCollection;
-import mx.utils.*;
 import mx.collections.ICollectionView;
+import mx.utils.*;
 
 
 /**
@@ -439,7 +439,7 @@ public class XObjXMLEncoder
                                 // remove elements we've handled to speed up the next iteration
                                 // makes a HUGE difference on large collections of objects
                                 properties.splice(k,1);
-                                encodeValue(obj[propName], entry.qname, myElement, recurse);
+                                encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName));
                                 break;
                             }
                         }
@@ -463,7 +463,7 @@ public class XObjXMLEncoder
                     continue;
                 
                 var propQName:XObjQName = new XObjQName("", fieldName);
-                encodeValue(obj[fieldName], propQName, myElement, recurse);
+                encodeValue(obj[fieldName], propQName, myElement, recurse, XObjMetadata.isPropByRef(classInfo, fieldName));
             }
         }
         else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION
@@ -480,15 +480,21 @@ public class XObjXMLEncoder
             {
                 var localName:String = "item";  //assume item unless told otherwise
                 var member:* = obj[j];
-                // look up the right qname to use
-                if (obj is IXObjCollection)
+                
+                // force use of item for local name if simpleEncoderCompatible is true
+                if (!simpleEncoderCompatible)
                 {
-                    localName = (obj as IXObjCollection).elementTagForMember(member);
+                    // look up the right qname to use
+                    if (obj is IXObjCollection)
+                    {
+                        localName = (obj as IXObjCollection).elementTagForMember(member);
+                    }
+                    else
+                    {
+                        localName = tagForType(member);
+                    }
                 }
-                else
-                {
-                    localName = tagForType(member);
-                }
+                
                 qname = new XObjQName("", localName);
                 
                 if (XObjUtils.isByReference(obj))
@@ -840,6 +846,6 @@ public class XObjXMLEncoder
         className = getQualifiedClassName(clazz);
         return className.replace(/.*::/, "");
     }
-    
+
 }
 }

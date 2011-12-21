@@ -125,5 +125,22 @@ public class XObjMetadata
     }
     
     
+    public static function isPropByRef(classInfo:Object, propName:String):Boolean
+    {
+        var metadata:Object;
+        var result:Boolean;
+        
+        if (classInfo)
+        {
+            metadata = classInfo.metadata;
+            if (propName && metadata && (propName in metadata))
+            {
+                result = ("xobjByReference" in metadata[propName]);
+            }
+        }
+        
+        return result;
+    }
+    
 }
 }

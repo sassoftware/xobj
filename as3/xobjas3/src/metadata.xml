@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <annotations version="1.0">
 
-	<metadata name="xobjTransient" description="xobj marker">
-        <context name="variable" />
-        <context name="getter" />
-        <context name="setter" />
+	<metadata name="xobjTransient" description="xobj do not encode">
+		<context name="variable" />
+		<context name="getter" />
+		<context name="setter" />
+	</metadata>
+
+	<metadata name="xobjByReference" description="xobj encode by ref marker">
+		<context name="variable" />
+		<context name="getter" />
+		<context name="setter" />
+	</metadata>
+
+	<metadata name="ElementType" description="xobj marker">
+		<attribute name="type" type="Class" required="true" />
+		<context name="variable" />
+		<context name="getter" />
+		<context name="setter" />
 	</metadata>
 
     <metadata name="ElementType" description="xobj marker">

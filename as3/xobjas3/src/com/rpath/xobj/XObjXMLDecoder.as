@@ -46,18 +46,19 @@ TODO: add some kind of "Type mapping" memory to the _xobj structure.
 TODO: explore looking up XMLSchema types using simple parsing ?
 */
 
+import com.adobe.utils.DateUtil;
+
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
 import flash.xml.XMLDocument;
 import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
+import mx.collections.ICollectionView;
+import mx.collections.IList;
 import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
-import mx.collections.IList;
-import com.adobe.utils.DateUtil;
-import mx.collections.ICollectionView;
 
 
 /**
@@ -339,7 +340,7 @@ public class XObjXMLDecoder
                 if (existingObj != result)
                 {
                     // hmmm. mismatched objects ???
-                    /**TRACEDISABLE:trace("mismatched objects for ID "+resultID);*/
+                    trace("mismatched objects for ID "+resultID);
                 }
             }
             else // no old obj
@@ -428,16 +429,21 @@ public class XObjXMLDecoder
         // If we're the root object (and a collection)
         // OR this collection is NOT byReference (i.e. it's embedded)
         // then FLUSH the array/collection to ensure uniqueness of results
+        
+        // TODO: consider role of [xobjByReference] metadata tag on parent
+        // object to detemrine isByReference in this case. QuerySet is a 
+        // good case study in why this may be more consistent
+        
         if (isRootNode || !XObjUtils.isByReference(result))
         {
             if (isArray && (result as Array).length > 0)
             {
-                /**TRACEDISABLE:trace("flushing array");*/
+                //trace("flushing array");
                 (result as Array).splice(0);
             }
             else if (isCollection && (result as IList).length > 0)
             {
-                /**TRACEDISABLE:trace("flushing collection");*/
+                //trace("flushing collection");
                 (result as IList).removeAll();
             }
         }
@@ -468,16 +474,34 @@ public class XObjXMLDecoder
             {
                 try
                 {
-                    if (result is Date)
+                    if (result is IXObjHref)
+                    {
+                        result.value = temp;
+                    }
+                    else if (result is Date)
                     {
                         try
                         {
-                            result = DateUtil.parseW3CDTF(temp);
+                            result = parseRPATHWHACKYDATETIME(temp);
                         }
                         catch (e:Error)
                         {
-                            result = new Date();
-                            result.time = Date.parse(temp);
+                            try
+                            {
+                                result = DateUtil.parseW3CDTF(temp);
+                            }
+                            catch (e:Error)
+                            {
+                                try
+                                {
+                                    result = DateUtil.parseRFC822(temp);
+                                }
+                                catch (e:Error)
+                                {
+                                    result = new Date();
+                                    result.time = Date.parse(temp);
+                                }
+                            }
                         }
                     }
                     else
@@ -584,7 +608,10 @@ public class XObjXMLDecoder
                         partClassName = XObjUtils.getClassName(partObj);
                     }
                         // else should we reuse an existing property object?
-                    else if (result.hasOwnProperty(propertyName))
+                        // NOTE: do not reuse if this is an implied array 
+                        // (hence seenProperties test)
+                    else if (!seenProperties[propertyName]
+                        && result.hasOwnProperty(propertyName))
                     {
                         var existing:* = result[propertyName];
                         
@@ -625,6 +652,25 @@ public class XObjXMLDecoder
                                 {
                                     // ID conflict. Use OLD object!
                                     partObj = existingByID;
+                                    
+                                    // hack to support RESTHref pointing to real object
+                                    // related to RBL-8840 where we dropped version and stage
+                                    // since href points to already fetched actual object
+                                    // basically, <stage href="..">name</stage> is BAD form
+                                    // for partial object pointers (named pointers? ewww)
+                                    
+                                    if (existing is IXObjHref)
+                                    {
+                                        try
+                                        {
+                                            existing.value = existingByID.name;
+                                            //existing.referenced = existingByID;
+                                        }
+                                        catch (e:Error)
+                                        {
+                                            // can't pull that swizzle here
+                                        }
+                                    }
                                 }
                             }
                             else // node has no ID, so use whatever we get
@@ -637,11 +683,19 @@ public class XObjXMLDecoder
                                     objectFactory.trackObjectById(partObj, partID);
                                 }
                             }
+                            
+                            // use whatever class info we were given
+                            if (partObj)
+                            {
+                                partClass = XObjUtils.getClass(partObj);
+                                partClassName = XObjUtils.getClassName(partObj);
+                            }
                         }
                         else
                         {
-                            // we have the property, but no value
-                            if (!partClass)
+                            // we have the property, but no value.
+                            // NB: ObjectProxy always says yes to hasOwnProperty()
+                            if (!partClass && !(result is ObjectProxy))
                             {
                                 // must be plain old Object, but our TypeInfo
                                 // method ignores them...compensate
@@ -734,32 +788,39 @@ public class XObjXMLDecoder
                         
                         if (seenProperties[propertyName])
                         {
-                            if (!((result[propertyName] is Array) || (result[propertyName] is ListCollectionView)))
+                            try
                             {
-                                if (shouldMakeBindable)
+                                if (!((result[propertyName] is Array) || (result[propertyName] is ListCollectionView)))
                                 {
-                                    result[propertyName] = objectFactory.newCollectionFrom(result[propertyName]);
-                                }
-                                else
-                                {
-                                    try
+                                    if (shouldMakeBindable)
                                     {
-                                        result[propertyName] = [result[propertyName]];
+                                        result[propertyName] = objectFactory.newCollectionFrom(result[propertyName]);
                                     }
-                                    catch (e:TypeError)
+                                    else
                                     {
-                                        if (e.errorID == 1034)
-                                        {// must be a non-array thingy. IGNORE
-                                            /**TRACEDISABLE:trace("Ignoring TypeError on promote to Array on" + propertyName);*/
+                                        try
+                                        {
+                                            result[propertyName] = [result[propertyName]];
                                         }
-                                        else
-                                            throw e;
-                                        
+                                        catch (e:TypeError)
+                                        {
+                                            if (e.errorID == 1034)
+                                            {// must be a non-array thingy. IGNORE
+                                                //trace("Ignoring TypeError on promote to Array on" + propertyName);
+                                            }
+                                            else
+                                                throw e;
+                                            
+                                        }
                                     }
                                 }
+                                partObj = null; // we need a fresh object next element
+                                propertyIsArray = true;
                             }
-                            partObj = null; // we need a fresh object next element
-                            propertyIsArray = true;
+                            catch (e:ReferenceError)
+                            {
+                                trace("Property "+propertyName+" not found on "+ XObjUtils.getClassName(result) +". Check dynamic or missing prop");
+                            }
                         }
                     }
                     
@@ -909,7 +970,7 @@ public class XObjXMLDecoder
                 catch (e:Error)
                 {
                     //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    /**TRACEDISABLE:trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". " + e + ". Check that class is dynamic or attribute name is spelled correctly");*/
+                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
             
@@ -1122,11 +1183,19 @@ public class XObjXMLDecoder
             value = existing;
         }
         
-        // are we just being asked to point at something?
-        if ((result[propName] is IXObjHref) && !(value is IXObjHref))
-            (result[propName] as IXObjHref).href = getIDProperty(value);
-        else
-            result[propName] = value;
+        try
+        {
+            // are we just being asked to point at something?
+            if ((result[propName] is IXObjHref) && !(value is IXObjHref))
+                (result[propName] as IXObjHref).href = getIDProperty(value);
+            else
+                result[propName] = value;
+        }
+        catch (e:ReferenceError)
+        {
+            //throw new Error("Failed to set property "+propName+"("+value+") on "+ XObjUtils.getClassName(result)+". Check that class is dynamic or property name is spelled correctly");
+            trace("Failed to set property "+propName+"("+value+") on "+ XObjUtils.getClassName(result)+". Check that class is dynamic or property name is spelled correctly");
+        }
         
         return result;
     }
@@ -1287,7 +1356,17 @@ public class XObjXMLDecoder
         return null;
     }
     
+    /** whacky rPath datetime format which is ISO8601 with the 
+     * required 'T' element replaced with a SPACE
+     */
     
+    public function parseRPATHWHACKYDATETIME(str:String):Date
+    {
+        var newStr:String = str.replace(" ","T");
+        
+        return DateUtil.parseW3CDTF(newStr);
+    }
+
 }
 
 }

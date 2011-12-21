@@ -109,7 +109,7 @@ public class XSmartURL extends URL
     /** filterTerms is an array of (field, operator, value) clauses
      * that are assumed to be AND clauses
      */
-    private var _filterTerms:Array;
+    private var _filterTerms:Array =[];
     
     [xobjTransient]
     public function get filterTerms():Array

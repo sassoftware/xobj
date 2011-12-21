@@ -39,6 +39,11 @@ public class InvalidationAware implements IInvalidationAware
         }
     }
     
+/*    public function validateNow():void
+    {
+        
+    }
+    */
     protected function commitProperties():void
     {
         // override this
