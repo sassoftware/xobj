@@ -357,16 +357,20 @@ public class XObjUtils
                 }
             }
             
+            typeInfo.isArray = isTypeArray(typeInfo.typeName);
+            typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
+
             if (arrayElementType)
             {
-                typeInfo.isCollection = true;
                 typeInfo.arrayElementTypeName = arrayElementType;
                 typeInfo.arrayElementClass = XObjUtils.getClassByName(typeInfo.arrayElementTypeName);
             }
-            else // can't infer, so go ask directly
+            
+            if (arrayElementType && !(typeInfo.isArray || typeInfo.isCollection))
             {
-                typeInfo.isArray = isTypeArray(typeInfo.typeName);
-                typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
+                // problem! Has an elementType but is neither array nor collection
+                // what is it, pray tell?
+                trace("Unknown iterable type");
             }
             
             if (typeInfo.typeName == "Object"
