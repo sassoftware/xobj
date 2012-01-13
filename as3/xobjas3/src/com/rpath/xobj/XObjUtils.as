@@ -323,6 +323,11 @@ public class XObjUtils
                         {
                             // can't handle these...
                         }
+                        else if (val == null)
+                        {
+                            // no idea about value. Assume object
+                            typeInfo.typeName = XObjUtils.getClassName({});
+                        }
                         else
                         {
                             // must be dynamic property or simply an error (no such property)
