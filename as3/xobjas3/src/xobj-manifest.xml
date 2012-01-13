@@ -21,6 +21,7 @@
     <component id="IXObjReference" class="com.rpath.xobj.IXObjReference"/>
     <component id="IXObjHref" class="com.rpath.xobj.IXObjHref"/>
     <component id="URL" class="com.rpath.xobj.URL"/>
+    <component id="XObjArrayCollection" class="com.rpath.xobj.XObjArrayCollection"/>
     <component id="XObjDefaultFactory" class="com.rpath.xobj.XObjDefaultFactory"/>
     <component id="XObjDeferredDecode" class="com.rpath.xobj.XObjDeferredDecode"/>
     <component id="XObjMetadata" class="com.rpath.xobj.XObjMetadata"/>
