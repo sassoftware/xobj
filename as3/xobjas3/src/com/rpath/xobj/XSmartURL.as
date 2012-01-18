@@ -212,7 +212,7 @@ public class XSmartURL extends URL
     [xobjTransient]
     public function queryFragment():String
     {
-        var params:Dictionary = new Dictionary();
+        var params:Array = [];
         var query:String = "";
         
         if (!descriptor)
@@ -221,9 +221,9 @@ public class XSmartURL extends URL
         if (rangeRequest)
         {
             if (descriptor.startKey)
-                params[descriptor.startKey] = startIndex;
+                params.push(descriptor.startKey + "=" + startIndex);
             if (descriptor.limitKey)
-                params[descriptor.limitKey] = limit;
+                params.push(descriptor.limitKey + "=" + limit);
         }
         
         // TODO: use descriptor to tell us how to express sort
@@ -249,7 +249,7 @@ public class XSmartURL extends URL
                 
                 if (terms)
                 {
-                    params[descriptor.sortKey] = terms;
+                    params.push(descriptor.sortKey + "=" + terms);
                 }
             }
         }
@@ -275,21 +275,26 @@ public class XSmartURL extends URL
             
             if (search)
             {
-                params[descriptor.filterKey] = search;
+                params.push(descriptor.filterKey + "=" + search);
             }
         }
         
         // Google like full text searching
         if (freeSearch)
         {
-            params[descriptor.searchKey] = freeSearch;
+            params.push(descriptor.searchKey + "=" + freeSearch);
         }
         
+        // sort params for sane loading of offline data
+        if (params && params.length > 1)
+        {
+            params.sort();
+        }
         
         first = true;
-        for (var param:String in params)
+        for each (var param:String in params)
         {
-            query = query + (first ? "" : descriptor.paramDelimiter) + param + "=" + params[param];
+            query = query + (first ? "" : descriptor.paramDelimiter) + param;
             first = false;
         }
         
