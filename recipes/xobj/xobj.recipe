@@ -54,7 +54,7 @@ class XObj(PackageRecipe):
             # run the tests
             r.macros.sitepkgs = Python.sitepkgs
             r.Make('test', preMake='CONARY_PATH=%(sitepkgs)s COVERAGE_PATH=%(sitepkgs)s')
-            r.Install('as3/xobjas3-test/bin-debug/test/output/*.xml', '%(testoutputdir)s')
+            #r.Install('as3/xobjas3-test/bin-debug/test/output/*.xml', '%(testoutputdir)s')
 
             # add test data to testinfo component
             r.ComponentSpec('testinfo', '%(testinfodir)s/.*')
