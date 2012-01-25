@@ -10,7 +10,7 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
-SUBDIRS = xobjas3 xobjas3-test
+SUBDIRS = xobjas3
 
 
 build: default-build
