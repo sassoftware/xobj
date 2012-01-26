@@ -1300,5 +1300,18 @@ class XobjV2Test(TestCase):
   <item b="b2" checksum="9e51b4b21eb771c58636405a6c0e8ab61519d62b"/>
 </root>""")
 
+    def testConflictWithBuiltin(self):
+        xml = """<root count="1"/>"""
+        class Root(object):
+            _xobjMeta = xobj2.XObjMetadata()
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root))
+        self.failUnlessEqual(doc.root.count, '1')
+
+        # Now with typing
+        class Root2(object):
+            _xobjMeta = xobj2.XObjMetadata(attributes=dict(count=int))
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root2))
+        self.failUnlessEqual(doc.root.count, 1)
+
 if __name__ == "__main__":
     testsuite.main()
