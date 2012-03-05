@@ -15,16 +15,16 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import tests.models.*;
-
 import flash.xml.XMLDocument;
+
+import tests.models.*;
 
 
 public class TestDataTypes extends TestBase
 {
     /** testSimple 
-    * test basic decoding behavior of a simple XML document
-    */
+     * test basic decoding behavior of a simple XML document
+     */
     
     
     private var simpleTypesTest:XML = 
@@ -37,9 +37,9 @@ public class TestDataTypes extends TestBase
             <aDate>Thu Jan 8 08:45:41 GMT-0500 2009</aDate>
          </simpleType>
         </top>
-        
-
-        
+    
+    
+    
     public function testSimpleTypes():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({simpleType:TestableSimpleTypes});
@@ -61,9 +61,48 @@ public class TestDataTypes extends TestBase
         var dateString:String = (o.top.simpleType.aDate as Date).toString();
         
         assertTrue("simpleType value", dateString == "Thu Jan 8 08:45:41 GMT-0500 2009");
-       
+        
     }
     
+    private var restBaseType:XML = 
+        <configuration id="https://qa4.eng.rpath.com/api/v1/inventory/systems/357/configuration"> 
+            <rpath_defaultapppool_managedruntimeversion>v2.0</rpath_defaultapppool_managedruntimeversion> 
+            <rpath_defaultapppool_password>Pass@word1</rpath_defaultapppool_password> 
+            <rpath_defaultapppool_username>Administrator</rpath_defaultapppool_username> 
+            <rpath_defaultapppool_identitytype>SpecificUser</rpath_defaultapppool_identitytype> 
+        </configuration>
+
+        
+    public function testRESTResourceBaseType():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({configuration:SubModel});
+        var xmlInput:XMLDocument = new XMLDocument(restBaseType);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("configuration is SubModel", o.configuration is SubModel);
+        assertTrue("configuration.rpath_defaultapppool_username is String", 
+            o.configuration.rpath_defaultapppool_username is String);
+        
     }
+    
+    public function testDoubleDynamicDecode():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({configuration:SubModel});
+        var xmlInput:XMLDocument = new XMLDocument(restBaseType);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("configuration is SubModel", o.configuration is SubModel);
+        assertTrue("configuration.rpath_defaultapppool_username is String", 
+            o.configuration.rpath_defaultapppool_username is String);
+        
+        // decode again
+        o = typedDecoder.decodeXMLIntoObject(xmlInput, o.configuration);
+        assertTrue("configuration is SubModel", o.configuration is SubModel);
+        assertTrue("configuration.rpath_defaultapppool_username is String", 
+            o.configuration.rpath_defaultapppool_username is String);
+      
+    }
+
+}
 }
 
