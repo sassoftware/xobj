@@ -615,26 +615,66 @@ public class XObjXMLDecoder
                     {
                         var existing:* = result[propertyName];
                         
-                        // we do not want to reuse simple objects
-                        if (existing && (existing is Object)
-                            && !(
-                                //(existing is Array) 
-                                //|| (existing is ICollectionView)
-                                //||
-                                (existing is String)
-                                || (existing is Boolean)
-                                || (existing is int)
-                                || (existing is Number)
-                                || (existing is Date)
-                            )
-                        )
+                        if (existing)
                         {
-                            // reuse any complex objects provided we don't have
-                            // an ID conflict
-                            if (partID)
+                            // we do not want to reuse simple objects
+                            if ((existing is Object)
+                                && !(
+                                    //(existing is Array) 
+                                    //|| (existing is ICollectionView)
+                                    //||
+                                    (existing is String)
+                                    || (existing is Boolean)
+                                    || (existing is int)
+                                    || (existing is Number)
+                                    || (existing is Date)
+                                ))
                             {
-                                var existingByID:* = objectFactory.getObjectForId(partID);
-                                if (!existingByID)
+                                // reuse any complex objects provided we don't have
+                                // an ID conflict
+                                if (partID)
+                                {
+                                    var existingByID:* = objectFactory.getObjectForId(partID);
+                                    if (!existingByID)
+                                    {
+                                        partObj = existing;
+                                        partID = getIDProperty(partObj);
+                                        if (partID)
+                                        {
+                                            // register it!
+                                            objectFactory.trackObjectById(partObj, partID);
+                                        }
+                                    }
+                                    else if (existing === existingByID)
+                                    {
+                                        partObj = existing;
+                                    }
+                                    else if (existing != existingByID)
+                                    {
+                                        // ID conflict. Use OLD object!
+                                        partObj = existingByID;
+                                        
+                                        // hack to support RESTHref pointing to real object
+                                        // related to RBL-8840 where we dropped version and stage
+                                        // since href points to already fetched actual object
+                                        // basically, <stage href="..">name</stage> is BAD form
+                                        // for partial object pointers (named pointers? ewww)
+                                        
+                                        if (existing is IXObjHref)
+                                        {
+                                            try
+                                            {
+                                                existing.value = existingByID.name;
+                                                //existing.referenced = existingByID;
+                                            }
+                                            catch (e:Error)
+                                            {
+                                                // can't pull that swizzle here
+                                            }
+                                        }
+                                    }
+                                }
+                                else // node has no ID, so use whatever we get
                                 {
                                     partObj = existing;
                                     partID = getIDProperty(partObj);
@@ -644,56 +684,24 @@ public class XObjXMLDecoder
                                         objectFactory.trackObjectById(partObj, partID);
                                     }
                                 }
-                                else if (existing === existingByID)
+                                
+                                // use whatever class info we were given
+                                if (partObj)
                                 {
-                                    partObj = existing;
-                                }
-                                else if (existing != existingByID)
-                                {
-                                    // ID conflict. Use OLD object!
-                                    partObj = existingByID;
-                                    
-                                    // hack to support RESTHref pointing to real object
-                                    // related to RBL-8840 where we dropped version and stage
-                                    // since href points to already fetched actual object
-                                    // basically, <stage href="..">name</stage> is BAD form
-                                    // for partial object pointers (named pointers? ewww)
-                                    
-                                    if (existing is IXObjHref)
-                                    {
-                                        try
-                                        {
-                                            existing.value = existingByID.name;
-                                            //existing.referenced = existingByID;
-                                        }
-                                        catch (e:Error)
-                                        {
-                                            // can't pull that swizzle here
-                                        }
-                                    }
+                                    partClass = XObjUtils.getClass(partObj);
+                                    partClassName = XObjUtils.getClassName(partObj);
                                 }
                             }
-                            else // node has no ID, so use whatever we get
+                            else
                             {
-                                partObj = existing;
-                                partID = getIDProperty(partObj);
-                                if (partID)
-                                {
-                                    // register it!
-                                    objectFactory.trackObjectById(partObj, partID);
-                                }
-                            }
-                            
-                            // use whatever class info we were given
-                            if (partObj)
-                            {
-                                partClass = XObjUtils.getClass(partObj);
-                                partClassName = XObjUtils.getClassName(partObj);
+                                // simple existing value.
+                                // Ignore type. Allow decode to deduce afresh
+                                // This prevents auto-promote of simple types to Objects on 
+                                // refetch into same instance
                             }
                         }
-                        else
+                        else  // we have the property, but no value.
                         {
-                            // we have the property, but no value.
                             // NB: ObjectProxy always says yes to hasOwnProperty()
                             if (!partClass && !(result is ObjectProxy))
                             {
