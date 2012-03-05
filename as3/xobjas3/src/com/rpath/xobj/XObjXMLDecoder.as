@@ -711,35 +711,20 @@ public class XObjXMLDecoder
                             }
                         }
                     }
-                    
+                    // else we have to check for it being a member of a collection/array if
+                    // it is NOT a property of the result object
+                    else if (!(result is IXObjCollection)  // but only if it's not a self-aware collection!
+                        && (isArray || isCollection) && !result.hasOwnProperty(propertyName))
+                    {
+                        // we need to handle collection type objects with special care
+                        // since if the element doesn't map to a property, it's a member
+                        
+                        isMember = true;
+                    }
                     
                     // Step 3: 
                     // decide what partClass to use if we don't already know
                     // from the above
-                    
-                    // OK. so is this actually a known property? Array elements
-                    // will be uknown property names by definition (have to be
-                    // so since a collection property that matched an element would be 
-                    // assigned to the property, not made a member of the 
-                    // collection)
-                    
-                    if (!partObj && !partClass)
-                    {
-                        // important: are we *in* an generic array or collection object?
-                        
-                        if (!(result is IXObjCollection)
-                            && (isArray || isCollection))
-                        {
-                            // we need to handle collection type objects with special care
-                            // since if the element doesn't map to a property, it's a member
-                            
-                            isMember = true;
-                        }
-                        else
-                        {
-                            // treat as regular property of our result object
-                        }
-                    }
                     
                     if (isMember)
                     {
@@ -1194,7 +1179,7 @@ public class XObjXMLDecoder
         try
         {
             // are we just being asked to point at something?
-            if ((result[propName] is IXObjHref) && !(value is IXObjHref))
+            if (!(value is IXObjHref) && (result[propName] is IXObjHref))
                 (result[propName] as IXObjHref).href = getIDProperty(value);
             else
                 result[propName] = value;

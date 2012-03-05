@@ -16,6 +16,7 @@ install: default-install as-install
 
 clean: default-clean as-clean
 
+#test: default-test as-test
 test: default-test as-test
 
 
