@@ -8,9 +8,7 @@
 
 package tests.models
 {   
-import com.verveguy.rest.RESTResource;
-import com.verveguy.rest.RESTUtils;
-import com.verveguy.rest.RESThref;
+import com.rpath.xobj.XObjString;
 
 import flash.events.Event;
 import flash.net.*;
@@ -22,7 +20,7 @@ import mx.utils.ObjectUtil;
 [RemoteClass]  // tell the compiler we can be deep copied 
 [Bindable]
 [Event(name="refreshingChange",type="flash.events.Event")]
-public dynamic class BaseModel extends RESTResource
+public dynamic class BaseModel extends XObjString
 {
     public static const REFRESHING_CHANGE_EVENT:String = "refreshingChange";
     public function BaseModel()
@@ -100,31 +98,11 @@ public dynamic class BaseModel extends RESTResource
         return ObjectUtil.copy(this);
     }
     
-    // shollow copy properties from one to the other
-    public function copyProps(otherObj:*): *
-    {
-        RESTUtils.copyProps(this, otherObj);
-        return this;
-    }
-    
-    public function shallowCopy(): *
-    {
-        return RESTUtils.shallowCopy(this);
-    }
     
     // TODO: make this function walk dynamic props as well as static props
     // which means using getClassInfo(this) rather than describeType(this)      
     
     // cache the classInfo per instance to save on reindexing calls
     private var classInfo:XML;
-    
-    public function getHref():RESThref
-    {
-        var href:RESThref = new RESThref();
-        href.href = id;
-        return href;
-    }
-    
-    
 }
 }
