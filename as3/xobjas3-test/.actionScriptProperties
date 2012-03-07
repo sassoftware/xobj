@@ -6,8 +6,6 @@
       <libraryPathEntry kind="4" path=""/>
       <libraryPathEntry kind="3" linkType="1" path="/xobjas3/bin/xobjas3.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="3" linkType="1" path="/fluint/bin/fluint.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/RESTful/bin/RESTful.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/flexfiltering/bin/flexfiltering.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
