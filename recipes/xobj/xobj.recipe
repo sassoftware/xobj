@@ -51,6 +51,9 @@ class XObj(PackageRecipe):
             r.Create('%(testinfodir)s/configuration.txt',
                 contents='%r\n' % configuration)
 
+            if not r.macros.get('python'):
+                r.macros.python = 'python%(pyver)s'
+
             # run the tests
             r.macros.sitepkgs = Python.sitepkgs
             r.Run('cd %(builddir)s/py/test && '
