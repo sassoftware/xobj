@@ -11,6 +11,8 @@
 # or fitness for a particular purpose. See the MIT License for full details.
 #
 
+import datetime
+from dateutil import tz
 import types
 
 import testsuite
@@ -1342,6 +1344,45 @@ class XobjV2Test(TestCase):
         self.failUnlessEqual(
             [ x.summary for x in doc.root.val],
             [ 'a', u'a\xf6a', ])
+
+    def testDateValue(self):
+        xml = """\
+<root>
+  <dateElement>2011-12-13T14:15:16.789012+00:00</dateElement>
+  <dateAttribute attr="2010-10-06T00:11:27.828160+00:00"/>
+  <dateAttribute2 attr="2010-10-06 00:11:27"/>
+</root>"""
+
+        class DateAttribute(object):
+            _xobjMeta = xobj2.XObjMetadata(attributes=dict(attr=xobj2.Date))
+
+        class DateAttribute2(object):
+            _xobjMeta = xobj2.XObjMetadata(
+                attributes=dict(attr=xobj2.Date),
+            )
+
+        class Root(object):
+            _xobjMeta = xobj2.XObjMetadata(
+                elements=[
+                    xobj2.Field('dateElement', xobj2.Date),
+                    xobj2.Field('dateAttribute', DateAttribute),
+                    xobj2.Field('dateAttribute2', DateAttribute2),
+                ],
+            )
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root))
+        self.assertEquals(doc.root.dateElement,
+            datetime.datetime(2011, 12, 13, 14, 15, 16, 789012,
+                tzinfo=tz.tzutc())
+        )
+        self.assertEquals(doc.root.dateAttribute.attr,
+            datetime.datetime(2010, 10, 6, 0, 11, 27, 828160,
+                tzinfo=tz.tzutc())
+        )
+        self.assertEquals(doc.root.dateAttribute2.attr,
+            datetime.datetime(2010, 10, 6, 0, 11, 27))
+
+        xml2 = doc.toxml()
+        self.assertXmlEqual(xml2, xml)
 
 if __name__ == "__main__":
     testsuite.main()

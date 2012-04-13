@@ -131,7 +131,7 @@ If you want to tightly control memory consumption, you can define classes
 with __slots__. Additional fields will no longer show up in the objects.
 """
 
-
+import datetime
 import types
 import inspect
 from StringIO import StringIO
@@ -145,6 +145,14 @@ try:
 except ImportError:
     import sha
     SHA1 = sha.new
+
+try:
+    from dateutil import parser as DateParser
+    from dateutil import tz
+    TZUTC = tz.tzutc()
+except ImportError:
+    DateParser = None
+    TZUTC = None
 
 class UnmatchedIdRef(Exception):
     """
@@ -325,6 +333,24 @@ class XObjFloat(_Native):
 
 class XObjLong(_Native):
     _nativeType = long
+
+class Date(_Native):
+    __slots__ = []
+    _nativeType = datetime.datetime
+
+    @classmethod
+    def fromText(cls, val=None):
+        if val is None:
+            return cls.fromNone()
+        if DateParser is None:
+            return val
+        return DateParser.parse(val)
+
+    @classmethod
+    def toText(cls, val):
+        if val is None:
+            return None
+        return val.isoformat()
 
 class XObjMetadata(object):
     """
