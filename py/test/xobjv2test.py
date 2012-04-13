@@ -528,6 +528,23 @@ class XobjV2Test(TestCase):
         self.failUnlessEqual(d.root._xobjMeta.tag, 'top')
         self.failUnlessEqual(d.root.attr, 'foo')
 
+    def testObjectTypeBool(self):
+        class Top(object):
+            __slots__ = [ 'val' ]
+            _xobjMeta = xobj2.XObjMetadata(
+                tag = 'top',
+                elements = [ xobj2.Field('val', bool) ])
+
+        t = Top()
+        t.val = True
+
+        s = "<top><val>true</val></top>"
+        d = xobj2.Document(root=t)
+        self.assertXMLEquals(d.toxml(xml_declaration = False), s)
+
+        d = xobj2.Document.fromxml(s, rootNodes = [ Top ])
+        self.assertTrue(d.root.val)
+
     def testEmptyList(self):
         class Top(object):
             _xobjMeta = xobj2.XObjMetadata(
@@ -1312,6 +1329,19 @@ class XobjV2Test(TestCase):
             _xobjMeta = xobj2.XObjMetadata(attributes=dict(count=int))
         doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root2))
         self.failUnlessEqual(doc.root.count, 1)
+
+    def testStringAndUnicode(self):
+        xml = u"""<?xml version='1.0' encoding='UTF-8'?>
+<root><val summary="a"/><val summary="a\xf6a"/></root>"""
+        class Val(object):
+            _xobjMeta = xobj2.XObjMetadata()
+
+        class Root(object):
+            _xobjMeta = xobj2.XObjMetadata(elements=xobj2.Field('val', [ Val ]))
+        doc = xobj2.Document.fromxml(xml, rootNodes = dict(root=Root))
+        self.failUnlessEqual(
+            [ x.summary for x in doc.root.val],
+            [ 'a', u'a\xf6a', ])
 
 if __name__ == "__main__":
     testsuite.main()

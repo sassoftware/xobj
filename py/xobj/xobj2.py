@@ -295,6 +295,9 @@ class XObjString(_Native):
     _nativeType = str
     @classmethod
     def fromText(cls, val=None):
+        # lxml may present the same string as either text or unicode
+        if isinstance(val, unicode):
+            return val
         if val is not None:
             # Only ASCII data is allowed
             return val.decode('ascii')
