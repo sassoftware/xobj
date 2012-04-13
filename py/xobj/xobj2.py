@@ -151,7 +151,7 @@ try:
     from dateutil import tz
     TZUTC = tz.tzutc()
 except ImportError:
-    DateParser = None
+    DateParser = None  # pyflakes=ignore
     TZUTC = None
 
 class UnmatchedIdRef(Exception):
