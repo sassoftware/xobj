@@ -18,6 +18,7 @@ class XObj(PackageRecipe):
     buildRequires = [ 'flexsdk', 'make:runtime',
         'procps:runtime', 'sun-jdk', 'ant:runtime', 'ant:java',
         'xorg-server:runtime', 'util-linux:runtime', 'lxml:python', 
+        'python-dateutil:python',
         'xkeyboard-config', 'xkbcomp', 'xfs', 'group-xorg-fonts',
     ]
 
