@@ -313,7 +313,7 @@ public class XObjXMLDecoder
         // for example, doing a GET into a previously fetched instance
         var resultID:String = getIDAttr(dataNode);
         
-        // see whether we alreadyhave an object with this IDif (resultID)
+        // see whether we alreadyhave an object with this ID
         var existingObj:Object;
         if (resultID)
         {
