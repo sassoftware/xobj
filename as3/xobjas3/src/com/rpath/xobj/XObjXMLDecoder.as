@@ -615,7 +615,7 @@ public class XObjXMLDecoder
                     {
                         var existing:* = result[propertyName];
                         
-                        if (existing)
+                        if (!(existing == undefined))
                         {
                             // we do not want to reuse simple objects
                             if ((existing is Object)
@@ -632,7 +632,7 @@ public class XObjXMLDecoder
                             {
                                 // reuse any complex objects provided we don't have
                                 // an ID conflict
-                                if (partID)
+                                if (partID != null)
                                 {
                                     var existingByID:* = objectFactory.getObjectForId(partID);
                                     if (!existingByID)
