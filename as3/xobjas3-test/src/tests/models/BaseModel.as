@@ -20,7 +20,7 @@ import mx.utils.ObjectUtil;
 [RemoteClass]  // tell the compiler we can be deep copied 
 [Bindable]
 [Event(name="refreshingChange",type="flash.events.Event")]
-public dynamic class BaseModel extends XObjString
+public dynamic class BaseModel extends Object
 {
     public static const REFRESHING_CHANGE_EVENT:String = "refreshingChange";
     public function BaseModel()
