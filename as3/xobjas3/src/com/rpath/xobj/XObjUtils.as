@@ -394,6 +394,10 @@ public class XObjUtils
             }
             
             // ask if this is a member of not
+            //TODO: move this to the start of this funciton and roll in 
+            // type mapping done by decoder to eliminate unwanted reflection
+            // and also ease potential for subtypes to "alias" properties as 
+            // members (ref RCE-229)
             if (object is IXObjCollection)
             {
                 typeInfo.isMember = (object as IXObjCollection).isElementMember(propName);
