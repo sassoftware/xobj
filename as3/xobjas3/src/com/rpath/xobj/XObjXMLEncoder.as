@@ -491,7 +491,12 @@ public class XObjXMLEncoder
                     }
                     else
                     {
-                        localName = tagForType(member);
+                        // do we have meta?
+                        var meta:XObjMetadata = XObjMetadata.getMetadata(obj, false);
+                        if (meta && meta.arrayEntryTag)
+                            localName = meta.arrayEntryTag;
+                        else
+                            localName = tagForType(member);
                     }
                 }
                 

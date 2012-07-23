@@ -13,6 +13,7 @@
 
 package com.rpath.xobj
 {
+import flash.utils.Dictionary;
 
 [RemoteClass]  // tell the compiler we can be deep copied 
 public class XObjMetadata
@@ -20,9 +21,11 @@ public class XObjMetadata
     public var attributes:Array;
     public var elements:Array;
     //public var namespaces:Array;
-    
+    public var arrayEntryTag:String;  // tag to encode array element with...
     
     public static const METADATA_PROPERTY:String = "_xobj";
+    
+    private static var _meta:Dictionary = new Dictionary(true);
     
     public function XObjMetadata()
     {
@@ -34,7 +37,7 @@ public class XObjMetadata
         //namespaces = [];
     }
     
-    private static function getMetadata(target:*):XObjMetadata
+    public static function getMetadata(target:*, create:Boolean=true):XObjMetadata
     {
         var result:XObjMetadata = null;
         
@@ -43,8 +46,10 @@ public class XObjMetadata
             result = target[METADATA_PROPERTY];
         }
         else
+            result = _meta[target];
+            
+        if (!result && create) // doesn't exist. Try creating it
         {
-            // doesn't exist. Try creating it
             try
             {
                 target[METADATA_PROPERTY] = new XObjMetadata();
@@ -54,6 +59,9 @@ public class XObjMetadata
             catch (e:Error)
             {
                 // must be nondynamic type
+                // use our global dict
+                result = new XObjMetadata();
+                _meta[target] = result;
             }
         }
         
