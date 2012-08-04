@@ -264,6 +264,13 @@ public class XObjUtils
         return (obj is ICollectionView) || (obj is IXObjCollection);
     }
     
+    public static function getClassForProperty(object:*, propName:String):Class
+    {
+        var tinfo:XObjTypeInfo = typeInfoForProperty(object, getClassName(object), propName);
+        
+        return tinfo.type;
+    }
+    
     public static function typeInfoForProperty(object:*, className:String, propName:String):XObjTypeInfo
     {
         var isArray:Boolean = false;

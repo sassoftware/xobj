@@ -260,6 +260,18 @@ public class XObjXMLDecoder
             return new XObjDeferredDecode(this, dataNode, propType);
     }
     
+    public function decodeRawXML(xml:XML, propType:Class = null):Object
+    {
+        var xmlInput:XMLDocument = new XMLDocument(xml);
+        return decodeXML(xmlInput);
+    }
+
+    public function decodeRawXMLInto(xml:XML, rootObject:Object):Object
+    {
+        var xmlInput:XMLDocument = new XMLDocument(xml);
+        return decodeXMLIntoObject(xmlInput, rootObject);
+    }
+
     public function decodeXMLIntoObject(dataNode:XMLNode, rootObject:Object):Object
     {
         if (!rootObject)
