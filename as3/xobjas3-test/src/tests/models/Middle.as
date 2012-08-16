@@ -13,14 +13,14 @@
 
 package tests.models
 {
-    public class Middle
+public class Middle
+{
+    public function Middle()
     {
-        public function Middle()
-        {
-        }
-
+    }
+    
     public var tag:int;
     public function foo():int { return tag  }
-
-    }
+    
+}
 }
