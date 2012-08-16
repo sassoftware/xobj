@@ -36,7 +36,7 @@ public class XObjTypeMap
         
     }
     
-    public static function elementTagForMember(typeMap:*, member:*):String
+    public static function elementTagForMember(obj:*, typeMap:*, member:*):String
     {
         var clazz:Class;
         
@@ -72,7 +72,14 @@ public class XObjTypeMap
                     return key
             }
         }
-        
+        else 
+        {
+            // do we have meta?
+            var meta:XObjMetadata = XObjMetadata.getMetadata(obj, false);
+            if (meta && meta.arrayEntryTag)
+                return meta.arrayEntryTag;
+        }
+
         return "item";  // we do not know
     }
 }

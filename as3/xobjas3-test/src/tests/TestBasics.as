@@ -15,9 +15,9 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import tests.models.*;
-
 import flash.xml.XMLDocument;
+
+import tests.models.*;
 
 
 public class TestBasics extends TestBase
@@ -127,7 +127,8 @@ public class TestBasics extends TestBase
         assertTrue(o.ns_top.ns_element.ns_attr == 'foo')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.ns_top, null, "ns_top", o._xobj.elements[0].qname);
+        var meta:XObjMetadata = XObjMetadata.getMetadata(o);
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.ns_top, null, "ns_top", meta.elements[0].qname);
 
         var expectedString:String = 
                 '<ns:top xmlns:ns="http://somens.xsd">' + 

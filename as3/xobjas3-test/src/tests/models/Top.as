@@ -13,13 +13,13 @@
 
 package tests.models
 {
-    public dynamic class Top
+public dynamic class Top
+{
+    public function Top()
     {
-        public function Top()
-        {
-        }
-
-        public var middle:Middle;
-        public var bottom:Middle;
     }
+    
+    public var middle:Middle;
+    public var bottom:Middle;
+}
 }
