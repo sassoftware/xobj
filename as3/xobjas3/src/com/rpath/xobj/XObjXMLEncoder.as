@@ -200,6 +200,17 @@ public class XObjXMLEncoder
         
         recursionMap = new Dictionary(true);
         
+        // is obj a root holder?
+        /*if (XObjMetadata.METADATA_PROPERTY in obj)
+        {
+        var xobj:XObjMetadata = obj[XObjMetadata.METADATA_PROPERTY];
+        if (xobj.elements.length == 1)
+        {
+        obj = obj[xobj.elements[0].propname];
+        qname = xobj.elements[0].qname;
+        }
+        }*/
+        
         // allow for a root object marked byReference only
         if (!referenceOnly && ("isByReference" in obj))
         {
@@ -250,7 +261,7 @@ public class XObjXMLEncoder
     internal function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XMLNode
     {
         var qname:XObjQName = new XObjQName();
-        
+
         if (q is XObjQName)
             qname = q;
         else if (q is QName)
@@ -326,7 +337,7 @@ public class XObjXMLEncoder
         else if (recurse)
         {
             if (obj is IXObjReference && 
-                ((obj as IXObjReference).isByReference || (obj.hasOwnProperty("id") && obj["id"] != null)))
+                    ((obj as IXObjReference).isByReference || (obj.hasOwnProperty("id") && obj["id"] != null)))
             {
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment
@@ -346,10 +357,10 @@ public class XObjXMLEncoder
     }
     
     internal function internal_encodeValue(obj:Object, 
-                                           qname:XObjQName, 
-                                           parentNode:XMLNode, 
-                                           recurse:Boolean=true, 
-                                           referenceOnly:Boolean=false):XMLNode
+                                            qname:XObjQName, 
+                                            parentNode:XMLNode, 
+                                            recurse:Boolean=true, 
+                                            referenceOnly:Boolean=false):XMLNode
     {
         var myElement:XMLNode;
         
@@ -397,40 +408,44 @@ public class XObjXMLEncoder
             
             // TODO: this is expensive. Can we optimize?
             var classInfo:Object = XObjUtils.getClassInfo(obj, [XObjMetadata.METADATA_PROPERTY, "attributes", "prototype"], CLASS_INFO_OPTIONS);
-            var properties:Array = (classInfo.properties as Array).concat();
+            var properties:Array = (classInfo.properties as Array);
             
             var propsDone:Object = {};
             
             // if we observed (or were provided) an ordering of elements
             // then output that set in order first
-            var xobj:XObjMetadata = XObjMetadata.getMetadata(obj, false);
-            if (xobj)
+            if (XObjMetadata.METADATA_PROPERTY in obj)
             {
-                // walk them in the order we saw them
-                for each (var entry:* in xobj.elements)
+                var xobj:XObjMetadata = (obj[XObjMetadata.METADATA_PROPERTY] as XObjMetadata);
+                
+                if (xobj)
                 {
-                    //var propName:String = decodePartName(propQName, myElement);
-                    var propName:String = entry.propname;
-                    
-                    if (propName in attrNames)
-                        continue;
-                    
-                    // don't write out things we don't have in the class info
-                    // such as [Transient] or write-only props
-                    for (var k:int=0; k < properties.length; k++)
+                    // walk them in the order we saw them
+                    for each (var entry:* in xobj.elements)
                     {
-                        var prop:QName = properties[k];
-                        if (prop.localName == propName)
+                        //var propName:String = decodePartName(propQName, myElement);
+                        var propName:String = entry.propname;
+                        
+                        if (propName in attrNames)
+                            continue;
+                        
+                        // don't write out things we don't have in the class info
+                        // such as [Transient] or write-only props
+                        for (var k:int=0; k < properties.length; k++)
                         {
-                            // remove elements we've handled to speed up the next iteration
-                            // makes a HUGE difference on large collections of objects
-                            properties.splice(k,1);
-                            encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName));
-                            break;
+                            var prop:QName = properties[k];
+                            if (prop.localName == propName)
+                            {
+                                // remove elements we've handled to speed up the next iteration
+                                // makes a HUGE difference on large collections of objects
+                                properties.splice(k,1);
+                                encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName));
+                                break;
+                            }
                         }
+                        // now mark those we visited so we don't try again
+                        propsDone[propName] = true;
                     }
-                    // now mark those we visited so we don't try again
-                    propsDone[propName] = true;
                 }
                 
             }
@@ -552,8 +567,16 @@ public class XObjXMLEncoder
         if (useMeta)
             attrSource = obj.attributes;
         
-        // get them from the metadata structure
-        attrList = XObjMetadata.getMetadata(obj).attributes;
+        // get them from the __attributes structure
+        if (XObjMetadata.METADATA_PROPERTY in obj)
+        {
+            attrList = obj[XObjMetadata.METADATA_PROPERTY]["attributes"];
+        }
+        else if (useMeta) // this is for the create case (no __ info available)
+        {
+            //TODO: synthesize the attrList structure
+            
+        }
         
         // always encode ID and HREF as attributes if they are defined on the 
         // object at all
@@ -635,7 +658,7 @@ public class XObjXMLEncoder
                         // note that we're encoding this attr
                         if (!useMeta)
                             attrNames[attr.propname] = true;
-                        
+
                         // skip anything other than ID if requested
                         if (idOnly && attr.propname != "id" && attr.propname != "href")
                             continue;
@@ -644,10 +667,8 @@ public class XObjXMLEncoder
                         if ((attr.propname == "id" || attr.propname == "href")
                             && !attrSource[attr.propname])
                             continue;
-                        if ("value" in attr)
-                            attributes[name] = attr['value'];
-                        else
-                            attributes[name] = attrSource[attr.propname];
+                        
+                        attributes[name] = attrSource[attr.propname];
                     }
                     catch (e:ReferenceError)
                     {
@@ -830,6 +851,6 @@ public class XObjXMLEncoder
         className = getQualifiedClassName(clazz);
         return className.replace(/.*::/, "");
     }
-    
+
 }
 }

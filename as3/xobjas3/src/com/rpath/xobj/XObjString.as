@@ -44,15 +44,15 @@ public dynamic class XObjString
     [Bindable]
     public var value:String;
     
-/*    public var _xobj:XObjMetadata;
-*/    
+    public var _xobj:XObjMetadata;
+    
     public function XObjString(val:*=null)
     {
         super();
         
         value = val;
-/*        _xobj = new XObjMetadata();
-*/    }
+        _xobj = new XObjMetadata();
+    }
     
     public function toString():String
     {

@@ -59,7 +59,7 @@ public class XObjArrayCollection extends ArrayCollection implements IXObjCollect
     
     public function elementTagForMember(member:*):String
     {
-        return XObjTypeMap.elementTagForMember(this, type, member);
+        return XObjTypeMap.elementTagForMember(type, member);
     }
 
     public function addItemIfAbsent(value:Object):Boolean

@@ -30,11 +30,14 @@ package com.rpath.xobj
 
 /*
 
+TODO: refactor all the __elements and __attributes structures into an _xobj
+structure
+
 TODO: Check mapping to primitive type (int) slots
 
 TODO: fix handling of arrays of simpleTypes that need to be locally typemapped
 
-TODO: add namespaces to the _xobj structure
+TODO: add __namespaces to the _xobj structure
 
 TODO: keep track of the element qname we (de)coded something with in the _xobj
 
@@ -77,7 +80,7 @@ import mx.utils.ObjectProxy;
  * properties to the unmarshalled instances
  * 
  * 2/ The preservation of namespaces, element ordering and attributes requires
- * the addition of an XObjMetadata structure for each unmarshalled instance.
+ * the addition of an _xobj metadata structure to each unmarshalled instance.
  * 
  * Further work could be done to eliminate this requirement by requiring any Type
  * mapped to support an IXObj interface that would provide methods for metadata
@@ -260,15 +263,15 @@ public class XObjXMLDecoder
     public function decodeRawXML(xml:XML, propType:Class = null):Object
     {
         var xmlInput:XMLDocument = new XMLDocument(xml);
-        return decodeXML(xmlInput, propType);
+        return decodeXML(xmlInput);
     }
-    
+
     public function decodeRawXMLInto(xml:XML, rootObject:Object):Object
     {
         var xmlInput:XMLDocument = new XMLDocument(xml);
         return decodeXMLIntoObject(xmlInput, rootObject);
     }
-    
+
     public function decodeXMLIntoObject(dataNode:XMLNode, rootObject:Object):Object
     {
         if (!rootObject)
@@ -393,15 +396,8 @@ public class XObjXMLDecoder
                 }
                 else
                 {
-                    // is this marked as a list="true" to hint us?
-                    if (getIsListAttr(dataNode))
-                    {
-                        resultClass = XObjArrayCollection;
-                    }
-                    else
-                    {// go with plain object, and allow bindable flag to kick in
-                        resultClass = Object;
-                    }
+                    // go with plain object, and allow bindable flag to kick in
+                    resultClass = Object;
                 }
             }
         }
@@ -727,8 +723,8 @@ public class XObjXMLDecoder
                             }
                         }
                     }
-                        // else we have to check for it being a member of a collection/array if
-                        // it is NOT a property of the result object
+                    // else we have to check for it being a member of a collection/array if
+                    // it is NOT a property of the result object
                     else if (!(result is IXObjCollection)  // but only if it's not a self-aware collection!
                         && (isArray || isCollection) && !result.hasOwnProperty(propertyName))
                     {
@@ -841,10 +837,6 @@ public class XObjXMLDecoder
                     if (isMember)
                     {
                         result = assignToArray(result, propertyName, partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
-                        
-                        // make a note of the propertyName that was a member for better round-trip support of untyped object heirarchies
-                        var meta:XObjMetadata = XObjMetadata.getMetadata(result);
-                        meta.arrayEntryTag = propertyName;
                     }
                     else
                     {
@@ -938,10 +930,12 @@ public class XObjXMLDecoder
             var attrObj:* = decodeAttrName(attribute, dataNode);
             
             // track the list of attrs so we can decode them later
+            
             attributeSet.push(attrObj);
             
             var attrName:String = attrObj.propname;
-            var attrValue:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
+            
+            var attr:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
             
             if (makeAttributesMeta)
             {
@@ -949,21 +943,19 @@ public class XObjXMLDecoder
                 {
                     if (!("attributes" in result))
                         result.attributes = {};
-                    result.attributes[attrName] = attrValue;
+                    result.attributes[attrName] = attr;
                 }
                 catch (e:Error)
                 {
-                    // probably not a dynamic class. Stash on global tracking dict...
-                    if (attrValue)
-                        attrObj.value = attrValue;
-                    XObjMetadata.addAttribute(result, attrObj);
+                    // probably not a dynamic class. Throw away the attributes...
+                    
                 }
             }
             else
             {
                 try
                 {
-                    result[attrName] = attrValue;
+                    result[attrName] = attr;
                     if (isArray)
                     {
                         // TODO: figure out the clean way to do this. namespaces?
@@ -973,24 +965,20 @@ public class XObjXMLDecoder
                 catch (e:TypeError)
                 {
                     if ((result[attrName] is IXObjHref)
-                        && (attrValue is String))
+                        && (attr is String))
                     {
-                        result[attrName].id = attrValue;
+                        result[attrName].id = attr;
                     }
                     else 
-                    {
-                        // Prob not a dynamic class. Stash on global tracking dict...
-                        if (attrValue)
-                            attrObj.value = attrValue;
-                        XObjMetadata.addAttribute(result, attrObj);
-                    }
+                        throw e;
                 }
                 catch (e:Error)
                 {
                     //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    trace("Failed to set attribute "+attrName+"("+attrValue+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    trace("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
+            
         }
         
         // finally, did we build a new untyped object with a single property named 'item'
@@ -1309,7 +1297,6 @@ public class XObjXMLDecoder
     
     public function decodeAttrName(name:String, node:XMLNode):*
     {
-        var attr:Object = {};
         // we need to map ovf:msgid to a local prefix
         var parts:Array = name.split(":");
         if (parts[0] == "xmlns")
@@ -1332,12 +1319,7 @@ public class XObjXMLDecoder
             }
         }
         
-        attr.qname = qname;
-        attr.propname = name;
-        // also pull attr value
-        if (node.attributes[name])
-            attr.value = node.attributes[name];
-        return attr;
+        return {qname: qname, propname: name};
     }
     
     public function toCollection(v:*):ListCollectionView
@@ -1379,18 +1361,6 @@ public class XObjXMLDecoder
         return null;
     }
     
-    private function getIsListAttr(part:XMLNode):Boolean
-    {
-        if (!part)
-            return false;
-        
-        if ("list" in part.attributes)
-            return part.attributes["list"] == "true";
-        
-        return false;
-    }
-    
-    
     /** whacky rPath datetime format which is ISO8601 with the 
      * required 'T' element replaced with a SPACE
      */
@@ -1401,7 +1371,7 @@ public class XObjXMLDecoder
         
         return DateUtil.parseW3CDTF(newStr);
     }
-    
+
 }
 
 }

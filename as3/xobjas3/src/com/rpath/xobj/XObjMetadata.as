@@ -41,9 +41,6 @@ public class XObjMetadata
     {
         var result:XObjMetadata = null;
         
-        if (!target)
-            return null;
-        
         if (METADATA_PROPERTY in target)
         {
             result = target[METADATA_PROPERTY];
@@ -121,20 +118,6 @@ public class XObjMetadata
     public function addElement(entry:*):void
     {
         elements.push(entry);
-    }
-    
-    /** addAttrIfAbsent checks for attr.propname uniqueness
-    */
-    
-    public function addAttrIfAbsent(attr:*):void
-    {
-        for each (var entry:Object in attributes)
-        {
-            if (entry.propname == attr.propname)
-                return;
-        }
-        
-        attributes.push(attr);
     }
     
     public static function addAttrIfAbsent(attrList:Array, attr:String):Array
