@@ -149,7 +149,35 @@ public class XObjMetadata
         return attrList;
     }
     
+    public function removeAttr(attr:*):void
+    {
+        var index:int = 0;
+        for each (var entry:Object in attributes)
+        {
+            if (entry.propname == attr.propname)
+            {
+                attributes.splice(index, 1);
+                break;
+            }
+            index++;
+        }
+    }
     
+    public static function removeAttr(attrList:Array, attr:String):Array
+    {
+        var index:int = 0;
+        for each (var entry:Object in attrList)
+        {
+            if (entry.propname == attr)
+            {
+                attrList.splice(index, 1);
+                break;
+            }
+            index++;
+        }
+        return attrList;
+    }
+
     public static function isPropByRef(classInfo:Object, propName:String):Boolean
     {
         var metadata:Object;

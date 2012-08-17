@@ -558,9 +558,15 @@ public class XObjXMLEncoder
         // always encode ID and HREF as attributes if they are defined on the 
         // object at all
         
-        if ("id" in obj) // special case id property in non __attributes case
+        if ("id" in obj) // special case id property in non attributes case
         {
-            XObjMetadata.addAttrIfAbsent(attrList, "id");
+            // this hack is here since RESThref cannot obscure it's own id prop
+            // without extra introspection magic and we don't want double id=""
+            // and href="" in a single RESThref encoding
+            if (obj is IXObjHref)
+                XObjMetadata.removeAttr(attrList, "id");
+            else
+                XObjMetadata.addAttrIfAbsent(attrList, "id");
         }
         
         // double up on HREF as well as ID as workaround for old servers
