@@ -33,7 +33,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOURCE CODE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package com.adobe.utils
+package com.rpath.xobj
 {
 import mx.formatters.DateBase;
 

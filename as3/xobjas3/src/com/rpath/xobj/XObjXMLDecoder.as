@@ -43,8 +43,6 @@ TODO: add some kind of "Type mapping" memory to the _xobj structure.
 TODO: explore looking up XMLSchema types using simple parsing ?
 */
 
-import com.adobe.utils.DateUtil;
-
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
 import flash.xml.XMLDocument;

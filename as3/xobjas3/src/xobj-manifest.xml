@@ -14,6 +14,7 @@
 
 <componentPackage>
     <component id="CollectionUtil" class="com.rpath.xobj.CollectionUtil"/>
+    <component id="DateUtil" class="com.rpath.xobj.DateUtil"/>
     <component id="IInvalidationAware" class="com.rpath.xobj.IInvalidationAware"/>
     <component id="InvalidationAware" class="com.rpath.xobj.InvalidationAware"/>
     <component id="IXObjCollection" class="com.rpath.xobj.IXObjCollection"/>
