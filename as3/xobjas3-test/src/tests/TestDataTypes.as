@@ -15,8 +15,6 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import flash.xml.XMLDocument;
-
 import tests.models.*;
 
 
@@ -43,7 +41,7 @@ public class TestDataTypes extends TestBase
     public function testSimpleTypes():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({simpleType:TestableSimpleTypes});
-        var xmlInput:XMLDocument = new XMLDocument(simpleTypesTest);
+        var xmlInput:XML = new XML(simpleTypesTest);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("top is object", o.top is Object);
@@ -76,7 +74,7 @@ public class TestDataTypes extends TestBase
     public function testRESTResourceBaseType():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({configuration:SubModel});
-        var xmlInput:XMLDocument = new XMLDocument(restBaseType);
+        var xmlInput:XML = new XML(restBaseType);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("configuration is SubModel", o.configuration is SubModel);
@@ -88,7 +86,7 @@ public class TestDataTypes extends TestBase
     public function testDoubleDynamicDecode():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({configuration:SubModel});
-        var xmlInput:XMLDocument = new XMLDocument(restBaseType);
+        var xmlInput:XML = new XML(restBaseType);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("configuration is SubModel", o.configuration is SubModel);
@@ -116,7 +114,7 @@ public class TestDataTypes extends TestBase
     {
         var typeMap:* = {configuration:SubModel};
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = new XMLDocument(restBaseType);
+        var xmlInput:XML = new XML(restBaseType);
         var o:*;
 
         o = typedDecoder.decodeXML(xmlInput);
@@ -140,7 +138,7 @@ public class TestDataTypes extends TestBase
         o.configuration.rpath_boolean_thing = true;
 
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.configuration);
+        var xmlOutput:XML = typedEncoder.encodeObject(o.configuration);
         var xmlString:String = xmlOutput.toString();
         
         // reencode

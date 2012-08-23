@@ -15,8 +15,6 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import flash.xml.XMLDocument;
-
 import mx.collections.ArrayCollection;
 
 import tests.models.*;
@@ -53,7 +51,7 @@ public class TestRefresh extends TestBase
     public function testRefreshBaseData():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArray});
-        var xmlInput:XMLDocument = new XMLDocument(refresh1);
+        var xmlInput:XML = new XML(refresh1);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("Top is type Object", o.top is TopWithArray);
@@ -82,7 +80,7 @@ public class TestRefresh extends TestBase
     public function testRefreshWithArray():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArray});
-        var xmlInput:XMLDocument = new XMLDocument(refresh1);
+        var xmlInput:XML = new XML(refresh1);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         // quick sanity check
@@ -135,7 +133,7 @@ public class TestRefresh extends TestBase
     public function testRefreshWithArrayCollection():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArrayCollection});
-        var xmlInput:XMLDocument = new XMLDocument(refresh1);
+        var xmlInput:XML = new XML(refresh1);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         // quick sanity check

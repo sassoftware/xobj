@@ -15,8 +15,6 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import flash.xml.XMLDocument;
-
 import mx.collections.ArrayCollection;
 
 import tests.models.*;
@@ -53,7 +51,7 @@ public class TestArrays extends TestBase
     public function testArrayCollection():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArrayCollection});
-        var xmlInput:XMLDocument = new XMLDocument(arrayCollectionTest1);
+        var xmlInput:XML = new XML(arrayCollectionTest1);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("Top is type Object", o.top is TopWithArrayCollection);
@@ -103,7 +101,7 @@ public class TestArrays extends TestBase
     public function testArray():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithArray});
-        var xmlInput:XMLDocument = new XMLDocument(arrayTest1);
+        var xmlInput:XML = new XML(arrayTest1);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("Top is type Object", o.top is TopWithArray);
@@ -170,7 +168,7 @@ public class TestArrays extends TestBase
         return;
         
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithNestedArray});
-        var xmlInput:XMLDocument = new XMLDocument(arrayTest2);
+        var xmlInput:XMLList = new XMLList(arrayTest2);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("Top is type Object", o.top is TopWithNestedArray);

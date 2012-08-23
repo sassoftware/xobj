@@ -47,7 +47,7 @@ package tests
             // now decode it and validate
             var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
             
-            var o:* = typedDecoder.decodeXML(new XMLDocument(xmlInput));
+            var o:* = typedDecoder.decodeXML(new XML(xmlInput));
             var testObj:TestEmbedded = o.management_interface as TestEmbedded;
             
             assertTrue(testObj != null);

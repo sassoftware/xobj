@@ -15,8 +15,6 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import flash.xml.XMLDocument;
-
 import tests.models.*;
 
 
@@ -28,7 +26,7 @@ public class TestBasics extends TestBase
     public function testSimple():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder();
-        var xmlInput:XMLDocument = new XMLDocument(testData.simple);
+        var xmlInput:XML = new XML(testData.simple);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("top is object", o.top is Object);
@@ -46,7 +44,7 @@ public class TestBasics extends TestBase
     public function testComplex():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({prop: Array});
-        var xmlInput:XMLDocument = new XMLDocument(testData.complex);
+        var xmlInput:XML = new XML(testData.complex);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue(o.top is Object);
@@ -60,7 +58,7 @@ public class TestBasics extends TestBase
         }
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({subprop: XObjString});
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
+        var xmlOutput:XML = typedEncoder.encodeObject(o.top, null, "top");
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }        
@@ -75,14 +73,14 @@ public class TestBasics extends TestBase
     public function testNamespaces():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder();
-        var xmlInput:XMLDocument = new XMLDocument(testData.namespaces);
+        var xmlInput:XML = new XML(testData.namespaces);
         var o:* = typedDecoder.decodeXML(xmlInput);
 
         assertTrue(o.top.other_tag.other_val == '1')
         assertTrue(o.top.other2_tag.val == '2')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
+        var xmlOutput:XML = typedEncoder.encodeObject(o.top, null, "top");
 
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     } 
@@ -95,14 +93,14 @@ public class TestBasics extends TestBase
     public function testMappedNamespaces():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(null, { other3 : 'http://other/other2'});
-        var xmlInput:XMLDocument = new XMLDocument(testData.namespaces);
+        var xmlInput:XML = new XML(testData.namespaces);
         var o:* = typedDecoder.decodeXML(xmlInput);
 
         assertTrue(o.top.other_tag.other_val == '1')
         assertTrue(o.top.other3_tag.val == '2')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.top, null, "top");
+        var xmlOutput:XML = typedEncoder.encodeObject(o.top, null, "top");
 
         // check that we remap to original prefixes on the way back out
         assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
@@ -121,14 +119,14 @@ public class TestBasics extends TestBase
     public function testExplicitNamespace():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder();
-        var xmlInput:XMLDocument = new XMLDocument(testData.explicitns);
+        var xmlInput:XML = new XML(testData.explicitns);
         var o:* = typedDecoder.decodeXML(xmlInput);
 
         assertTrue(o.ns_top.ns_element.ns_attr == 'foo')
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder();
-        var meta:XObjMetadata = XObjMetadata.getMetadata(o);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.ns_top, null, "ns_top", meta.elements[0].qname);
+        var meta:XObjMetadata = XObjMetadata.getMetadata(o.ns_top);
+        var xmlOutput:XML = typedEncoder.encodeObject(o.ns_top, null, "ns_top", meta.elements[0].qname);
 
         var expectedString:String = 
                 '<ns:top xmlns:ns="http://somens.xsd">' + 
@@ -155,7 +153,7 @@ public class TestBasics extends TestBase
         var typeMap:* = {top:Top};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(t);
+        var xmlOutput:XML = typedEncoder.encodeObject(t);
 
         var expectedString:String = 
                 '<top>'+
@@ -169,7 +167,7 @@ public class TestBasics extends TestBase
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
 
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
 
         assertTrue(o.top is Top);
@@ -202,7 +200,7 @@ public class TestBasics extends TestBase
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
         typedEncoder.encodeNullElements = false;
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(t);
+        var xmlOutput:XML = typedEncoder.encodeObject(t);
         
         var expectedString:String = 
             '<top>'+
@@ -215,7 +213,7 @@ public class TestBasics extends TestBase
         assertTrue(compareXMLtoString(xmlOutput, expectedString));
         
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue(o.top is Top);
@@ -246,7 +244,7 @@ public class TestBasics extends TestBase
         var typeMap:* = {obj: TestableObject};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+        var xmlOutput:XML = typedEncoder.encodeObject(obj);
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
@@ -259,7 +257,7 @@ public class TestBasics extends TestBase
         
         // now decode it and validate
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
         assertTrue(o.obj is TestableObject);
         assertTrue(o.obj.someVal =="someval");
@@ -281,7 +279,7 @@ public class TestBasics extends TestBase
         var typeMap:* = {obj: TestableObject};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+        var xmlOutput:XML = typedEncoder.encodeObject(obj);
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
@@ -294,7 +292,7 @@ public class TestBasics extends TestBase
         
         // now decode it and validate
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
         assertTrue(o.obj is TestableObject);
         assertTrue(o.obj.someVal == "1.0");
@@ -316,7 +314,7 @@ public class TestBasics extends TestBase
         var typeMap:* = {obj: TestableNumericObject};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+        var xmlOutput:XML = typedEncoder.encodeObject(obj);
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
@@ -329,7 +327,7 @@ public class TestBasics extends TestBase
         
         // now decode it and validate
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
         assertTrue(o.obj is TestableNumericObject);
         assertTrue(o.obj.someNumber == 1.1);
@@ -351,7 +349,7 @@ public class TestBasics extends TestBase
         var typeMap:* = {obj: TestableNumericObject};
         
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-        var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+        var xmlOutput:XML = typedEncoder.encodeObject(obj);
 
         // neither the Transient nor the xobjTransient vars should be there
         var expectedString:String = 
@@ -364,7 +362,7 @@ public class TestBasics extends TestBase
         
         // now decode it and validate
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-        var xmlInput:XMLDocument = xmlOutput;
+        var xmlInput:XML = xmlOutput;
         var o:* = typedDecoder.decodeXML(xmlInput);
         assertTrue(o.obj is TestableNumericObject);
         assertTrue(o.obj.someNumber == 0.5);

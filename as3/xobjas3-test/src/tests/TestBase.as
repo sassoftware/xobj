@@ -13,8 +13,6 @@
 
 package tests
 {
-    import flash.xml.XMLNode;
-    
     import net.digitalprimates.fluint.tests.TestCase;
 
     public class TestBase extends TestCase
@@ -40,7 +38,7 @@ package tests
             
         }
         
-        public function compareXML(a:XMLNode, b:XMLNode):Boolean
+        public function compareXML(a:XML, b:XML):Boolean
         {
             var aString:String = a.toString();
             var bString:String = b.toString();
@@ -54,7 +52,7 @@ package tests
         }
 
 
-        public function compareXMLtoString(a:XMLNode, b:String):Boolean
+        public function compareXMLtoString(a:XML, b:String):Boolean
         {
             var outputXML:XML = new XML(a.toString());
             var inputXML:XML = new XML(b);

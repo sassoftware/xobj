@@ -17,7 +17,6 @@ import flash.errors.StackOverflowError;
 import flash.utils.Dictionary;
 import flash.utils.getDefinitionByName;
 import flash.utils.getQualifiedClassName;
-import flash.xml.XMLNode;
 
 import mx.collections.ArrayList;
 import mx.collections.ICollectionView;
@@ -42,11 +41,11 @@ public class XObjUtils
     private static var CLASS_INFO_CACHE:Object = {};
     
     /**
-     * Returns the local name of an XMLNode.
+     * Returns the local name of an XMLList.
      *
-     * @return The local name of an XMLNode.
+     * @return The local name of an XMLList.
      */
-    public static function getLocalName(xmlNode:XMLNode):String
+    public static function getLocalName(xmlNode:XMLList):String
     {
         return getNCName(xmlNode.nodeName);
     }
@@ -61,13 +60,13 @@ public class XObjUtils
         return name;
     }
     
-    public static function safeGetPrefixForNamespace(node:XMLNode, uri:String):String
+    public static function safeGetPrefixForNamespace(node:XML, uri:String):String
     {
         var result:String;
         
         try
         {
-            result = node.getPrefixForNamespace(uri);
+            result = node.namespace();//(uri);
         }
         catch (e:StackOverflowError)
         {
@@ -80,7 +79,7 @@ public class XObjUtils
     }
     
     
-    public static function encodeElementTag(qname:XObjQName, node:XMLNode):String
+    public static function encodeElementTag(qname:XObjQName, node:XML):String
     {
         var elementTag:String = XObjUtils.getNCName(qname.localName);
         

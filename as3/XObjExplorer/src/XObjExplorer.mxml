@@ -141,7 +141,7 @@
                 {
                     case "SIMPLE":
                     var simpleDecoder:SimpleXMLDecoder = new SimpleXMLDecoder(false);
-                    var xmlNode:XMLNode = new XMLDocument(inputXML);
+                    var xmlNode:XMLList = new XMLList(inputXML);
                     newObject = simpleDecoder.decodeXML(xmlNode);
                     break;
                     
@@ -149,7 +149,7 @@
                     var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({Envelope:test.Envelope, File:test.File},
                         { _default_ : "http://schemas.dmtf.org/ovf/envelope/1"}, false, false);
                         
-                    xmlNode = new XMLDocument(inputXML);
+                    xmlNode = new XMLList(inputXML);
                     newObject = typedDecoder.decodeXML(xmlNode);
                     break;
                     
@@ -178,7 +178,7 @@
         refreshingXML = true;
         
         var myXML:XMLDocument = new XMLDocument();
-        var xmlNode:XMLNode;
+        var xmlNode:XMLList;
         var xmlList:XMLList;
         var unformattedOutput:String;
         
@@ -186,7 +186,7 @@
         {
             case "SIMPLE":
             var simpleEncoder:SimpleXMLEncoder = new SimpleXMLEncoder(myXML);
-            xmlNode = simpleEncoder.encodeValue(testObject, new QName("local","foo"), new XMLNode(5,"root"));
+            xmlNode = simpleEncoder.encodeValue(testObject, new QName("local","foo"), new XMLList(5,"root"));
             unformattedOutput = myXML.toString();
             break;
             

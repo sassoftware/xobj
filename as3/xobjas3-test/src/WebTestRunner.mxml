@@ -19,21 +19,32 @@
     creationComplete="startTestProcess(event)"
     width="100%" height="100%"
     >
-
+    
     <mx:Script>
     <![CDATA[
-
-    protected function startTestProcess( event:Event ):void 
-    {
-        var suites:Array = TestSuites.suites();
-        testRunner.startTests(suites);
-    }
-
+        
+        private var startTime:Number;
+        
+        protected function startTestProcess( event:Event ):void 
+        {
+            var suites:Array = TestSuites.suites();
+            startTime = getTimer();
+            
+            testRunner.startTests(suites);
+            
+            testRunner.addEventListener(net.digitalprimates.fluint.ui.TestRunner.TESTS_COMPLETE, handleTestsComplete);
+        }
+        
+        private function handleTestsComplete(event:Event):void
+        {
+            trace("Total time for 1 runs: "+ (getTimer() - startTime) + " ms");
+        }
+        
     ]]>
     </mx:Script>
-
+    
     <fluint:TestResultDisplay width="100%" height="100%"/>
-
+    
     <fluint:TestRunner id="testRunner"/>
-
+    
 </mx:Application>

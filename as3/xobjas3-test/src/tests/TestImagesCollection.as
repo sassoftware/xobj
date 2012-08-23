@@ -15,8 +15,6 @@ package tests
 {
 import com.rpath.xobj.*;
 
-import flash.xml.XMLDocument;
-
 import mx.collections.ArrayCollection;
 
 import tests.models.*;
@@ -30,7 +28,7 @@ public class TestImagesCollection extends TestBase
     public function testImagesCollection():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({images:ImagesCollection, image:ProductImage});
-        var xmlInput:XMLDocument = new XMLDocument(testData.imagecollection);
+        var xmlInput:XML = new XML(testData.imagecollection);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("images is object", o.images is ImagesCollection);

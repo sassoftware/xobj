@@ -36,7 +36,7 @@ package tests
             var typeMap:* = {obj: TestableObject};
             
             var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder(typeMap);
-            var xmlOutput:XMLDocument = typedEncoder.encodeObject(obj);
+            var xmlOutput:XML = typedEncoder.encodeObject(obj);
     
             // neither the Transient nor the xobjTransient vars should be there
             var expectedString:String = 
@@ -49,7 +49,7 @@ package tests
             
             // now decode it and validate
             var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder(typeMap);
-            var xmlInput:XMLDocument = xmlOutput;
+            var xmlInput:XML = xmlOutput;
             var o:* = typedDecoder.decodeXML(xmlInput);
             assertTrue(o.obj is TestableObject);
             assertTrue(o.obj.someVal =="someval");

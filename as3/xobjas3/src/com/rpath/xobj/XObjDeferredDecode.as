@@ -13,11 +13,10 @@
 
 package com.rpath.xobj
 {
-import flash.xml.XMLNode;
 
 public class XObjDeferredDecode
 {
-    public function XObjDeferredDecode(xmlDecoder:XObjXMLDecoder, dataNode:XMLNode, propType:Class=null, rootObject:Object=null)
+    public function XObjDeferredDecode(xmlDecoder:XObjXMLDecoder, dataNode:XML, propType:Class=null, rootObject:Object=null)
     {
         super();
         this.decoder = xmlDecoder;
@@ -27,7 +26,7 @@ public class XObjDeferredDecode
     }
     
     public var decoder:XObjXMLDecoder;
-    public var dataNode:XMLNode;
+    public var dataNode:XML;
     public var propType:Class;
     public var rootObject:Object;
     

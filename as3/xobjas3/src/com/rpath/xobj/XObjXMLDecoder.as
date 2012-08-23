@@ -45,8 +45,6 @@ TODO: explore looking up XMLSchema types using simple parsing ?
 
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
-import flash.xml.XMLDocument;
-import flash.xml.XMLNode;
 import flash.xml.XMLNodeType;
 
 import mx.collections.ICollectionView;
@@ -126,17 +124,21 @@ public class XObjXMLDecoder
     {
         var result:Object = val;
         
-        if (val != null)
+        if (val == null)
+            return null;
+        
+        var valStr:String = val.toString();
+
+        if (valStr != "")
         {
             var testNum:Number = Number(val);
-            var valStr:String = val.toString();
             var lowerVal:String  = val.toString().toLowerCase();
             
             //return the value as a string, a boolean or a number.
             //numbers that start with 0 are left as strings
             //ForceObject removed since we'll take care of converting to a String or Number object later
             // make sure to check if String here so "1.0" is a String, not the number 1 (RBL-4931)
-            if ((val is String) && ((String(val) == "") || (resultType == String)))
+            if (resultType == String)
             {
                 result = valStr;    
             }
@@ -157,8 +159,8 @@ public class XObjXMLDecoder
                 result = Number(val);
             }
             else if (!isFinite(testNum) || isNaN(testNum)
-                || (val.charAt(0) == '0') // starts with a leading zero
-                || ((val.charAt(0) == '-') && (val.charAt(1) == '0')) // starts with -0
+                || (valStr.charAt(0) == '0') // starts with a leading zero
+                || ((valStr.charAt(0) == '-') && (valStr.charAt(1) == '0')) // starts with -0
                 || lowerVal.charAt(lowerVal.length -1) == 'e') // TODO: wtf?
             {
                 result = valStr;
@@ -168,9 +170,9 @@ public class XObjXMLDecoder
                 result = Number(val);
             }
         }
-        else if (val == "")
+        else if (valStr == "")
         {
-            // do something with NULL values?
+            // TODO: do something with NULL values?
             var foo:String = "bar";
         }
         
@@ -241,39 +243,37 @@ public class XObjXMLDecoder
     //--------------------------------------------------------------------------
     
     /**
-     *  Converts a tree of XMLNodes into a tree of ActionScript Objects.
+     *  Converts a tree of XMLLists into a tree of ActionScript Objects.
      *
-     *  @param dataNode An XMLNode to be converted into a tree of ActionScript Objects.
+     *  @param dataNode An XMLList to be converted into a tree of ActionScript Objects.
      *
      *  @return A tree of ActionScript Objects.
      */
-    public function decodeXML(dataNode:XMLNode, propType:Class = null):Object
+    public function decodeXML(dataNode:XML, propType:Class = null):Object
     {
         if (!deferred)
-            return actualDecodeXML(dataNode, propType);
+            return actualDecodeXML(dataNode, propType, null, true);
         else
             return new XObjDeferredDecode(this, dataNode, propType);
     }
     
     public function decodeRawXML(xml:XML, propType:Class = null):Object
     {
-        var xmlInput:XMLDocument = new XMLDocument(xml);
-        return decodeXML(xmlInput, propType);
+        return decodeXML(xml, propType);
     }
     
     public function decodeRawXMLInto(xml:XML, rootObject:Object):Object
     {
-        var xmlInput:XMLDocument = new XMLDocument(xml);
-        return decodeXMLIntoObject(xmlInput, rootObject);
+        return decodeXMLIntoObject(xml, rootObject);
     }
     
-    public function decodeXMLIntoObject(dataNode:XMLNode, rootObject:Object):Object
+    public function decodeXMLIntoObject(dataNode:XML, rootObject:Object):Object
     {
         if (!rootObject)
             return null;
         
         if (!deferred)
-            return actualDecodeXML(dataNode, null, rootObject);
+            return actualDecodeXML(dataNode, null, rootObject, true);
         else
             return new XObjDeferredDecode(this, dataNode, null, rootObject);
     }
@@ -281,7 +281,7 @@ public class XObjXMLDecoder
     /**
      * 
      * actualDecodeXML is the workhorse function that does the heavy lifting of 
-     * decoding a given XMLNode
+     * decoding a given XMLList
      * 
      * In addition to the node, the caller can pass an optional propertyType
      * that specifies what data type the node should be decoded as.
@@ -294,7 +294,7 @@ public class XObjXMLDecoder
      * 
      */
     
-    public function actualDecodeXML(dataNode:XMLNode, expectedResultClass:Class = null, 
+    public function actualDecodeXML(dataNode:XML, expectedResultClass:Class = null, 
                                     rootObject:* = null, isRootNode:Boolean = false, 
                                     memberClass:Class = null):Object
     {
@@ -313,7 +313,7 @@ public class XObjXMLDecoder
         if (dataNode == null)
             return null;
         
-        if (dataNode is XMLDocument)
+        if (dataNode is XMLList)
             nextNodeIsRoot = true;
         
         // does the node have an id? If so, we may already know this object
@@ -338,7 +338,7 @@ public class XObjXMLDecoder
         // flag to track whether we were told or not
         isSpecifiedType = rootObject || expectedResultClass;
         
-        if (rootObject && !nextNodeIsRoot)
+        if (rootObject)
         {
             result = rootObject;
             // also track the ID we got, if any, since this may have been a POST
@@ -381,7 +381,7 @@ public class XObjXMLDecoder
             else
             {
                 // is there a typeMap entry for this element?
-                var nodeType:Class = typeForTag(dataNode.nodeName);
+                var nodeType:Class = typeForTag(dataNode.name());
                 
                 if (nodeType)
                 {
@@ -445,7 +445,7 @@ public class XObjXMLDecoder
         // then FLUSH the array/collection to ensure uniqueness of results
         
         // TODO: consider role of [xobjByReference] metadata tag on parent
-        // object to detemrine isByReference in this case. QuerySet is a 
+        // object to determine isByReference in this case. QuerySet is a 
         // good case study in why this may be more consistent
         
         if (isRootNode || !XObjUtils.isByReference(result))
@@ -464,17 +464,17 @@ public class XObjXMLDecoder
         
         // Now start looking at the child XML nodes
         
-        var children:Array = dataNode.childNodes;
+        var children:XMLList = dataNode.children();
         
         // track whether we actually have any values at all
         isNullObject = true;
         
         // OK. Now we're ready to decode some actual data!
-        if ((children.length == 1) && (children[0].nodeType == XMLNodeType.TEXT_NODE))
+        if ((children.length() == 1) && (children[0].nodeKind() == "text"))
         {
             isNullObject = false;
             
-            var temp:* = XObjXMLDecoder.simpleType(children[0].nodeValue, resultClass);
+            var temp:* = XObjXMLDecoder.simpleType(children[0], resultClass);
             if (!isSpecifiedType
                 || (result is String)
                 || (result is int) 
@@ -530,16 +530,16 @@ public class XObjXMLDecoder
         }
         else 
         {
-            if (children.length > 0 && !(result is XML))
+            if (children.length() > 0 && !(result is XML))
             {
                 var seenProperties:Dictionary = new Dictionary();
                 var lastPartName:Object = {qname: null, propname: null};
                 // loop through all children. TODO: break this into async slices 
                 // as we did with FilterIndex creation and maintenance?
                 
-                for (var i:uint = 0; i < children.length; i++)
+                for (var i:uint = 0; i < children.length(); i++)
                 {
-                    var partNode:XMLNode = children[i];
+                    var partNode:XML = children[i];
                     var typeInfo:XObjTypeInfo = null;
                     var partClass:Class = null;
                     var partClassName:String = null;
@@ -555,7 +555,7 @@ public class XObjXMLDecoder
                     var partObj:*;
                     
                     // skip text nodes, which are part of mixed content
-                    if (partNode.nodeType != XMLNodeType.ELEMENT_NODE)
+                    if (partNode.nodeKind() != "element")
                     {
                         continue;
                     }
@@ -566,7 +566,7 @@ public class XObjXMLDecoder
                     // Step 1: 
                     // figure out the name of the element and thus, the propertyName
                     // to use
-                    partQName = new XObjQName(partNode.namespaceURI, XObjUtils.getNCName(partNode.nodeName));
+                    partQName = new XObjQName(partNode.namespace(), null, partNode.localName());
                     
                     // TODO: allow type map entries to be full QNames, not just local names
                     elementName = decodePartName(partQName, partNode);
@@ -614,17 +614,18 @@ public class XObjXMLDecoder
                     nextCollClass = typeInfo.arrayElementClass;
                     
                     // now, should we decode into a new object, or decode into an existing instance?
-                    if (rootObject && nextNodeIsRoot)
+                    /*if (rootObject && isRootNode)
                     {
                         // we're about to read the root element
                         partObj = rootObject;
                         partClass = XObjUtils.getClass(partObj);
                         partClassName = XObjUtils.getClassName(partObj);
-                    }
-                        // else should we reuse an existing property object?
-                        // NOTE: do not reuse if this is an implied array 
-                        // (hence seenProperties test)
-                    else if (!seenProperties[propertyName]
+                    }*/
+                    //else
+                    // else should we reuse an existing property object?
+                    // NOTE: do not reuse if this is an implied array 
+                    // (hence seenProperties test)
+                    if (!seenProperties[propertyName]
                         && result.hasOwnProperty(propertyName))
                     {
                         var existing:* = result[propertyName];
@@ -833,7 +834,7 @@ public class XObjXMLDecoder
                     
                     // now finally, decode the part itself, using the type information
                     // and possibly, the existing partObj to decode into
-                    partObj = actualDecodeXML(partNode, partClass, partObj, nextNodeIsRoot, nextCollClass);
+                    partObj = actualDecodeXML(partNode, partClass, partObj, false, nextCollClass);
                     
                     // and assign the result property based on array characteristics
                     if (isMember)
@@ -859,24 +860,17 @@ public class XObjXMLDecoder
                         }        
                     }
                     
-                    // should we keep an extra, well-known ref to the object?
-                    if (nextNodeIsRoot && !doneRootDupe)
-                    {
-                        result = assignToProperty(result, "root", partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
-                        doneRootDupe = true;
-                    }
-                    
                     nextNodeIsRoot = false; // don't use root twice!
                 }
             }
-            else if (children.length > 0 && (result is XML))
+            else if (children.length() > 0 && (result is XML))
             {
                 var tempXML:XML;
                 
                 // XML needs special handling as "embedded" XML
                 isNullObject = false;
                 
-                if (children.length > 1)
+                if (children.length() > 1)
                 {
                     // if there's more than one child, use the element *itself* 
                     // as the root node. This will preserve any attributes on it
@@ -885,13 +879,13 @@ public class XObjXMLDecoder
                 else
                 {
                     // otherwise, grab the first child as the root
-                    tempXML = new XML((children[0] as XMLNode).toString());
+                    tempXML = new XML(children[0]);
                 }
                 
                 isSimpleType = false;
                 result = tempXML;
             }
-            else if (children.length == 0)
+            else if (children.length() == 0)
             {
                 // empty node
             }
@@ -910,10 +904,10 @@ public class XObjXMLDecoder
         }
         
         // Cycle through the attributes
-        var attributes:Object = dataNode.attributes;
-        for (var attribute:String in attributes)
+        var attributes:XMLList = dataNode.attributes();
+        for each (var attributeXML:XML in attributes)
         {
-            
+            //var attribute:String = attributeXML.name();
             // result can be null if it contains no children.
             if (result == null)
             {
@@ -933,13 +927,13 @@ public class XObjXMLDecoder
             
             isNullObject = false;
             
-            var attrObj:* = decodeAttrName(attribute, dataNode);
+            var attrObj:* = decodeAttrName(attributeXML.localName(), attributeXML);
             
             // track the list of attrs so we can decode them later
             attributeSet.push(attrObj);
             
             var attrName:String = attrObj.propname;
-            var attrValue:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
+            var attrValue:* = XObjXMLDecoder.simpleType(attributeXML.toString(), resultClass);
             
             if (makeAttributesMeta)
             {
@@ -1042,6 +1036,19 @@ public class XObjXMLDecoder
         if (result && shouldMakeBindable)
         {                
             result = new ObjectProxy(result);
+        }
+        
+        // should we keep an extra, well-known ref to the object?
+        if (isRootNode && !doneRootDupe)
+        {
+            var wrappedResult:Object;
+            
+            wrappedResult = { root: result };
+            var rootQName:XObjQName = new XObjQName(dataNode.namespace(), null, dataNode.localName());
+            wrappedResult[decodePartName(rootQName, dataNode)] = result;
+            result = wrappedResult;
+            //assignToProperty(result, "root", partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
+            doneRootDupe = true;
         }
         
         return result;
@@ -1268,9 +1275,10 @@ public class XObjXMLDecoder
         return null;
     }
     
-    public function getLocalPrefixForNamespace(uri:String, node:XMLNode):String
+    public function getLocalPrefixForNamespace(uri:String, node:XML):String
     {
         var prefix:String;
+        var decls:* = node.namespaceDeclarations();
         
         prefix = namespaceMap[uri];
         if (!prefix)
@@ -1285,11 +1293,16 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodePartName(partQName:XObjQName, node:XMLNode):String
+    public function decodePartName(partQName:XObjQName, node:XML):String
     {
+        var prefix:String;
         var partName:String = XObjUtils.getNCName(partQName.localName);
         
-        var prefix:String = getLocalPrefixForNamespace(partQName.uri, node);
+        // map local namespaces
+        prefix = namespaceMap[node.namespace().uri];
+        if (!prefix)
+            prefix = node.namespace().prefix;
+        //getLocalPrefixForNamespace(partQName.uri, node);
         
         if (prefix == null || prefix == "")
         {
@@ -1305,36 +1318,29 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodeAttrName(name:String, node:XMLNode):*
+    public function decodeAttrName(name:*, node:XML):*
     {
         var attr:Object = {};
-        // we need to map ovf:msgid to a local prefix
-        var parts:Array = name.split(":");
-        if (parts[0] == "xmlns")
+        var namespace:Namespace = node.namespace();
+        var prefix:String = namespace.prefix;
+        var newName:String;
+        
+        if (!prefix)
         {
-            // special case these.
-            name =  name.replace(/:/,"_");
+            // this tells us we "topped out" and can't resolve the ns
+            newName = name;
         }
         else
         {
-            var ns:String = node.getNamespaceForPrefix(parts[0]);
-            if (ns == null)
-            {
-                // this tells us we "topped out" and can't resolve the ns
-                name = name.replace(/:/,"_");
-            }
-            else
-            {
-                var qname:XObjQName = new XObjQName(ns, parts[1]);
-                name = decodePartName(qname, node);
-            }
+            var qname:XObjQName = new XObjQName(namespace, null, name);
+            newName = decodePartName(qname, node);
         }
         
         attr.qname = qname;
-        attr.propname = name;
+        attr.propname = newName;
         // also pull attr value
-        if (node.attributes[name])
-            attr.value = node.attributes[name];
+        if (node.attribute(name).toString())
+            attr.value = node.attribute(name)[0].toString();
         return attr;
     }
     
@@ -1351,15 +1357,18 @@ public class XObjXMLDecoder
     private var makeObjectsBindable:Boolean;
     private var makeAttributesMeta:Boolean;
     
-    private function getIDAttr(part:XMLNode):String
+    private function getIDAttr(part:XML):String
     {
         if (!part)
             return null;
         
-        if ("id" in part.attributes)
-            return part.attributes["id"];
-        else if ("href" in part.attributes)
-            return part.attributes["href"];
+        var id:String = part.attribute("id").toString();
+        var href:String = part.attribute("href").toString();
+        
+        if (id)
+            return id;
+        else if (href)
+            return href;
         
         return null;
     }
@@ -1377,13 +1386,13 @@ public class XObjXMLDecoder
         return null;
     }
     
-    private function getIsListAttr(part:XMLNode):Boolean
+    private function getIsListAttr(part:XML):Boolean
     {
         if (!part)
             return false;
         
-        if ("list" in part.attributes)
-            return part.attributes["list"] == "true";
+        if (part.@list)
+            return part.@list == "true";
         
         return false;
     }

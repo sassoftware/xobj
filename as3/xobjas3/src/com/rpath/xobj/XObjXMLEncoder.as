@@ -145,7 +145,7 @@ public class XObjXMLEncoder
     //--------------------------------------------------------------------------
     
     
-    public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null, myXML:XMLDocument=null)
+    public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null, myXML:XML=null)
     {
         super();
         
@@ -163,17 +163,8 @@ public class XObjXMLEncoder
             spacenameMap[prefix] = nmMap[prefix];
         }
         
-        this.xmlDocument = myXML ? myXML : new XMLDocument();
     }
-    
-    //--------------------------------------------------------------------------
-    //
-    //  Variables
-    //
-    //--------------------------------------------------------------------------
-    
-    public var xmlDocument:XMLDocument;
-    
+
     //--------------------------------------------------------------------------
     //
     //  Methods
@@ -188,13 +179,13 @@ public class XObjXMLEncoder
      * 
      * @param qname The qualified name of the child node.
      * 
-     * @param parentNode An XMLNode under which to put the encoded
+     * @param parentNode An XMLList under which to put the encoded
      * value.
      */
     
     private var recursionMap:Dictionary;
     
-    public function encodeObject(obj:Object, parentNode:XMLNode=null, rootTag:String=null, rootQName:XObjQName=null, referenceOnly:Boolean=false):XMLDocument
+    public function encodeObject(obj:Object, parentNode:XML=null, rootTag:String=null, rootQName:XObjQName=null, referenceOnly:Boolean=false):XML
     {
         var qname:XObjQName = rootQName;
         
@@ -221,17 +212,12 @@ public class XObjXMLEncoder
         }
         
         if (qname == null)
-            qname = new XObjQName("", tag);
+            qname = new XObjQName(null, null, tag);
         
         // null parentNode means "make a new document please"
         if (parentNode == null)
         {
-            xmlDocument = new XMLDocument();
-            parentNode = xmlDocument;
-        }
-        else if (parentNode != xmlDocument)
-        {
-            parentNode.parentNode = xmlDocument;
+            parentNode = <xml></xml>;
         }
         
         encodeValue(obj, qname, parentNode, true, referenceOnly, true);
@@ -239,29 +225,29 @@ public class XObjXMLEncoder
         // dump the recursionMap at the end
         recursionMap = null;
         
-        return xmlDocument;
+        return parentNode.children()[0];
     }
     
-    internal function encodeReference(obj:Object, q:*, parentNode:XMLNode):XMLNode
+    internal function encodeReference(obj:Object, q:*, parentNode:XML):XML
     {
         return encodeValue(obj, q, parentNode, false, true);
     }
     
-    internal function encodeValue(obj:Object, q:*, parentNode:XMLNode, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XMLNode
+    internal function encodeValue(obj:Object, q:*, parentNode:XML, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XML
     {
-        var qname:XObjQName = new XObjQName();
+        var qname:XObjQName;
         
-        if (q is XObjQName)
+        if (q is Namespace)
+            new XObjQName(q);
+        else if (q is XObjQName)
             qname = q;
         else if (q is QName)
         {
-            qname.localName = (q as QName).localName;
-            qname.uri = (q as QName).uri;
+            qname = new XObjQName(null,(q as QName).uri, (q as QName).localName);
         }
         else if (q is String)
         {
-            qname.localName = q;
-            qname.uri="";
+            qname = new XObjQName(null,"", q);
         }
         
         if (qname.localName == null || qname.localName == "")
@@ -273,9 +259,9 @@ public class XObjXMLEncoder
         {
             if (encodeNullElements)
             {
-                var myElement:XMLNode = xmlDocument.createElement("foo");
+                var myElement:XML = <foo></foo>
                 parentNode.appendChild(myElement);
-                myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
+                myElement.setName(XObjUtils.encodeElementTag(qname, parentNode));
                 return myElement;
             }
             else
@@ -297,7 +283,7 @@ public class XObjXMLEncoder
         }
         else if (obj is XObjString)
         {
-            var newNode:XMLNode;
+            var newNode:XML;
             
             // unwrap XObjStrings to their naked value
             if (obj.value != null || encodeNullElements)
@@ -307,12 +293,12 @@ public class XObjXMLEncoder
             else
             {
                 // special case this one to avoid parent getting attrs by mistake
-                newNode = xmlDocument.createElement("foo");
+                newNode = <foo></foo>;
             }
             // encoded as meta ?
             setAttributes(newNode, obj);
             // re-encode the nodename to pick up possible local namespace overrides
-            newNode.nodeName = XObjUtils.encodeElementTag(qname, newNode);
+            newNode.setName(XObjUtils.encodeElementTag(qname, newNode));
             return newNode;
         }
         else if (isRoot)
@@ -347,11 +333,11 @@ public class XObjXMLEncoder
     
     internal function internal_encodeValue(obj:Object, 
                                            qname:XObjQName, 
-                                           parentNode:XMLNode, 
+                                           parentNode:XML, 
                                            recurse:Boolean=true, 
-                                           referenceOnly:Boolean=false):XMLNode
+                                           referenceOnly:Boolean=false):XML
     {
-        var myElement:XMLNode;
+        var myElement:XML;
         
         if (obj == null)
             return null;
@@ -363,12 +349,12 @@ public class XObjXMLEncoder
         
         if (typeType == XObjXMLEncoder.XML_TYPE)
         {
-            myElement = obj.cloneNode(true);
+            myElement = (obj as XML).copy();
             parentNode.appendChild(myElement);
             return myElement;
         }
         
-        myElement = xmlDocument.createElement("foo");
+        myElement = <foo></foo>;
         
         if (referenceOnly || recursionMap[obj])
         {
@@ -379,7 +365,7 @@ public class XObjXMLEncoder
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
             setAttributes(myElement, obj, true);
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+            myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
         }
         else if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
@@ -393,7 +379,7 @@ public class XObjXMLEncoder
             // do all attributes first in case any are namespaced
             var attrNames:Object = setAttributes(myElement, obj);
             
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+            myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
             
             // TODO: this is expensive. Can we optimize?
             var classInfo:Object = XObjUtils.getClassInfo(obj, [XObjMetadata.METADATA_PROPERTY, "attributes", "prototype"], CLASS_INFO_OPTIONS);
@@ -447,7 +433,7 @@ public class XObjXMLEncoder
                 if (fieldName in attrNames)
                     continue;
                 
-                var propQName:XObjQName = new XObjQName("", fieldName);
+                var propQName:XObjQName = new XObjQName(null, null, fieldName);
                 encodeValue(obj[fieldName], propQName, myElement, recurse, XObjMetadata.isPropByRef(classInfo, fieldName));
             }
         }
@@ -458,7 +444,7 @@ public class XObjXMLEncoder
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
             setAttributes(myElement, obj);
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, myElement);
+            myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
             
             // encode array elements
             for (var j:int=0; j < obj.length; j++)
@@ -485,7 +471,7 @@ public class XObjXMLEncoder
                     }
                 }
                 
-                qname = new XObjQName("", localName);
+                qname = new XObjQName(null, null, localName);
                 
                 if (XObjUtils.isByReference(obj))
                     encodeReference(member, qname, myElement);
@@ -495,11 +481,7 @@ public class XObjXMLEncoder
         }
         else // must be simple type
         {
-            parentNode.appendChild(myElement);
-            
-            myElement.nodeName = XObjUtils.encodeElementTag(qname, parentNode);
-            
-            // Simple types fall through to here
+             // Simple types fall through to here
             var valueString:String;
             
             if (typeType == XObjXMLEncoder.DATE_TYPE)
@@ -531,16 +513,16 @@ public class XObjXMLEncoder
             {
                 valueString = obj.toString();
             }
-            
-            var valueNode:XMLNode = xmlDocument.createTextNode(valueString);
-            myElement.appendChild(valueNode);
+            myElement = <blah>{valueString}</blah>
+            myElement.setName(XObjUtils.encodeElementTag(qname, parentNode));
+            parentNode.appendChild(myElement);
         }
         
         return myElement;
     }
     
     // set the attributes, and return a list of all propNames consumed
-    private function setAttributes(node:XMLNode, obj:*, idOnly:Boolean=false):Object
+    private function setAttributes(node:XML, obj:*, idOnly:Boolean=false):Object
     {
         var attrNames:Object = {};
         var attributes:Object = {};
@@ -607,7 +589,9 @@ public class XObjXMLEncoder
                     // required
                     if (count > 0 && needDefault)
                     {
-                        attributes["xmlns"] = defaultNS;
+                        //TODO: CHANGE THIS
+                        //attributes["xmlns"] = defaultNS;
+                        node.setNamespace(new Namespace("xmlns", defaultNS));
                         needDefault = false;
                     }
                     
@@ -659,18 +643,22 @@ public class XObjXMLEncoder
                     {
                     }
                 }
-                
-                node.attributes = attributes;
-                
                 count++;
             }
+            
+            for (var attrName:String in attributes)
+            {
+                node.@[attrName] = attributes[attrName];
+            }
+            
+
         }
         
         return attrNames;
     }
     
     
-    private function decodePartName(partQName:XObjQName, node:XMLNode):String
+    private function decodePartName(partQName:XObjQName, node:XML):String
     {
         var partName:String = XObjUtils.getNCName(partQName.localName);
         
@@ -682,7 +670,7 @@ public class XObjXMLEncoder
         return partName;
     }
     
-    private function getLocalPrefixForNamespace(uri:String, node:XMLNode):String
+    private function getLocalPrefixForNamespace(uri:String, node:XML):String
     {
         var prefix:String;
         
@@ -694,7 +682,7 @@ public class XObjXMLEncoder
         return prefix;
     }
     
-    private function encodeAttrName(attr:*, node:XMLNode):String
+    private function encodeAttrName(attr:*, node:XML):String
     {
         var name:String = attr.propname;
         
@@ -723,7 +711,7 @@ public class XObjXMLEncoder
     }
     
     
-    private function localPrefixToDocPrefix(prefix:String, node:XMLNode):String
+    private function localPrefixToDocPrefix(prefix:String, node:XML):String
     {
         var ns:String;
         
@@ -737,7 +725,7 @@ public class XObjXMLEncoder
         
         if (ns == null)
         {
-            ns = node.getNamespaceForPrefix(prefix);
+            ns = node.namespace(prefix);
         }
         if (ns == null)
         {
@@ -765,7 +753,7 @@ public class XObjXMLEncoder
             return XObjXMLEncoder.BOOLEAN_TYPE;
         else if (obj is String)
             return XObjXMLEncoder.STRING_TYPE;
-        else if (obj is XMLDocument)
+        else if (obj is XMLList)
             return XObjXMLEncoder.XML_TYPE;
         else if (obj is Date)
             return XObjXMLEncoder.DATE_TYPE;
