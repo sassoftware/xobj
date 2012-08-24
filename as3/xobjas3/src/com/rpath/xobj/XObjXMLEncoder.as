@@ -176,39 +176,42 @@ public class XObjXMLEncoder
      * with type mapping support. Goal is to be symmetrical with TypedXMLDecoder
      * 
      * @param obj The ActionScript object to encode.
-     * 
-     * @param qname The qualified name of the child node.
-     * 
-     * @param parentNode An XMLList under which to put the encoded
-     * value.
+     * @param tag The tag to use for root element. Overrides xobj metadata (if any)
+     * @param parentNode An XML object under which to put the encoded value.
      */
     
     private var recursionMap:Dictionary;
     
-    public function encodeObject(obj:Object, parentNode:XML=null, rootTag:String=null, rootQName:XObjQName=null, referenceOnly:Boolean=false):XML
+    public function encodeObject(obj:Object, tag:String=null, parentNode:XML=null, referenceOnly:Boolean=false):XML
     {
-        var qname:XObjQName = rootQName;
+        var qname:XObjQName;
+        var meta:XObjMetadata = XObjMetadata.getMetadata(obj);
         
+        if (meta && meta.rootQName)
+        {
+            // we want to make sure the type we use for root node is type of object
+            if (!tag)
+                tag = meta.rootQName.localName;
+            qname = meta.rootQName;
+        }
+        else
+        {
+            if (!tag)
+                tag = tagForType(obj);
+        }
+
+        // handle untyped objects
+        if (!tag)
+        {
+            tag = defaultTag;
+        }
+
         recursionMap = new Dictionary(true);
         
         // allow for a root object marked byReference only
         if (!referenceOnly && ("isByReference" in obj))
         {
             referenceOnly = obj["isByReference"];
-        }
-        
-        // we want to make sure the type we use for root node is type of object
-        var tag:String = tagForType(obj);
-        
-        // handle untyped objects
-        if (!tag || tag == "Object")
-        {
-            tag = rootTag;
-        }
-        
-        if (!tag)
-        {
-            tag = defaultTag;
         }
         
         if (qname == null)
@@ -261,7 +264,7 @@ public class XObjXMLEncoder
             {
                 var myElement:XML = <foo></foo>
                 parentNode.appendChild(myElement);
-                myElement.setName(XObjUtils.encodeElementTag(qname, parentNode));
+                myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
                 return myElement;
             }
             else
@@ -295,9 +298,8 @@ public class XObjXMLEncoder
                 // special case this one to avoid parent getting attrs by mistake
                 newNode = <foo></foo>;
             }
-            // encoded as meta ?
-            setAttributes(newNode, obj);
             // re-encode the nodename to pick up possible local namespace overrides
+            setAttributes(newNode, obj);
             newNode.setName(XObjUtils.encodeElementTag(qname, newNode));
             return newNode;
         }
@@ -366,7 +368,7 @@ public class XObjXMLEncoder
             parentNode.appendChild(myElement);
             setAttributes(myElement, obj, true);
             myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
-        }
+       }
         else if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
             // track anything we're actually encoding
@@ -378,7 +380,6 @@ public class XObjXMLEncoder
             
             // do all attributes first in case any are namespaced
             var attrNames:Object = setAttributes(myElement, obj);
-            
             myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
             
             // TODO: this is expensive. Can we optimize?
@@ -514,8 +515,8 @@ public class XObjXMLEncoder
                 valueString = obj.toString();
             }
             myElement = <blah>{valueString}</blah>
-            myElement.setName(XObjUtils.encodeElementTag(qname, parentNode));
             parentNode.appendChild(myElement);
+            myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
         }
         
         return myElement;
@@ -525,7 +526,7 @@ public class XObjXMLEncoder
     private function setAttributes(node:XML, obj:*, idOnly:Boolean=false):Object
     {
         var attrNames:Object = {};
-        var attributes:Object = {};
+        var attributes:Array = [];
         var attrList:Array = [];
         var attrSource:Object = obj;
         
@@ -616,7 +617,7 @@ public class XObjXMLEncoder
                         continue;
                     
                     
-                    var name:String;
+                    var name:QName;
                     
                     // finally, encode the attribute!
                     name = encodeAttrName(attr, node);
@@ -635,9 +636,9 @@ public class XObjXMLEncoder
                             && !attrSource[attr.propname])
                             continue;
                         if ("value" in attr)
-                            attributes[name] = attr['value'];
+                            attributes.push({name: name, value: attr['value']});
                         else
-                            attributes[name] = attrSource[attr.propname];
+                            attributes.push({name: name, value: attrSource[attr.propname]});
                     }
                     catch (e:ReferenceError)
                     {
@@ -646,9 +647,9 @@ public class XObjXMLEncoder
                 count++;
             }
             
-            for (var attrName:String in attributes)
+            for each (var attrObj:Object in attributes)
             {
-                node.@[attrName] = attributes[attrName];
+                node.@[attrObj.name] = attrObj.value;
             }
             
 
@@ -682,9 +683,17 @@ public class XObjXMLEncoder
         return prefix;
     }
     
-    private function encodeAttrName(attr:*, node:XML):String
+    private function encodeAttrName(attr:*, node:XML):QName
     {
-        var name:String = attr.propname;
+        var qname:QName;
+        var name:String;
+        
+        if (!attr.qname)
+            qname = new QName(null, attr.propname);
+        else
+            qname = new QName(attr.qname.ns, attr.qname.localName);
+        
+        return qname;
         
         if (/xml(ns)?.*/.exec(name) )
         {

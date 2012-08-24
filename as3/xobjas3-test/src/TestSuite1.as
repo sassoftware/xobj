@@ -29,6 +29,7 @@ package
             addTestCase(new TestArrays());
             addTestCase(new TestDataTypes());
             addTestCase(new TestImagesCollection());
+            addTestCase(new TestNamespaces());
         }
 
     }

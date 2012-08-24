@@ -16,23 +16,48 @@ package com.rpath.xobj
 [RemoteClass]   // tell the compiler we can be deep copied  
 public class XObjQName
 {
-    public function XObjQName(ns:Namespace, uri:String="", localName:String="", prefix:String="")
+    public function XObjQName(meta:*, uri:String="", localName:String="", prefix:String="")
     {
-        this.localName=localName;
-        this.ns = ns;
-        if (ns)
+        var xml:XML = meta as XML;
+        
+        if (meta is Namespace)
         {
-            this.uri = ns.uri;
-            this.prefix= ns.prefix;
+            this.ns = (meta as Namespace);
+            this.localName=localName;
+        }
+        else if (xml != null)
+        {
+            this.ns = xml.namespace();
+            this.localName = xml.localName();
         }
         else
         {
             this.uri = uri;
             this.prefix = prefix;
+            this.localName=localName;
+            if ((uri != null) && (prefix != null))
+                this.ns = new Namespace(prefix, uri);
         }
     }
     
-    public var ns:Namespace;
+    
+    public function get ns():Namespace
+    {
+        return _ns;
+    }
+    
+    private var _ns:Namespace;
+    
+    public function set ns(value:Namespace):void
+    {
+        _ns = value;
+        if (ns)
+        {
+            uri = ns.uri;
+            prefix= ns.prefix;
+        }
+    }
+    
     public var localName:String;
     public var uri:String;
     public var prefix:String;
@@ -50,8 +75,6 @@ public class XObjQName
     
     public function get namespace():Namespace
     {
-        if (!ns)
-            ns = new Namespace(prefix, uri);
         return ns;
     }
     

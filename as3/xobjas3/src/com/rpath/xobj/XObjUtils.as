@@ -66,7 +66,7 @@ public class XObjUtils
         
         try
         {
-            result = node.namespace();//(uri);
+            result = node.namespace().prefix;//(uri);
         }
         catch (e:StackOverflowError)
         {
@@ -79,16 +79,18 @@ public class XObjUtils
     }
     
     
-    public static function encodeElementTag(qname:XObjQName, node:XML):String
+    public static function encodeElementTag(qname:XObjQName, node:XML):QName
     {
         var elementTag:String = XObjUtils.getNCName(qname.localName);
         
-        var prefix:String = XObjUtils.safeGetPrefixForNamespace(node, qname.uri);
+        node.setName(elementTag);
+
+        if (qname.ns)
+        {
+            node.setNamespace(qname.ns);
+        }
         
-        if (prefix)
-            elementTag =  prefix + ":" + elementTag;
-        
-        return elementTag;
+        return node.name();
     }
     
     

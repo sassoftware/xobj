@@ -416,6 +416,17 @@ public class XObjXMLDecoder
             }
         }
         
+        
+        if (isRootNode)
+        {
+            // note the element used to decode
+            meta = XObjMetadata.getMetadata(result);
+            if (!meta.rootQName)
+            {
+                meta.rootQName = new XObjQName(dataNode.namespace(), null, dataNode.localName());
+            }
+        }
+
         // so what type did we eventually use?
         var resultTypeName:String = getQualifiedClassName(result);
         
