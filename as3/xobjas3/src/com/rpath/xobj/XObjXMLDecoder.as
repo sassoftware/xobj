@@ -1026,7 +1026,7 @@ public class XObjXMLDecoder
             XObjMetadata.setElements(result, elementSet);
         
         // so did we actually do anything to the object?
-        if (isNullObject)
+        if (isNullObject && !isRootNode)
             result = null;
         
         // and finally, give the object a chance to process commitProperties()

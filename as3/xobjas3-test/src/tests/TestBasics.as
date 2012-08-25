@@ -36,6 +36,19 @@ public class TestBasics extends TestBase
         assertTrue("subelement.subaattr value", o.top.subelement.subattr == "2");
         assertTrue("subelement is Object", o.top.subelement is Object);
     }
+
+    /** testEmpty 
+     * test basic decoding behavior of a simple XML document
+     */
+    public function testEmpty():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder();
+        var xmlInput:XML = <troves />
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("troves is object", o.troves is Object);
+    }
+
     
     /** testComplex
     * Slightly more complex test with a repeated element that results in an
