@@ -36,7 +36,7 @@ public class XObjDeferredDecode
         if (!rootObject)
             return decoder.actualDecodeXML(dataNode, propType);
         else
-            return decoder.actualDecodeXML(dataNode, null, rootObject, false);
+            return decoder.actualDecodeXML(dataNode, null, rootObject, true);
     }
     
     public function decodeXMLIntoObject(rootObject:*):Object
@@ -44,7 +44,7 @@ public class XObjDeferredDecode
         if (!rootObject)
             return null;
         
-        return decoder.actualDecodeXML(dataNode, null, rootObject, false);
+        return decoder.actualDecodeXML(dataNode, null, rootObject, true);
     }
     
 }
