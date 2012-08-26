@@ -21,4 +21,5 @@
     <mx:XML id="complex" source="../../test/complex.xml" /> 
     <mx:XML id="embedded" source="../../test/embedded.xml" />
     <mx:XML id="imagecollection" source="../../test/imagecollection.xml" />
+    <mx:XML id="large_imagecollection" source="../../test/large_imagecollection.xml" />
 </mx:Object>

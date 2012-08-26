@@ -1,0 +1,3416 @@
+<images count="37" next_page="https://rbanext-eng.eng.rpath.com/api/v1/query_sets/15/all;start_index=30;limit=30" num_pages="2" previous_page="" full_collection="https://rbanext-eng.eng.rpath.com/api/v1/query_sets/15/all" end_index="29" limit="30" order_by="" per_page="30" filter_by="" id="https://rbanext-eng.eng.rpath.com/api/v1/query_sets/15/all;start_index=0;limit=30" start_index="0"> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/1"> 
+        <files> 
+            <file> 
+                <sha1>2ac757f4d3a6ebcf6f7febcdddbf4abfc6a29796</sha1> 
+                <idx>0</idx> 
+                <title>cloudstack DVD 1</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=1&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/1" /> 
+                <file_id>1</file_id> 
+                <size>885919744</size> 
+            </file> 
+            <file> 
+                <sha1>87e4ee7ca2d876a2a7b9bab50375f0c9fb67ef36</sha1> 
+                <idx>1</idx> 
+                <title>boot.iso</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=2&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/1" /> 
+                <file_id>2</file_id> 
+                <size>171986944</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/1/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack/project_branches/cloudstack.contents.rpath.com@rpath:cloudstack-management"> 
+            <name>management</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>management-3-1</trailing_version> 
+        <num_image_files>2</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/16"> 
+            <description>Appliance Installable ISO</description> 
+            <name>Appliance Inst</name> 
+            <key>APPLIANCE_ISO</key> 
+            <image_type_id>16</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/1/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-cloudstack-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/1/jobs" /> 
+        <description /> 
+        <image_id>1</image_id> 
+        <trove_last_changed>2012-05-09T15:01:51.971000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>CloudStack Management ISO</name> 
+        <trove_version>/cloudstack.contents.rpath.com@rpath:cloudstack-management-devel/1336503319.926:management-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>cloudstack</short_name> 
+            <name>cloudstack</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-09T15:01:51.949000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/2"> 
+        <files> 
+            <file> 
+                <sha1>93462b48f73b8000d1f5792bf8947b26dba3c069</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=3&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/2" /> 
+                <file_id>3</file_id> 
+                <size>1015398400</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/3" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/3" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/3" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/3" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/3" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/3" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/2/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack/project_branches/cloudstack.contents.rpath.com@rpath:cloudstack-management"> 
+            <name>management</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>management-3-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/2/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-cloudstack-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/2/jobs" /> 
+        <description /> 
+        <image_id>2</image_id> 
+        <trove_last_changed>2012-05-09T15:01:53.363000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>CloudStack Management VMware</name> 
+        <trove_version>/cloudstack.contents.rpath.com@rpath:cloudstack-management-devel/1336503319.926:management-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>cloudstack</short_name> 
+            <name>cloudstack</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-09T15:01:53.357000+00:00</time_created> 
+        <image_count>2</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/4"> 
+        <files> 
+            <file> 
+                <sha1>c971a452b5e955eabb586b6dc4764fa0b342af87</sha1> 
+                <idx>0</idx> 
+                <title>Hadoop Cluster Disc 1</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=7&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/4" /> 
+                <file_id>7</file_id> 
+                <size>452014080</size> 
+            </file> 
+            <file> 
+                <sha1>d74f22af9a42210ce24b6a4db5a05433f18334cc</sha1> 
+                <idx>1</idx> 
+                <title>boot.iso</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=8&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/4" /> 
+                <file_id>8</file_id> 
+                <size>32342016</size> 
+            </file> 
+            <file> 
+                <sha1>b9d1288d05670102f40247605971a137dcb40431</sha1> 
+                <idx>2</idx> 
+                <title>diskboot.img</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=9&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/4" /> 
+                <file_id>9</file_id> 
+                <size>36700160</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/4/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>3</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/16"> 
+            <description>Appliance Installable ISO</description> 
+            <name>Appliance Inst</name> 
+            <key>APPLIANCE_ISO</key> 
+            <image_type_id>16</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/4/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/4/jobs" /> 
+        <description /> 
+        <image_id>4</image_id> 
+        <trove_last_changed>2012-05-09T18:35:57.795000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop ISO</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-1-devel/1336587090.572:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-09T18:35:57.780000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/5"> 
+        <files> 
+            <file> 
+                <sha1>42858109eba4ff40ad01d2b39ac2654887836279</sha1> 
+                <idx>0</idx> 
+                <title>Citrix XenServer (TM) Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=6&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/5" /> 
+                <file_id>6</file_id> 
+                <size>238336000</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/5/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/11"> 
+            <description>Citrix(R) XenServer(TM) Appliance</description> 
+            <name>Citrix XenServer (TM)</name> 
+            <key>XEN_OVA</key> 
+            <image_type_id>11</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/5/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:domU:xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/5/jobs" /> 
+        <description /> 
+        <image_id>5</image_id> 
+        <trove_last_changed>2012-05-09T18:35:59.557000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop Xen</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-1-devel/1336587090.572:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-09T18:35:59.544000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/6"> 
+        <files> 
+            <file> 
+                <sha1>74c243b401eb6dc1ae64c94acb603e41c37bee57</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=5&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/6" /> 
+                <file_id>5</file_id> 
+                <size>411402240</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/5" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/5" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/5" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/5" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/5" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/5" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/6/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/6/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/6/jobs" /> 
+        <description /> 
+        <image_id>6</image_id> 
+        <trove_last_changed>2012-05-09T18:36:00.539000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop ESX</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-1-devel/1336587090.572:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-09T18:36:00.525000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/17"> 
+        <files> 
+            <file> 
+                <sha1>9e1c9d236fa894864dc7865405d398bad25c27e2</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=13&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/17" /> 
+                <file_id>13</file_id> 
+                <size>323655680</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/13" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/13" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/13" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/13" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/13" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/13" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/17/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/disastig-app2/project_branches/disastig-app2.eng.rpath.com@rpath:disastig-app2-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/17/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-disastig-app2-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/17/jobs" /> 
+        <description /> 
+        <image_id>17</image_id> 
+        <trove_last_changed>2012-05-10T15:39:26.500000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>esx-32-app-1</name> 
+        <trove_version>/disastig-app2.eng.rpath.com@rpath:disastig-app2-1-devel/1336603120.384:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/disastig-app2"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>disastig-app2</short_name> 
+            <name>disastig-app1</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-10T15:39:26.491000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/18"> 
+        <files> 
+            <file> 
+                <sha1>53ae81b823c4cea7fe52289c475568f95770a082</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=14&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/18" /> 
+                <file_id>14</file_id> 
+                <size>295587840</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/14" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/14" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/14" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/14" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/14" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/14" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/18/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/disastig-app2/project_branches/disastig-app2.eng.rpath.com@rpath:disastig-app2-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/18/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-disastig-app2-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/18/jobs" /> 
+        <description /> 
+        <image_id>18</image_id> 
+        <trove_last_changed>2012-05-10T16:53:00.019000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>esx-32-app-1</name> 
+        <trove_version>/disastig-app2.eng.rpath.com@rpath:disastig-app2-1-devel/1336603120.384:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/disastig-app2"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>disastig-app2</short_name> 
+            <name>disastig-app1</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-10T16:53:00.011000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/30"> 
+        <files> 
+            <file> 
+                <sha1>dc764ff0d3eb4ed42ef1c929c6275eb6e88b8c16</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=22&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/30" /> 
+                <file_id>22</file_id> 
+                <size>958822400</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/22" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/22" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/22" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/22" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/22" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/22" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/30/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack/project_branches/cloudstack.contents.rpath.com@rpath:cloudstack-host"> 
+            <name>host</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>host-10-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/30/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/2"> 
+            <user_name>elliot</user_name> 
+            <full_name>Elliot Peele</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-cloudstack-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/30/jobs" /> 
+        <description /> 
+        <image_id>30</image_id> 
+        <trove_last_changed>2012-05-10T20:03:38.931000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>cloudstack-host-ova</name> 
+        <trove_version>/cloudstack.contents.rpath.com@rpath:cloudstack-host-devel/1336680095.656:host-10-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>cloudstack</short_name> 
+            <name>cloudstack</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-10T20:03:38.913000+00:00</time_created> 
+        <image_count>2</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/31"> 
+        <files> 
+            <file> 
+                <sha1>ceea77992cc9efd4992313ee4f42b4184508c71a</sha1> 
+                <idx>0</idx> 
+                <title>cloudstack DVD 1</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=20&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/31" /> 
+                <file_id>20</file_id> 
+                <size>856414208</size> 
+            </file> 
+            <file> 
+                <sha1>87e4ee7ca2d876a2a7b9bab50375f0c9fb67ef36</sha1> 
+                <idx>1</idx> 
+                <title>boot.iso</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=21&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/31" /> 
+                <file_id>21</file_id> 
+                <size>171986944</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/31/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack/project_branches/cloudstack.contents.rpath.com@rpath:cloudstack-host"> 
+            <name>host</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>host-10-1</trailing_version> 
+        <num_image_files>2</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/16"> 
+            <description>Appliance Installable ISO</description> 
+            <name>Appliance Inst</name> 
+            <key>APPLIANCE_ISO</key> 
+            <image_type_id>16</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/31/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/2"> 
+            <user_name>elliot</user_name> 
+            <full_name>Elliot Peele</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-cloudstack-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/31/jobs" /> 
+        <description /> 
+        <image_id>31</image_id> 
+        <trove_last_changed>2012-05-10T20:03:39.978000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>cloudstack-host-iso</name> 
+        <trove_version>/cloudstack.contents.rpath.com@rpath:cloudstack-host-devel/1336680095.656:host-10-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/cloudstack"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>cloudstack</short_name> 
+            <name>cloudstack</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-10T20:03:39.962000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/49"> 
+        <files> 
+            <file> 
+                <sha1>03064b0422c9bb972ba3b3bb39f9f51c49ea6336</sha1> 
+                <idx>0</idx> 
+                <title>Hadoop Cluster Disc 1</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=40&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/49" /> 
+                <file_id>40</file_id> 
+                <size>578447360</size> 
+            </file> 
+            <file> 
+                <sha1>d74f22af9a42210ce24b6a4db5a05433f18334cc</sha1> 
+                <idx>1</idx> 
+                <title>boot.iso</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=41&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/49" /> 
+                <file_id>41</file_id> 
+                <size>32342016</size> 
+            </file> 
+            <file> 
+                <sha1>b9d1288d05670102f40247605971a137dcb40431</sha1> 
+                <idx>2</idx> 
+                <title>diskboot.img</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=42&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/49" /> 
+                <file_id>42</file_id> 
+                <size>36700160</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/49/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-JobTracker"> 
+            <name>JobTracker</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>JobTracker-3-1</trailing_version> 
+        <num_image_files>3</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/16"> 
+            <description>Appliance Installable ISO</description> 
+            <name>Appliance Inst</name> 
+            <key>APPLIANCE_ISO</key> 
+            <image_type_id>16</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/49/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/49/jobs" /> 
+        <description /> 
+        <image_id>49</image_id> 
+        <trove_last_changed>2012-05-14T19:40:36.014000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-JobTracker-ISO</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-JobTracker-devel/1337018183.428:JobTracker-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-14T19:40:35.997000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/50"> 
+        <files> 
+            <file> 
+                <sha1>9293eaf1bb70eddb55540afe6d0b28f3077924ad</sha1> 
+                <idx>0</idx> 
+                <title>Citrix XenServer (TM) Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=44&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/50" /> 
+                <file_id>44</file_id> 
+                <size>365475840</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/50/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-JobTracker"> 
+            <name>JobTracker</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>JobTracker-3-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/11"> 
+            <description>Citrix(R) XenServer(TM) Appliance</description> 
+            <name>Citrix XenServer (TM)</name> 
+            <key>XEN_OVA</key> 
+            <image_type_id>11</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/50/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:domU:xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/50/jobs" /> 
+        <description /> 
+        <image_id>50</image_id> 
+        <trove_last_changed>2012-05-14T19:40:37.709000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-JobTracker-Xen</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-JobTracker-devel/1337018183.428:JobTracker-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-14T19:40:37.694000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/51"> 
+        <files> 
+            <file> 
+                <sha1>ccc927acb7a1ff0b66706a87bb32813970ab8db9</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=43&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/51" /> 
+                <file_id>43</file_id> 
+                <size>464005120</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/43" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/43" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/43" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/43" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/43" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/43" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/51/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-JobTracker"> 
+            <name>JobTracker</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>JobTracker-3-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/51/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/51/jobs" /> 
+        <description /> 
+        <image_id>51</image_id> 
+        <trove_last_changed>2012-05-14T19:40:38.718000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-JobTracker-ESX</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-JobTracker-devel/1337018183.428:JobTracker-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-14T19:40:38.702000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/52"> 
+        <files> 
+            <file> 
+                <sha1>f343ea2f4fbaa903fd14ea1d7aec6d4004976a38</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=45&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/52" /> 
+                <file_id>45</file_id> 
+                <size>1143490560</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/45" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/45" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/45" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/45" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/45" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/45" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/52/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/appdevciproject/project_branches/appdevciproject.contents.rpath.com@rpath:appdevciproject-1.0"> 
+            <name>1.0</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1.0-6-5</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/52/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/11"> 
+            <user_name>rbuild-teamc</user_name> 
+            <full_name>Charles the Constructor</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-appdevciproject-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/52/jobs" /> 
+        <description /> 
+        <image_id>52</image_id> 
+        <trove_last_changed>2012-05-14T20:47:15.651000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>appdevcitrial</name> 
+        <trove_version>/appdevciproject.contents.rpath.com@rpath:appdevciproject-1.0-devel/1337028444.548:1.0-6-5</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/appdevciproject"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>appdevciproject</short_name> 
+            <name>AppDevCi Project</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-05-14T20:47:15.633000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/54"> 
+        <files> 
+            <file> 
+                <sha1>66e225eec4ac122e4e58b56c75b83f9358b1cf92</sha1> 
+                <idx>0</idx> 
+                <title>Hadoop Cluster Disc 1</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=47&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/54" /> 
+                <file_id>47</file_id> 
+                <size>578433024</size> 
+            </file> 
+            <file> 
+                <sha1>d74f22af9a42210ce24b6a4db5a05433f18334cc</sha1> 
+                <idx>1</idx> 
+                <title>boot.iso</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=48&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/54" /> 
+                <file_id>48</file_id> 
+                <size>32342016</size> 
+            </file> 
+            <file> 
+                <sha1>b9d1288d05670102f40247605971a137dcb40431</sha1> 
+                <idx>2</idx> 
+                <title>diskboot.img</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=49&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/54" /> 
+                <file_id>49</file_id> 
+                <size>36700160</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/54/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-Slave"> 
+            <name>Slave</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>Slave-4-1</trailing_version> 
+        <num_image_files>3</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/16"> 
+            <description>Appliance Installable ISO</description> 
+            <name>Appliance Inst</name> 
+            <key>APPLIANCE_ISO</key> 
+            <image_type_id>16</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/54/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/54/jobs" /> 
+        <description /> 
+        <image_id>54</image_id> 
+        <trove_last_changed>2012-05-15T14:58:51.440000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-Slave-ISO</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-Slave-devel/1337006851.273:Slave-4-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-15T14:58:51.423000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/55"> 
+        <files> 
+            <file> 
+                <sha1>217b0fbdfed7ca3470f2ea2e2b31b29c0e7b255e</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=50&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/55" /> 
+                <file_id>50</file_id> 
+                <size>500776960</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/50" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/50" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/50" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/50" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/50" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/50" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/55/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-Slave"> 
+            <name>Slave</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>Slave-4-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/55/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/55/jobs" /> 
+        <description /> 
+        <image_id>55</image_id> 
+        <trove_last_changed>2012-05-15T14:58:53.210000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-Slave-ESX</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-Slave-devel/1337006851.273:Slave-4-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-15T14:58:53.193000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/56"> 
+        <files> 
+            <file> 
+                <sha1>6a1177886cf181cbbe0fc8ccd2b689771bb9a5d8</sha1> 
+                <idx>0</idx> 
+                <title>Citrix XenServer (TM) Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=51&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/56" /> 
+                <file_id>51</file_id> 
+                <size>365639680</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/56/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-Slave"> 
+            <name>Slave</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>Slave-4-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/11"> 
+            <description>Citrix(R) XenServer(TM) Appliance</description> 
+            <name>Citrix XenServer (TM)</name> 
+            <key>XEN_OVA</key> 
+            <image_type_id>11</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/56/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:domU:xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/56/jobs" /> 
+        <description /> 
+        <image_id>56</image_id> 
+        <trove_last_changed>2012-05-15T14:58:54.250000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-Slave-Xen</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-Slave-devel/1337006851.273:Slave-4-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-15T14:58:54.234000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/86"> 
+        <files> 
+            <file> 
+                <sha1>82fc57ce81acea655479b8a4f322b002c29f0dc9</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=91&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/86" /> 
+                <file_id>91</file_id> 
+                <size>320286720</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/91" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/91" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/91" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/91" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/91" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/91" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/86/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/turbo-crm/project_branches/turbo-crm.eng.rpath.com@rpath:turbo-crm-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/86/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/6"> 
+            <user_name>mtharp</user_name> 
+            <full_name>Michael Tharp</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-turbo-crm-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/86/jobs" /> 
+        <description /> 
+        <image_id>86</image_id> 
+        <trove_last_changed>2012-05-18T15:40:09.710000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>turbo-crm</name> 
+        <trove_version>/turbo-crm.eng.rpath.com@rpath:turbo-crm-1-devel/1337355362.537:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/turbo-crm"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>turbo-crm</short_name> 
+            <name>Turbo CRM</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-05-18T15:40:09.670000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/94"> 
+        <files> 
+            <file> 
+                <sha1>65faed7353487d151e43cdcf2219560fb419c656</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=99&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/94" /> 
+                <file_id>99</file_id> 
+                <size>436848640</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/99" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/99" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/99" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/99" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/99" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/99" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/94/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop/project_branches/hadoop.contents.rpath.com@rpath:hadoop-1.0"> 
+            <name>1.0</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1.0-8-7</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/94/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/9"> 
+            <user_name>jdaniels</user_name> 
+            <full_name>Jim Daniels</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-hadoop-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/94/jobs" /> 
+        <description /> 
+        <image_id>94</image_id> 
+        <trove_last_changed>2012-05-21T15:22:38.827000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>Hadoop-ESX</name> 
+        <trove_version>/hadoop.contents.rpath.com@rpath:hadoop-1.0-devel/1337612596.052:1.0-8-7</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/hadoop"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>hadoop</short_name> 
+            <name>Hadoop Cluster</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-21T15:22:38.808000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/98"> 
+        <files> 
+            <file> 
+                <sha1>1fe32d6a1a0d454b48c8233294db625a7166c96a</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=103&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/98" /> 
+                <file_id>103</file_id> 
+                <size>491315200</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/103" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/103" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/103" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/103" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/103" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/103" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/98/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/demo-application-server/project_branches/demo-application-server.eng.rpath.com@rpath:demo-application-server-trunk"> 
+            <name>trunk</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>trunk-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/98/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686:sse:sse2|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/3"> 
+            <user_name>amccabe</user_name> 
+            <full_name>Andrew McCabe</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-demo-application-server-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/98/jobs" /> 
+        <description /> 
+        <image_id>98</image_id> 
+        <trove_last_changed>2012-05-22T05:12:09.042000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>demo-application-server-esx-x86_64</name> 
+        <trove_version>/demo-application-server.eng.rpath.com@rpath:demo-application-server-trunk-devel/1337663047.153:trunk-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/demo-application-server"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>demo-application-server</short_name> 
+            <name>Demo Application Server</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-05-22T05:12:09.022000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/99"> 
+        <files> 
+            <file> 
+                <sha1>643b8dafb3ff6a48bd60d6a18f8fcf8ea201a9fb</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=104&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/99" /> 
+                <file_id>104</file_id> 
+                <size>282818560</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/104" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/104" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/104" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/104" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/104" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/104" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/99/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/ajm-custom-c6-downstream/project_branches/ajm-custom-c6-downstream.eng.rpath.com@rpath:ajm-custom-c6-downstream-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/99/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-ajm-custom-c6-downstream-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/99/jobs" /> 
+        <description /> 
+        <image_id>99</image_id> 
+        <trove_last_changed>2012-05-24T21:53:06.366000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>asdf</name> 
+        <trove_version>/ajm-custom-c6-downstream.eng.rpath.com@rpath:ajm-custom-c6-downstream-1-devel/1337896301.617:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/ajm-custom-c6-downstream"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>ajm-custom-c6-downstream</short_name> 
+            <name>ajm-custom-c6-downstream</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-05-24T21:53:06.331000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/100"> 
+        <files> 
+            <file> 
+                <sha1>0f3d738e7564fc14353a117d67a424afe038c7ed</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=105&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/100" /> 
+                <file_id>105</file_id> 
+                <size>422082560</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/105" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/105" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/105" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/105" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/105" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/105" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/100/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/ajmconfigtest/project_branches/ajmconfigtest.eng.rpath.com@rpath:ajmconfigtest-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/100/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-ajmconfigtest-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/100/jobs" /> 
+        <description /> 
+        <image_id>100</image_id> 
+        <trove_last_changed>2012-05-25T02:25:35.703000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>ajm32</name> 
+        <trove_version>/ajmconfigtest.eng.rpath.com@rpath:ajmconfigtest-1-devel/1337912666.597:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/ajmconfigtest"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>ajmconfigtest</short_name> 
+            <name>ajmconfigtest</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-05-25T02:25:35.686000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/101"> 
+        <files> 
+            <file> 
+                <sha1>8918599f1514ec106dfaf494fd55a505243e043c</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=106&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/101" /> 
+                <file_id>106</file_id> 
+                <size>292290560</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/106" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/106" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/106" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/106" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/106" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/106" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/101/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/bpja-config-test/project_branches/bpja-config-test.eng.rpath.com@rpath:bpja-config-test-trunk"> 
+            <name>trunk</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>trunk-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/101/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-bpja-config-test-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/101/jobs" /> 
+        <description /> 
+        <image_id>101</image_id> 
+        <trove_last_changed>2012-05-25T03:59:24.065000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>esx</name> 
+        <trove_version>/bpja-config-test.eng.rpath.com@rpath:bpja-config-test-trunk-devel/1337918289.826:trunk-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/bpja-config-test"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>bpja-config-test</short_name> 
+            <name>bpja-config-test</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-05-25T03:59:24.053000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/102"> 
+        <files> 
+            <file> 
+                <sha1>d97d02d9c5df9fbf3d22792ea4e55da1b8070a31</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=107&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/102" /> 
+                <file_id>107</file_id> 
+                <size>3811706880</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/107" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/107" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/107" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/107" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/107" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/107" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/102/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/elliot-wintest/project_branches/elliot-wintest.eng.rpath.com@rpath:elliot-wintest-2k8r2"> 
+            <name>2k8r2</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>2k8r2-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/102/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Image built {6/6}</status_message> 
+        <trove_name>group-elliot-wintest-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/102/jobs" /> 
+        <description /> 
+        <image_id>102</image_id> 
+        <trove_last_changed>2012-06-13T17:08:21.129000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>elliot windemo</name> 
+        <trove_version>/elliot-wintest.eng.rpath.com@rpath:elliot-wintest-2k8r2-devel/1339607251.587:2k8r2-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/elliot-wintest"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>elliot-wintest</short_name> 
+            <name>elliot-wintest</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-06-13T17:08:21.041000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid>10c22e2d-cfe3-4f0f-bc18-9bf5c121f8f5</job_uuid> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/111"> 
+        <files> 
+            <file> 
+                <sha1>4fc1c84520fe2417effb32d8decf0740ec5a7590</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=113&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/111" /> 
+                <file_id>113</file_id> 
+                <size>361666560</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/113" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/113" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/113" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/113" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/113" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/113" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/111/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/smitty-c6e-goad-testing/project_branches/smitty-c6e-goad-testing.eng.rpath.com@rpath:smitty-c6e-goad-testing-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/111/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-smitty-c6e-goad-testing-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/111/jobs" /> 
+        <description /> 
+        <image_id>111</image_id> 
+        <trove_last_changed>2012-07-06T19:36:41.752000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>smitty-c6e-goad-testing-x64</name> 
+        <trove_version>/smitty-c6e-goad-testing.eng.rpath.com@rpath:smitty-c6e-goad-testing-1-devel/1341603368.956:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/smitty-c6e-goad-testing"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>smitty-c6e-goad-testing</short_name> 
+            <name>Smitty-C6E-Goad-Testing</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-06T19:36:41.680000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/112"> 
+        <files> 
+            <file> 
+                <sha1>dd545b12da882b715061c8ede8437c5fb40939fe</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=112&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/112" /> 
+                <file_id>112</file_id> 
+                <size>494479360</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/112" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/112" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/112" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/112" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/112" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/112" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/112/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/smitty-c6e-goad-testing/project_branches/smitty-c6e-goad-testing.eng.rpath.com@rpath:smitty-c6e-goad-testing-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/112/build_log" /> 
+        <trove_flavor>1#x86:i486:i586:i686|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-smitty-c6e-goad-testing-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/112/jobs" /> 
+        <description /> 
+        <image_id>112</image_id> 
+        <trove_last_changed>2012-07-06T19:36:42.555000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>smitty-c6e-goad-testing-x86</name> 
+        <trove_version>/smitty-c6e-goad-testing.eng.rpath.com@rpath:smitty-c6e-goad-testing-1-devel/1341603368.956:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/smitty-c6e-goad-testing"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>smitty-c6e-goad-testing</short_name> 
+            <name>Smitty-C6E-Goad-Testing</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86</architecture> 
+        <time_created>2012-07-06T19:36:42.538000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/113"> 
+        <files> 
+            <file> 
+                <sha1>f82436e912440b51ea1999bdb7977f5b0fc4e4ee</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=114&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/113" /> 
+                <file_id>114</file_id> 
+                <size>4043028480</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/114" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/114" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/114" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/114" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/114" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/114" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/113/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/elliot-wintest/project_branches/elliot-wintest.eng.rpath.com@rpath:elliot-wintest-2k8r2"> 
+            <name>2k8r2</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>2k8r2-3-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/113/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Image built {6/6}</status_message> 
+        <trove_name>group-elliot-wintest-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/113/jobs" /> 
+        <description /> 
+        <image_id>113</image_id> 
+        <trove_last_changed>2012-07-10T17:36:35.998000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>elliot windemo</name> 
+        <trove_version>/elliot-wintest.eng.rpath.com@rpath:elliot-wintest-2k8r2-devel/1340733307.899:2k8r2-3-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/elliot-wintest"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>elliot-wintest</short_name> 
+            <name>elliot-wintest</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-10T17:36:35.935000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid>3aa4f8b2-78c6-4d42-9589-23aa730a7a1e</job_uuid> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/118"> 
+        <files> 
+            <file> 
+                <sha1>2283003462448f63822e45b63a2239f1ce25a934</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=119&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/118" /> 
+                <file_id>119</file_id> 
+                <size>560394240</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/119" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/119" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/119" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/119" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/119" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/119" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/118/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo/project_branches/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/118/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-postgresql-demo-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/118/jobs" /> 
+        <description /> 
+        <image_id>118</image_id> 
+        <trove_last_changed>2012-07-18T14:09:40.442000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>postgresql-demo-esx-x64</name> 
+        <trove_version>/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1-devel/1342619549.569:1-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>postgresql-demo</short_name> 
+            <name>PostgreSQL-Demo</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-18T14:09:40.409000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/119"> 
+        <files> 
+            <file> 
+                <sha1>6f164a600a44b8025e7f21a69adad30fe1157af7</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=120&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/119" /> 
+                <file_id>120</file_id> 
+                <size>379781120</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/120" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/120" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/120" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/120" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/120" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/120" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/119/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/daemian-test/project_branches/daemian-test.eng.rpath.com@rpath:daemian-test-trunk"> 
+            <name>trunk</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>trunk-1-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/119/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-daemian-test-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/119/jobs" /> 
+        <description /> 
+        <image_id>119</image_id> 
+        <trove_last_changed>2012-07-18T19:12:51.023000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>the-image</name> 
+        <trove_version>/daemian-test.eng.rpath.com@rpath:daemian-test-trunk-devel/1342636497.129:trunk-1-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/daemian-test"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>daemian-test</short_name> 
+            <name>daemian-test</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-18T19:12:51.006000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/121"> 
+        <files> 
+            <file> 
+                <sha1>62e051273cd8102255b9b966c7589efcd7c489f3</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=121&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/121" /> 
+                <file_id>121</file_id> 
+                <size>373760000</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/121" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/121" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/121" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/121" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/121" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/121" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/121/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo/project_branches/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-22-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/121/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-postgresql-demo-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/121/jobs" /> 
+        <description /> 
+        <image_id>121</image_id> 
+        <trove_last_changed>2012-07-24T20:37:42.711000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>postgresql-demo-esx-x64</name> 
+        <trove_version>/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1-devel/1343161917.918:1-22-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>postgresql-demo</short_name> 
+            <name>PostgreSQL-Demo</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-24T20:37:42.693000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+    <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/125"> 
+        <files> 
+            <file> 
+                <sha1>6b378259e6e7aeb559e9ad1e1e2f7d9d68c67fea</sha1> 
+                <idx>0</idx> 
+                <title>VMware (R) ESX OVF 1.0 Image</title> 
+                <url>https://rbanext-eng.eng.rpath.com/downloadImage?fileId=122&amp;urlType=0</url> 
+                <image id="https://rbanext-eng.eng.rpath.com/api/v1/images/125" /> 
+                <file_id>122</file_id> 
+                <size>563220480</size> 
+            </file> 
+        </files> 
+        <actions> 
+            <action> 
+                <name>Deploy image on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/deploy/file/122" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/deploy/file/122" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Deploy image on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/17" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/deploy/file/122" /> 
+                <key>deploy_image_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Deploy image on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1/descriptors/launch/file/122" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/1" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2/descriptors/launch/file/122" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/2" /> 
+                </resources> 
+                <description>Launch system on 'esx.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</name> 
+                <enabled>true</enabled> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/18" /> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3/descriptors/launch/file/122" /> 
+                <key>launch_system_on_target</key> 
+                <resources> 
+                    <target id="https://rbanext-eng.eng.rpath.com/api/v1/targets/3" /> 
+                </resources> 
+                <description>Launch system on 'vcenter.cloudstack.testnet-4.eng.rpath.com' (vmware)</description> 
+            </action> 
+            <action> 
+                <name>Cancel image build</name> 
+                <job_type id="https://rbanext-eng.eng.rpath.com/api/v1/inventory/event_types/25" /> 
+                <enabled>false</enabled> 
+                <descriptor id="https://rbanext-eng.eng.rpath.com/api/v1/images/125/descriptors/cancel_build" /> 
+                <key>image_build_cancellation</key> 
+                <description>Cancel image build</description> 
+            </action> 
+        </actions> 
+        <project_branch id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo/project_branches/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1"> 
+            <name>1</name> 
+        </project_branch> 
+        <updated_by /> 
+        <trailing_version>1-24-1</trailing_version> 
+        <num_image_files>1</num_image_files> 
+        <image_type id="https://rbanext-eng.eng.rpath.com/api/v1/image_types/9"> 
+            <description>VMware(R) ESX/VCD Virtual Appliance</description> 
+            <name>VMware (R) ESX</name> 
+            <key>VMWARE_ESX_IMAGE</key> 
+            <image_type_id>9</image_type_id> 
+        </image_type> 
+        <build_log id="https://rbanext-eng.eng.rpath.com/api/v1/images/125/build_log" /> 
+        <trove_flavor>1#x86|1#x86_64|5#use:~!xen</trove_flavor> 
+        <created_by id="https://rbanext-eng.eng.rpath.com/api/v1/users/1"> 
+            <user_name>admin</user_name> 
+            <full_name>Administrator</full_name> 
+        </created_by> 
+        <base_image /> 
+        <status_message>Job Finished</status_message> 
+        <trove_name>group-postgresql-demo-appliance</trove_name> 
+        <status>300</status> 
+        <stage_name>Development</stage_name> 
+        <jobs id="https://rbanext-eng.eng.rpath.com/api/v1/images/125/jobs" /> 
+        <description /> 
+        <image_id>125</image_id> 
+        <trove_last_changed>2012-07-26T20:10:21.530000+00:00</trove_last_changed> 
+        <time_updated /> 
+        <name>postgresql-demo-esx-x64</name> 
+        <trove_version>/postgresql-demo.eng.rpath.com@rpath:postgresql-demo-1-devel/1343333241.429:1-24-1</trove_version> 
+        <project id="https://rbanext-eng.eng.rpath.com/api/v1/projects/postgresql-demo"> 
+            <domain_name>eng.rpath.com</domain_name> 
+            <short_name>postgresql-demo</short_name> 
+            <name>PostgreSQL-Demo</name> 
+        </project> 
+        <output_trove /> 
+        <architecture>x86_64</architecture> 
+        <time_created>2012-07-26T20:10:21.512000+00:00</time_created> 
+        <image_count>1</image_count> 
+        <job_uuid /> 
+    </image> 
+</images>

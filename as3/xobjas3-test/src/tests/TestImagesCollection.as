@@ -45,6 +45,43 @@ public class TestImagesCollection extends TestBase
     }
 
 
+    /** testLrageImagesCollection 
+     * sameas above but for timing purposes
+     */
+    public function testLargeImagesCollection():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({images:ImagesCollection, image:ProductImage});
+        var xmlInput:XML = new XML(testData.large_imagecollection);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("images is object", o.images is ImagesCollection);
+        assertTrue("images is array collection", o.images.image is ArrayCollection);
+        
+        var index:int = 0;
+        for (index = 0; index < o.images.image.length; index++)
+        {
+            var image:ProductImage = o.images.image[index];
+            assertTrue("elements are ProductImage", image != null);
+        }
+        
+    }
+
+    
+    /** testLrageImagesCollection 
+     * sameas above but for timing purposes
+     */
+    public function testLargeImagesCollection100times():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({images:ImagesCollection, image:ProductImage});
+        var xmlInput:XML = new XML(testData.large_imagecollection);
+        
+        
+        for (var loop:int ; loop < 100 ; loop++)
+        {
+            var o:* = typedDecoder.decodeXML(xmlInput);
+        }
+    }
+
     
 }
 }
