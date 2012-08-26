@@ -34,7 +34,7 @@ public class XObjDeferredDecode
     public function decodeXML():Object
     {
         if (!rootObject)
-            return decoder.actualDecodeXML(dataNode, propType);
+            return decoder.actualDecodeXML(dataNode, propType, null, true);
         else
             return decoder.actualDecodeXML(dataNode, null, rootObject, true);
     }
