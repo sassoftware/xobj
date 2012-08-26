@@ -381,7 +381,10 @@ public class XObjXMLDecoder
             else
             {
                 // is there a typeMap entry for this element?
-                var nodeType:Class = typeForTag(dataNode.name());
+                // TODO: NOTE: we use localName only (no namespace support)
+                var nodeType:Class
+                nodeType = typeForTag(dataNode.localName());
+                //nodeType = typeForTag(dataNode.name());  //namespaced
                 
                 if (nodeType)
                 {
