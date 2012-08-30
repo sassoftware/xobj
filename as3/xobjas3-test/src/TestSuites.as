@@ -13,6 +13,14 @@
 
 package
 {
+import com.rpath.xobj.XObjDefaultFactory;
+
+import tests.models.ProductImage;
+import tests.models.ProductImageDecoder;
+
+// force loader
+ProductImageDecoder;
+
     
     /** 
      * TestSuites is a static helper class that
@@ -27,7 +35,6 @@ package
             var suiteArray:Array = new Array();
     
             suiteArray.push(new TestSuite1());
-            
             return suiteArray;
         }
     }

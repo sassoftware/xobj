@@ -53,6 +53,7 @@ import mx.collections.ListCollectionView;
 import mx.rpc.xml.*;
 import mx.utils.ObjectProxy;
 
+use namespace xobj;
 
 /**
  * The TypedXMLDecoder class deserializes XML into a graph of ActionScript objects
@@ -310,7 +311,7 @@ public class XObjXMLDecoder
      * then recompute it at the end
      */
     
-    public function actualDecodeXML(dataNode:XML, expectedResultClass:Class = null, 
+    xobj function actualDecodeXML(dataNode:XML, expectedResultClass:Class = null, 
                                     rootObject:* = null, isRootNode:Boolean = false, 
                                     info:XObjDecoderInfo=null):Object
     {
@@ -448,17 +449,9 @@ public class XObjXMLDecoder
             }
         }
         
-        // Now, do we have a decoder for this result?
+        // Decode the part
+        result = decodePart(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
         
-        var decoder:XObjDecoder = objectFactory.getDecoderForObject(result);
-        if (decoder)
-        {
-            result = decoder.decodeIntoObject(dataNode, result);
-        }
-        else
-        {
-            result = decodeReflectively(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
-        }
         // so did we actually do anything to the object?
         if (info.isNullObject && !isRootNode)
             result = null;
@@ -500,12 +493,50 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodeReflectively(dataNode:XML, result:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
+    public function decodePart(dataNode:XML, result:Object, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):Object
+    {
+        if (!dataNode)
+            return null;
+        
+        var decoder:IXObjSerializing = objectFactory.getDecoderForObject(result);
+        if (decoder)
+        {
+            result = decoder.decodeIntoObject(this, dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+        }
+        else
+        {
+            result = decodeReflectively(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+        }
+        
+        return result;
+    }
+    
+    
+    public function decodeArray(xml:Object, result:Object, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    {
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        return decodePart(xml as XML, result, info, true, false, shouldMakeBindable);
+    }
+    
+    public function decodeCollection(xml:XML, result:Object, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    {
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        return decodePart(xml as XML, result, info, false, true, shouldMakeBindable);
+    }
+    
+    private function decodeReflectively(dataNode:XML, result:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
     {
         var isSimpleType:Boolean = false;
         var elementSet:Array = [];
         var attributeSet:Array = [];
-
+        
+        if (!info)
+            info = new XObjDecoderInfo();
+        
         // Now start looking at the child XML nodes
         
         var children:XMLList = dataNode.children();
@@ -1048,7 +1079,7 @@ public class XObjXMLDecoder
         // stash the order of elements on the result as hidden metadata
         if (elementSet.length > 0)
             XObjMetadata.setElements(result, elementSet);
-   
+        
         return result;
     }
     

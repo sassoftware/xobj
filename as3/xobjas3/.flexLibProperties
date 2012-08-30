@@ -4,6 +4,8 @@
     <classEntry path="com.rpath.xobj.XObjArrayCollection"/>
     <classEntry path="com.rpath.xobj.XObjDecoderInfo"/>
     <classEntry path="com.rpath.xobj.XObjDecoder"/>
+    <classEntry path="com.rpath.xobj.IXObjSerializing"/>
+    <classEntry path="com.rpath.xobj.xobj"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="metadata.xml" sourcePath="metadata.xml"/>
