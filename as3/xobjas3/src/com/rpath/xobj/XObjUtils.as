@@ -39,16 +39,10 @@ public class XObjUtils
      * @private
      */ 
     private static var CLASS_INFO_CACHE:Object = {};
-    
-    /**
-     * Returns the local name of an XMLList.
-     *
-     * @return The local name of an XMLList.
-     */
-    public static function getLocalName(xmlNode:XMLList):String
-    {
-        return getNCName(xmlNode.nodeName);
-    }
+
+    /** getNCName stripts any preceeding foo: portion off a name
+    * TODO: decide whether this is now redundant
+    */
     
     public static function getNCName(name:String):String
     {

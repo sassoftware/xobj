@@ -71,6 +71,10 @@ public class XObjDefaultFactory implements IXObjFactory
         return result;
     }
     
+    public function getDecoderForObject(object:Object):XObjDecoder
+    {
+        return null;
+    }
     
 }
 }

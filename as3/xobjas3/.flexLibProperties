@@ -2,6 +2,8 @@
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="com.rpath.xobj.XObjArrayCollection"/>
+    <classEntry path="com.rpath.xobj.XObjDecoderInfo"/>
+    <classEntry path="com.rpath.xobj.XObjDecoder"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="metadata.xml" sourcePath="metadata.xml"/>

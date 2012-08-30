@@ -128,7 +128,7 @@ public class XObjXMLDecoder
             return null;
         
         var valStr:String = val.toString();
-
+        
         if (valStr != "")
         {
             var testNum:Number = Number(val);
@@ -281,90 +281,61 @@ public class XObjXMLDecoder
     /**
      * 
      * actualDecodeXML is the workhorse function that does the heavy lifting of 
-     * decoding a given XMLList
+     * decoding a given XML object and will return the resulting AS3 object
      * 
-     * In addition to the node, the caller can pass an optional propertyType
-     * that specifies what data type the node should be decoded as.
+     * Caller can pass in an object to populate with the decoded data or can 
+     * allow one to be located or created by this method.
      * 
-     * If propType is null, various heuristics, including a typeMap lookup
-     * are used to infer the desired type.
+     * Location of the result object is done by looking at the dataNode.@id
+     * attribute and consulting a weak object cache.
      * 
-     * memberClass allows you to dictate what type should be used for decoded
-     * child elements if not otherwise computable from result properties
+     * Alternatively, an expectedResultClass can be passed to inform the creation
+     * of a new instance object.
      * 
+     * If expectedResultClass is null, various heuristics, including a typeMap 
+     * lookup are used to infer the desired type.
+     * 
+     * Every XML attribute is mapped to a property of the result object
+     * 
+     * Every XML element is mapped to a property of the result object with 
+     * special handling for nested elements that are collection members
+     * 
+     * For this purpose, memberClass allows you to dictate what type should be used 
+     * for decode child elements if not otherwise computable from result properties
+     * 
+     * Note that throughout, reflection is used on the result object to infer
+     * the object types that should be used for properties as well as members
+     * 
+     * TODO: shouldMakeBindable is broken. We maintain it redundantly (always false)
+     * then recompute it at the end
      */
     
     public function actualDecodeXML(dataNode:XML, expectedResultClass:Class = null, 
                                     rootObject:* = null, isRootNode:Boolean = false, 
-                                    memberClass:Class = null):Object
+                                    info:XObjDecoderInfo=null):Object
     {
         var result:*;
-        var isNullObject:Boolean;
-        var isSimpleType:Boolean = false;
         var shouldMakeBindable:Boolean = false;
         var isTypedProperty:Boolean = false;
-        var isSpecifiedType:Boolean = false;
-        var elementSet:Array = [];
-        var attributeSet:Array = [];
-        var nextNodeIsRoot:Boolean = false;
         var doneRootDupe:Boolean = false;
-        var resultClass:Class;
+        var meta:XObjMetadata;
+        //var resultID:String;
         
         if (dataNode == null)
             return null;
         
-        if (dataNode is XMLList)
-            nextNodeIsRoot = true;
+        if (info == null)
+            info = new XObjDecoderInfo();
         
-        // does the node have an id? If so, we may already know this object
-        // for example, doing a GET into a previously fetched instance
-        var resultID:String = getIDAttr(dataNode);
-        
-        // see whether we alreadyhave an object with this ID
-        var existingObj:Object;
-        if (resultID)
-        {
-            existingObj = objectFactory.getObjectForId(resultID);
-        }
-        
-        /* figure out what type the result object should be.
-        
-        1. did the caller pass in an object to populate via rootObject?
-        2. do we have the object already by ID?
-        3. was a particular type specified by the caller?
-        4. is there a typeMap entry for the object?
-        
-        */
         // flag to track whether we were told or not
-        isSpecifiedType = rootObject || expectedResultClass;
+        info.isSpecifiedType = rootObject || expectedResultClass;
         
-        if (rootObject)
-        {
-            result = rootObject;
-            // also track the ID we got, if any, since this may have been a POST
-            if (existingObj)
-            {
-                if (existingObj != result)
-                {
-                    // hmmm. mismatched objects ???
-                    trace("mismatched objects for ID "+resultID);
-                }
-            }
-            else // no old obj
-            {
-                objectFactory.trackObjectById(result, resultID);
-            }
-        }
-        else
-        {
-            // use if if we have it
-            result = existingObj;
-        }
+        result = findExistingObject(dataNode, rootObject, info);
         
         // now look up type info if available
         if (result)
         {
-            resultClass = XObjUtils.getClass(result);
+            info.resultClass = XObjUtils.getClass(result);
             // assume we should NEVER make specified types bindable
             shouldMakeBindable = false;
         }
@@ -374,7 +345,7 @@ public class XObjXMLDecoder
             if (expectedResultClass)
             {
                 // use what was asked for
-                resultClass = expectedResultClass;
+                info.resultClass = expectedResultClass;
                 // assume we should NEVER make specified types bindable
                 shouldMakeBindable = false;
             }
@@ -388,7 +359,7 @@ public class XObjXMLDecoder
                 
                 if (nodeType)
                 {
-                    resultClass = nodeType;
+                    info.resultClass = nodeType;
                     // assume we should NEVER make specified types bindable
                     shouldMakeBindable = false;
                 }
@@ -397,11 +368,11 @@ public class XObjXMLDecoder
                     // is this marked as a list="true" to hint us?
                     if (getIsListAttr(dataNode))
                     {
-                        resultClass = XObjArrayCollection;
+                        info.resultClass = XObjArrayCollection;
                     }
                     else
                     {// go with plain object, and allow bindable flag to kick in
-                        resultClass = Object;
+                        info.resultClass = Object;
                     }
                 }
             }
@@ -411,14 +382,13 @@ public class XObjXMLDecoder
         {
             // finally, create the right kind of result object via whatever
             // factory we were given
-            result = objectFactory.newObject(resultClass, resultID);
+            result = objectFactory.newObject(info.resultClass, info.resultID);
             
             if (result == null)
             {
                 throw new Error("Cannot determine which object type to instantiate");
             }
         }
-        
         
         if (isRootNode)
         {
@@ -429,12 +399,14 @@ public class XObjXMLDecoder
                 meta.rootQName = new XObjQName(dataNode.namespace(), null, dataNode.localName());
             }
         }
-
-        // so what type did we eventually use?
-        var resultTypeName:String = getQualifiedClassName(result);
         
-        // TODO: pass these in from caller, since we already know them up
-        // there
+        // so what type did we eventually use?
+        info.resultTypeName = getQualifiedClassName(result);
+        
+        // Now, is this a collection or not
+        // TODO: if we knew the result already, these are known in caller
+        // so pass them in instead of looking them up again
+        
         var isCollection:Boolean = false;
         var isArray:Boolean = false;
         
@@ -476,20 +448,78 @@ public class XObjXMLDecoder
             }
         }
         
+        // Now, do we have a decoder for this result?
+        
+        var decoder:XObjDecoder = objectFactory.getDecoderForObject(result);
+        if (decoder)
+        {
+            result = decoder.decodeIntoObject(dataNode, result);
+        }
+        else
+        {
+            result = decodeReflectively(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+        }
+        // so did we actually do anything to the object?
+        if (info.isNullObject && !isRootNode)
+            result = null;
+        
+        // and finally, give the object a chance to process commitProperties()
+        // if it is IInvalidationAware
+        if (result is IInvalidationAware)
+        {
+            (result as IInvalidationAware).invalidateProperties();
+        }
+        
+        
+        // Last question, should we make this bindable?
+        shouldMakeBindable = 
+            (makeObjectsBindable 
+                && (nodeType == Object)
+                && !(result is ObjectProxy)
+                && (info.resultClass != String));
+        
+        if (result && shouldMakeBindable)
+        {                
+            result = new ObjectProxy(result);
+        }
+        
+        // should we keep an extra, well-known ref to the object?
+        if (isRootNode && !doneRootDupe)
+        {
+            var wrappedResult:Object;
+            
+            wrappedResult = { root: result };
+            var rootQName:XObjQName = new XObjQName(dataNode.namespace(), null, dataNode.localName());
+            wrappedResult[decodePartName(rootQName, dataNode)] = result;
+            result = wrappedResult;
+            //assignToProperty(result, "root", partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
+            doneRootDupe = true;
+        }
+        
+        return result;
+    }
+    
+    
+    public function decodeReflectively(dataNode:XML, result:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
+    {
+        var isSimpleType:Boolean = false;
+        var elementSet:Array = [];
+        var attributeSet:Array = [];
+
         // Now start looking at the child XML nodes
         
         var children:XMLList = dataNode.children();
         
         // track whether we actually have any values at all
-        isNullObject = true;
+        info.isNullObject = true;
         
         // OK. Now we're ready to decode some actual data!
         if ((children.length() == 1) && (children[0].nodeKind() == "text"))
         {
-            isNullObject = false;
+            info.isNullObject = false;
             
-            var temp:* = XObjXMLDecoder.simpleType(children[0], resultClass);
-            if (!isSpecifiedType
+            var temp:* = XObjXMLDecoder.simpleType(children[0], info.resultClass);
+            if (!info.isSpecifiedType
                 || (result is String)
                 || (result is int) 
                 || (result is Number) 
@@ -559,7 +589,7 @@ public class XObjXMLDecoder
                     var partClassName:String = null;
                     var nextCollClass:Class = null;
                     var isMember:Boolean;
-                    var partID:String
+                    //var partID:String
                     var partQName:XObjQName;
                     var elementName:*;
                     // assume elementName maps directly to propertyName for now
@@ -567,6 +597,7 @@ public class XObjXMLDecoder
                     var propertyIsArray:Boolean
                     var propertyIsCollection:Boolean;
                     var partObj:*;
+                    var partInfo:XObjDecoderInfo;
                     
                     // skip text nodes, which are part of mixed content
                     if (partNode.nodeKind() != "element")
@@ -574,8 +605,11 @@ public class XObjXMLDecoder
                         continue;
                     }
                     
-                    isNullObject = false;
-                    partID = getIDAttr(partNode);
+                    info.isNullObject = false;
+                    
+                    partInfo = new XObjDecoderInfo();
+                    
+                    partInfo.resultID = getIDAttr(partNode);
                     
                     // Step 1: 
                     // figure out the name of the element and thus, the propertyName
@@ -610,12 +644,12 @@ public class XObjXMLDecoder
                     partObj = null;
                     
                     // now, do we already know this object?
-                    partObj = objectFactory.getObjectForId(partID);
+                    partObj = objectFactory.getObjectForId(partInfo.resultID);
                     
                     // Get part type information
                     
                     // look up characteristics of the result.propertyName type
-                    typeInfo = XObjUtils.typeInfoForProperty(result, resultTypeName, propertyName);
+                    typeInfo = XObjUtils.typeInfoForProperty(result, info.resultTypeName, propertyName);
                     partClass = typeInfo.type;
                     partClassName = typeInfo.typeName;
                     propertyIsArray = typeInfo.isArray;
@@ -627,18 +661,6 @@ public class XObjXMLDecoder
                     // to recursive calls)
                     nextCollClass = typeInfo.arrayElementClass;
                     
-                    // now, should we decode into a new object, or decode into an existing instance?
-                    /*if (rootObject && isRootNode)
-                    {
-                        // we're about to read the root element
-                        partObj = rootObject;
-                        partClass = XObjUtils.getClass(partObj);
-                        partClassName = XObjUtils.getClassName(partObj);
-                    }*/
-                    //else
-                    // else should we reuse an existing property object?
-                    // NOTE: do not reuse if this is an implied array 
-                    // (hence seenProperties test)
                     if (!seenProperties[propertyName]
                         && result.hasOwnProperty(propertyName))
                     {
@@ -661,17 +683,17 @@ public class XObjXMLDecoder
                             {
                                 // reuse any complex objects provided we don't have
                                 // an ID conflict
-                                if (partID != null)
+                                if (partInfo.resultID != null)
                                 {
-                                    var existingByID:* = objectFactory.getObjectForId(partID);
+                                    var existingByID:* = objectFactory.getObjectForId(partInfo.resultID);
                                     if (!existingByID)
                                     {
                                         partObj = existing;
-                                        partID = getIDProperty(partObj);
-                                        if (partID)
+                                        partInfo.resultID = getIDProperty(partObj);
+                                        if (partInfo.resultID)
                                         {
                                             // register it!
-                                            objectFactory.trackObjectById(partObj, partID);
+                                            objectFactory.trackObjectById(partObj, partInfo.resultID);
                                         }
                                     }
                                     else if (existing === existingByID)
@@ -706,11 +728,11 @@ public class XObjXMLDecoder
                                 else // node has no ID, so use whatever we get
                                 {
                                     partObj = existing;
-                                    partID = getIDProperty(partObj);
-                                    if (partID)
+                                    partInfo.resultID = getIDProperty(partObj);
+                                    if (partInfo.resultID)
                                     {
                                         // register it!
-                                        objectFactory.trackObjectById(partObj, partID);
+                                        objectFactory.trackObjectById(partObj, partInfo.resultID);
                                     }
                                 }
                                 
@@ -758,10 +780,10 @@ public class XObjXMLDecoder
                     if (isMember)
                     {
                         // we were told what type to use on the way in?
-                        if (memberClass)  
+                        if (info.memberClass)  
                         {
                             // parent object determined type for us. let it trump
-                            partClass = memberClass;
+                            partClass = info.memberClass;
                         }
                         
                     }
@@ -848,7 +870,8 @@ public class XObjXMLDecoder
                     
                     // now finally, decode the part itself, using the type information
                     // and possibly, the existing partObj to decode into
-                    partObj = actualDecodeXML(partNode, partClass, partObj, false, nextCollClass);
+                    partInfo.memberClass = nextCollClass;
+                    partObj = actualDecodeXML(partNode, partClass, partObj, false, partInfo);
                     
                     // and assign the result property based on array characteristics
                     if (isMember)
@@ -873,8 +896,6 @@ public class XObjXMLDecoder
                             // result.setPropertyIsEnumerable(propertyName, false);
                         }        
                     }
-                    
-                    nextNodeIsRoot = false; // don't use root twice!
                 }
             }
             else if (children.length() > 0 && (result is XML))
@@ -882,7 +903,7 @@ public class XObjXMLDecoder
                 var tempXML:XML;
                 
                 // XML needs special handling as "embedded" XML
-                isNullObject = false;
+                info.isNullObject = false;
                 
                 if (children.length() > 1)
                 {
@@ -939,7 +960,7 @@ public class XObjXMLDecoder
                 isSimpleType = false;
             }
             
-            isNullObject = false;
+            info.isNullObject = false;
             
             var attrObj:* = decodeAttrName(attributeXML.localName(), attributeXML);
             
@@ -947,7 +968,7 @@ public class XObjXMLDecoder
             attributeSet.push(attrObj);
             
             var attrName:String = attrObj.propname;
-            var attrValue:* = XObjXMLDecoder.simpleType(attributeXML.toString(), resultClass);
+            var attrValue:* = XObjXMLDecoder.simpleType(attributeXML.toString(), info.resultClass);
             
             if (makeAttributesMeta)
             {
@@ -994,7 +1015,7 @@ public class XObjXMLDecoder
                 catch (e:Error)
                 {
                     //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    trace("Failed to set attribute "+attrName+"("+attrValue+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    trace("Failed to set attribute "+attrName+"("+attrValue+") on "+ info.resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
         }
@@ -1002,7 +1023,7 @@ public class XObjXMLDecoder
         // finally, did we build a new untyped object with a single property named 'item'
         // which is the magic sentinal SimpleXMLEncoder seems to use?
         
-        if (!isSpecifiedType)
+        if (!info.isSpecifiedType)
         {
             var count:int;
             
@@ -1027,46 +1048,10 @@ public class XObjXMLDecoder
         // stash the order of elements on the result as hidden metadata
         if (elementSet.length > 0)
             XObjMetadata.setElements(result, elementSet);
-        
-        // so did we actually do anything to the object?
-        if (isNullObject && !isRootNode)
-            result = null;
-        
-        // and finally, give the object a chance to process commitProperties()
-        // if it is IInvalidationAware
-        if (result is IInvalidationAware)
-        {
-            (result as IInvalidationAware).invalidateProperties();
-        }
-        
-        
-        // Last question, should we make this bindable?
-        shouldMakeBindable = 
-            (makeObjectsBindable 
-                && (nodeType == Object)
-                && !(result is ObjectProxy)
-                && (resultClass != String));
-        
-        if (result && shouldMakeBindable)
-        {                
-            result = new ObjectProxy(result);
-        }
-        
-        // should we keep an extra, well-known ref to the object?
-        if (isRootNode && !doneRootDupe)
-        {
-            var wrappedResult:Object;
-            
-            wrappedResult = { root: result };
-            var rootQName:XObjQName = new XObjQName(dataNode.namespace(), null, dataNode.localName());
-            wrappedResult[decodePartName(rootQName, dataNode)] = result;
-            result = wrappedResult;
-            //assignToProperty(result, "root", partObj, false, propertyIsArray, propertyIsCollection, shouldMakeBindable);
-            doneRootDupe = true;
-        }
-        
+   
         return result;
     }
+    
     
     private function assignToProperty(result:*, propName:String, value:*,
                                       seenBefore:Boolean, makeArray:Boolean, makeCollection:Boolean, makeBindable:Boolean):*
@@ -1316,7 +1301,6 @@ public class XObjXMLDecoder
         prefix = namespaceMap[node.namespace().uri];
         if (!prefix)
             prefix = node.namespace().prefix;
-        //getLocalPrefixForNamespace(partQName.uri, node);
         
         if (prefix == null || prefix == "")
         {
@@ -1373,18 +1357,19 @@ public class XObjXMLDecoder
     
     private function getIDAttr(part:XML):String
     {
-        if (!part)
-            return null;
+        var result:String;
         
-        var id:String = part.attribute("id").toString();
-        var href:String = part.attribute("href").toString();
+        if (part)
+        {
+            result = part.@id;
+            
+            if (!result)
+            {
+                result = part.@href;
+            }
+        }
         
-        if (id)
-            return id;
-        else if (href)
-            return href;
-        
-        return null;
+        return result;
     }
     
     private function getIDProperty(part:Object):String
@@ -1405,8 +1390,10 @@ public class XObjXMLDecoder
         if (!part)
             return false;
         
-        if (part.@list)
-            return part.@list == "true";
+        var p:String = part.@list;
+        
+        if (p)
+            return p == "true";
         
         return false;
     }
@@ -1421,6 +1408,58 @@ public class XObjXMLDecoder
         var newStr:String = str.replace(" ","T");
         
         return DateUtil.parseW3CDTF(newStr);
+    }
+    
+    
+    private function findExistingObject(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
+    {
+        var result:Object;
+        var existingObj:Object;
+        
+        // does the node have an id? If so, we may already know this object
+        // for example, doing a GET into a previously fetched instance
+        info.resultID = getIDAttr(dataNode);
+        var resultID:String = info.resultID;
+        
+        // see whether we alreadyhave an object with this ID
+        if (resultID)
+        {
+            existingObj = objectFactory.getObjectForId(resultID);
+        }
+        
+        /* figure out what type the result object should be.
+        
+        1. did the caller pass in an object to populate via rootObject?
+        2. do we have the object already by ID?
+        3. was a particular type specified by the caller?
+        4. is there a typeMap entry for the object?
+        
+        */
+        
+        if (rootObject)
+        {
+            result = rootObject;
+            // also track the ID we got, if any, since this may have been a POST
+            if (existingObj)
+            {
+                if (existingObj != result)
+                {
+                    // hmmm. mismatched objects ???
+                    trace("mismatched objects for ID "+ resultID);
+                }
+            }
+            else // no old obj
+            {
+                objectFactory.trackObjectById(result, resultID);
+            }
+        }
+        else
+        {
+            // use if if we have it
+            result = existingObj;
+        }
+        
+        return result;
     }
     
 }

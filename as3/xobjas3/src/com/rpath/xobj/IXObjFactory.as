@@ -19,5 +19,6 @@ public interface IXObjFactory
     function getObjectForId(id:String):Object;
     function trackObjectById(item:Object, id:String):void;
     function newCollectionFrom(item:*):*;
+    function getDecoderForObject(object:Object):XObjDecoder;
 }
 }

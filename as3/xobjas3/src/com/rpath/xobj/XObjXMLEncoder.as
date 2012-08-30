@@ -658,6 +658,9 @@ public class XObjXMLEncoder
         return attrNames;
     }
     
+    /** TODO: refactor this to put it all in one helper class
+    * XMLdecode as a copy of this method 
+    */
     
     private function decodePartName(partQName:XObjQName, node:XML):String
     {

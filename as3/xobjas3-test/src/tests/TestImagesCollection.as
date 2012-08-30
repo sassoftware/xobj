@@ -76,10 +76,10 @@ public class TestImagesCollection extends TestBase
         var xmlInput:XML = new XML(testData.large_imagecollection);
         
         
-        for (var loop:int ; loop < 100 ; loop++)
+/*        for (var loop:int ; loop < 100 ; loop++)
         {
             var o:* = typedDecoder.decodeXML(xmlInput);
-        }
+        }*/
     }
 
     
