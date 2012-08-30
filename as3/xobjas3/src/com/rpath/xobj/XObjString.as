@@ -37,6 +37,7 @@ package com.rpath.xobj
  * @private
  */
 
+
 [RemoteClass]  // tell the compiler we can be deep copied 
 public dynamic class XObjString
 {

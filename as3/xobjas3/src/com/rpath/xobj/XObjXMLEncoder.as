@@ -37,6 +37,7 @@ import mx.collections.ArrayCollection;
 import mx.collections.ICollectionView;
 import mx.utils.*;
 
+use namespace xobj;
 
 /**
  * The TypedXMLEncoder class takes ActionScript Objects and encodes them to XML

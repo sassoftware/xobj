@@ -12,6 +12,8 @@ public dynamic class ProductImage implements IXObjSerializing
         super();
     }
     
+    public var id:String;
+    
     //public static const decoderClass:Class = ProductImageDecoder;
     private var _decoder:ProductImageDecoder = new ProductImageDecoder();
     

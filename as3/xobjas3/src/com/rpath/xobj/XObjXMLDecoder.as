@@ -47,6 +47,7 @@ import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
 import flash.xml.XMLNodeType;
 
+import mx.collections.ArrayCollection;
 import mx.collections.ICollectionView;
 import mx.collections.IList;
 import mx.collections.ListCollectionView;
@@ -107,8 +108,8 @@ public class XObjXMLDecoder
     
     public var typeMap:* = {};
     
-    public var namespaceMap:Dictionary = new Dictionary();
-    public var spacenameMap:Dictionary = new Dictionary();
+    xobj var namespaceMap:Dictionary = new Dictionary();
+    xobj var spacenameMap:Dictionary = new Dictionary();
     
     //--------------------------------------------------------------------------
     //
@@ -233,7 +234,7 @@ public class XObjXMLDecoder
         this.objectFactory = objectFactory;
     }
     
-    public var deferred:Boolean;
+    xobj var deferred:Boolean;
     
     public var objectFactory:IXObjFactory;
     
@@ -512,18 +513,22 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodeArray(xml:Object, result:Object, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    public function decodeArray(xml:Object, result:Object=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
     {
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
+        if (result == null)
+            result = [];
         
         return decodePart(xml as XML, result, info, true, false, shouldMakeBindable);
     }
     
-    public function decodeCollection(xml:XML, result:Object, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    public function decodeCollection(xml:XML, result:Object=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
     {
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
+        if (result == null)
+            result = new ArrayCollection();
         
         return decodePart(xml as XML, result, info, false, true, shouldMakeBindable);
     }
@@ -571,7 +576,7 @@ public class XObjXMLDecoder
                     {
                         try
                         {
-                            result = parseRPATHWHACKYDATETIME(temp);
+                            result = XObjUtils.parseRPATHWHACKYDATETIME(temp);
                         }
                         catch (e:Error)
                         {
@@ -1305,7 +1310,7 @@ public class XObjXMLDecoder
         return null;
     }
     
-    public function getLocalPrefixForNamespace(uri:String, node:XML):String
+    xobj function getLocalPrefixForNamespace(uri:String, node:XML):String
     {
         var prefix:String;
         var decls:* = node.namespaceDeclarations();
@@ -1323,7 +1328,7 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodePartName(partQName:XObjQName, node:XML):String
+    xobj function decodePartName(partQName:XObjQName, node:XML):String
     {
         var prefix:String;
         var partName:String = XObjUtils.getNCName(partQName.localName);
@@ -1347,7 +1352,7 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodeAttrName(name:*, node:XML):*
+    xobj function decodeAttrName(name:*, node:XML):*
     {
         var attr:Object = {};
         var namespace:Namespace = node.namespace();
@@ -1373,7 +1378,7 @@ public class XObjXMLDecoder
         return attr;
     }
     
-    public function toCollection(v:*):ListCollectionView
+    xobj function toCollection(v:*):ListCollectionView
     {
         if (v is ListCollectionView)
             return v;
@@ -1428,19 +1433,7 @@ public class XObjXMLDecoder
         
         return false;
     }
-    
-    
-    /** whacky rPath datetime format which is ISO8601 with the 
-     * required 'T' element replaced with a SPACE
-     */
-    
-    public function parseRPATHWHACKYDATETIME(str:String):Date
-    {
-        var newStr:String = str.replace(" ","T");
-        
-        return DateUtil.parseW3CDTF(newStr);
-    }
-    
+
     
     private function findExistingObject(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
     {

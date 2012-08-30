@@ -36,7 +36,7 @@ public class ProductImageDecoder extends XObjDecoder
         if (!image)
             return null;
         
-        image.id = String(xml.@id);
+        image.id = xml.@id;
         image.imageId = int(xml.imageId);
         image.hostname = String(xml.hostname);
         image.release = xml.release;
@@ -55,9 +55,8 @@ public class ProductImageDecoder extends XObjDecoder
         image.buildCount = xml.buildCount;
         image.status = xml.status;
         image.statusMessage = xml.statusMessage;
-        image.files = [];
         
-        image.files = xobj.decodeArray(xml.files, []);
+        image.files = xobj.decodeArray(xml.files);
         
         info.isNullObject = false;
         

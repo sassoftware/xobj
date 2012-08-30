@@ -987,5 +987,18 @@ public class XObjUtils
         var bMember:Boolean = !obj.hasOwnProperty(propName);
         return bMember;
     }
+    
+    
+    /** whacky rPath datetime format which is ISO8601 with the 
+     * required 'T' element replaced with a SPACE
+     */
+    
+    public static function parseRPATHWHACKYDATETIME(str:String):Date
+    {
+        var newStr:String = str.replace(" ","T");
+        
+        return DateUtil.parseW3CDTF(newStr);
+    }
+    
 }
 }
