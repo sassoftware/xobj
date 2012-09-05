@@ -10,6 +10,7 @@ package com.rpath.xobj
 {
 import flash.utils.Dictionary;
 
+import mx.collections.ArrayCollection;
 import mx.core.mx_internal;
 
 public class XObjDecoderGenerator
@@ -24,7 +25,9 @@ public class XObjDecoderGenerator
      */
     public static var generateClasses:Boolean = false;
     
-    /** stashTypeInfo builds up an index of all types, and all properties
+    private static var _typeInfoByClassName:Dictionary = new Dictionary();
+
+    /** recordPropertyInfo() builds up an index of all types, and all properties
      * so that we can consider code-generation of decoding classes
      */
     
@@ -40,7 +43,18 @@ public class XObjDecoderGenerator
         props[typeInfo.propName] = typeInfo;
     }
     
-    private static var _typeInfoByClassName:Dictionary = new Dictionary();
+    
+    private static function getKeys(d:Dictionary):Array
+    {
+        var a:Array = new Array();
+        
+        for (var key:Object in d)
+        {
+            a.push(key);
+        }
+        
+        return a;
+    }
     
     public static function dumpClasses():void
     {
@@ -52,7 +66,9 @@ public class XObjDecoderGenerator
                 continue;
             
             var clazz:Class = XObjUtils.getClassByName(c);
-            if (clazz == null)
+            if (clazz == null || clazz == Object ||
+                clazz == String || clazz == Array ||
+                clazz == ArrayCollection)
                 continue;
             
             var cname:String = XObjUtils.getUnqualfiedClassName(clazz);
@@ -95,8 +111,14 @@ public class XObjDecoderGenerator
             var props:Dictionary = _typeInfoByClassName[c];
             if (props)
             {
-                for each (var t:XObjTypeInfo in props)
+                // sort keys
+                var propNames:Array = getKeys(props);
+                propNames.sort();
+                
+                for each (var propName:String in propNames)
                 {
+                    var t:XObjTypeInfo = props[propName];
+                    
                     var xe:String = "xml."+ (t.isAttribute ? "@" : "")+t.propName;
                     var op:String = "m."+t.propName;
                     
@@ -142,5 +164,6 @@ public class XObjDecoderGenerator
             trace(line);
         }
     }
+    
 }
 }
