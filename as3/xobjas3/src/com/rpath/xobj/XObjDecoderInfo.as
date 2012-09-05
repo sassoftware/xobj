@@ -22,6 +22,6 @@ public final class XObjDecoderInfo
     public var isSpecifiedType:Boolean;
     public var isNullObject:Boolean;
     public var isSimpleType:Boolean;
-    
+    public var isRootNode:Boolean;
 }
 }

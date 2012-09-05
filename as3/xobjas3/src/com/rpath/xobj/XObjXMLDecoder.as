@@ -96,17 +96,192 @@ public class XObjXMLDecoder
 {
     public static var useStaticDecoders:Boolean = true;
     
+    public var objectFactory:IXObjFactory;
+    
     public var typeMap:* = {};
+    
+    /**
+     *  Constructor.
+     * 
+     * typeMap should be of the form { element_tag : AS3 Type, ... } 
+     * 
+     * e.g. 
+     * 
+     *      {   image: com.rpath.catalog.VirtualImage, 
+     *          cloud: com.rpath.catalog.Cloud }
+     * 
+     * 
+     */
+    public function XObjXMLDecoder(typeMap:* = null, nmMap:* = null,
+                                   makeObjectsBindable:Boolean = false,
+                                   makeAttributesMeta:Boolean = false,
+                                   defer:Boolean=false,
+                                   objectFactory:IXObjFactory=null,
+                                   ignoreWhitespace:Boolean=false)
+    {
+        super();
+        
+        if (!ignoreWhitespace)
+        {
+            XML.ignoreWhitespace = false;
+            XML.prettyPrinting = false;
+        }
+        
+        this.typeMap = typeMap;
+        
+        for (var prefix:String in nmMap)
+        {
+            namespaceMap[nmMap[prefix]] = prefix;
+            spacenameMap[prefix] = nmMap[prefix];
+        }
+        
+        this.makeObjectsBindable = makeObjectsBindable;
+        this.makeAttributesMeta = makeAttributesMeta;
+        this.deferred = defer;
+        
+        if (objectFactory == null)
+        {
+            objectFactory = new XObjDefaultFactory();
+        }
+        
+        this.objectFactory = objectFactory;
+    }
+
+    // PRIMARY INTERFACES
+    
+    /**
+     *  Converts a tree of XMLLists into a tree of ActionScript Objects.
+     *
+     *  @param dataNode An XMLList to be converted into a tree of ActionScript Objects.
+     *
+     *  @return A tree of ActionScript Objects.
+     */
+    public function decodeXML(dataNode:XML, propType:Class = null):Object
+    {
+        if (!deferred)
+            return actualDecodeXML(dataNode, propType, null, true);
+        else
+            return new XObjDeferredDecode(this, dataNode, propType);
+    }
+    
+    public function decodeRawXML(xml:XML, propType:Class = null):Object
+    {
+        return decodeXML(xml, propType);
+    }
+    
+    public function decodeRawXMLInto(xml:XML, rootObject:Object):Object
+    {
+        return decodeXMLIntoObject(xml, rootObject);
+    }
+    
+    public function decodeXMLIntoObject(dataNode:XML, rootObject:Object):Object
+    {
+        if (!rootObject)
+            return null;
+        
+        if (!deferred)
+            return actualDecodeXML(dataNode, null, rootObject, true);
+        else
+            return new XObjDeferredDecode(this, dataNode, null, rootObject);
+    }
+
+    // STATIC DECODER SUPPORT FUNCTIONS
+    
+    /** decodePart() allows for a static decoder to request that one of its
+    * member elements (typically, a subobject) be decoded
+    */
+    
+    public function decodePart(xml:Object, result:Object, resultClass:Class=null, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):*
+    {
+        if (!xml)
+            return null;
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        return xobj::actualDecodeXML(xml as XML, resultClass, result, false, info);
+    }
+    
+    /** decodeArray() allows for a static decoder to request that one of its
+     * member elements which is an array of objects be decoded
+     */
+
+    public function decodeArray(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
+    {
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        if (!info)
+        {
+            info = new XObjDecoderInfo();
+        }
+        
+        info.resultClass = resultClass;
+        info.memberClass = memberClass;
+        
+        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+    }
+    
+    /** decodeCollection() allows a static decoder to request the xobj machinery
+     * reflectively decode a collection. Provides all the support for "identified
+     * collections" (those with an id) and proper type mapping, etc.
+     */
+    
+    public function decodeCollection(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
+    {
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        if (!info)
+        {
+            info = new XObjDecoderInfo();
+        }
+        
+        info.resultClass = resultClass;
+        info.memberClass = memberClass;
+        
+        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+    }
+    
+    
+    /** decodeCollectionMembers() allows for direct decoding into a collection
+     * avoiding the reflective step in between. Useful for hand-coded decoders
+     * that understand how to directly reference the XML list and types required
+     * 
+     * Note: does not support looking up "identified" collections (those with 
+     * and id property)
+     */
+    
+    public function decodeCollectionMembers(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
+    {
+        if (xml is XML)
+            xml = (xml as XML).children();
+        
+        if (!result && resultClass)
+            result = new resultClass();
+        
+        if (!result)
+            result = new ArrayCollection();
+        
+        if (!info)
+            info = new XObjDecoderInfo();
+        
+        info.resultClass = resultClass;
+        info.memberClass = memberClass;
+        
+        for each (var elem:XML in (xml as XMLList))
+        {
+            var newObj:Object = xobj::actualDecodeXML(elem, memberClass);
+            result.addObject(newObj);
+        }
+        
+        return result;
+    }
+    
     
     xobj var namespaceMap:Dictionary = new Dictionary();
     xobj var spacenameMap:Dictionary = new Dictionary();
     
-    //--------------------------------------------------------------------------
-    //
-    //  Class Methods
-    //
-    //--------------------------------------------------------------------------
-    
+
     /**
      *  @private
      * 
@@ -171,62 +346,8 @@ public class XObjXMLDecoder
         return result;
     }
     
-    //--------------------------------------------------------------------------
-    //
-    //  Constructor
-    //
-    //--------------------------------------------------------------------------
-    
-    /**
-     *  Constructor.
-     * 
-     * typeMap should be of the form { element_tag : AS3 Type, ... } 
-     * 
-     * e.g. 
-     * 
-     *      {   image: com.rpath.catalog.VirtualImage, 
-     *          cloud: com.rpath.catalog.Cloud }
-     * 
-     * 
-     */
-    public function XObjXMLDecoder(typeMap:* = null, nmMap:* = null,
-                                   makeObjectsBindable:Boolean = false,
-                                   makeAttributesMeta:Boolean = false,
-                                   defer:Boolean=false,
-                                   objectFactory:IXObjFactory=null,
-                                   ignoreWhitespace:Boolean=false)
-    {
-        super();
-        
-        if (!ignoreWhitespace)
-        {
-            XML.ignoreWhitespace = false;
-            XML.prettyPrinting = false;
-        }
-        
-        this.typeMap = typeMap;
-        
-        for (var prefix:String in nmMap)
-        {
-            namespaceMap[nmMap[prefix]] = prefix;
-            spacenameMap[prefix] = nmMap[prefix];
-        }
-        
-        this.makeObjectsBindable = makeObjectsBindable;
-        this.makeAttributesMeta = makeAttributesMeta;
-        this.deferred = defer;
-        
-        if (objectFactory == null)
-        {
-            objectFactory = new XObjDefaultFactory();
-        }
-        
-        this.objectFactory = objectFactory;
-    }
     
     xobj var deferred:Boolean;
-    
-    public var objectFactory:IXObjFactory;
     
     //--------------------------------------------------------------------------
     //
@@ -234,41 +355,6 @@ public class XObjXMLDecoder
     //
     //--------------------------------------------------------------------------
     
-    /**
-     *  Converts a tree of XMLLists into a tree of ActionScript Objects.
-     *
-     *  @param dataNode An XMLList to be converted into a tree of ActionScript Objects.
-     *
-     *  @return A tree of ActionScript Objects.
-     */
-    public function decodeXML(dataNode:XML, propType:Class = null):Object
-    {
-        if (!deferred)
-            return actualDecodeXML(dataNode, propType, null, true);
-        else
-            return new XObjDeferredDecode(this, dataNode, propType);
-    }
-    
-    public function decodeRawXML(xml:XML, propType:Class = null):Object
-    {
-        return decodeXML(xml, propType);
-    }
-    
-    public function decodeRawXMLInto(xml:XML, rootObject:Object):Object
-    {
-        return decodeXMLIntoObject(xml, rootObject);
-    }
-    
-    public function decodeXMLIntoObject(dataNode:XML, rootObject:Object):Object
-    {
-        if (!rootObject)
-            return null;
-        
-        if (!deferred)
-            return actualDecodeXML(dataNode, null, rootObject, true);
-        else
-            return new XObjDeferredDecode(this, dataNode, null, rootObject);
-    }
     
     /**
      * 
@@ -321,6 +407,7 @@ public class XObjXMLDecoder
         
         // flag to track whether we were told or not
         info.isSpecifiedType = rootObject || expectedResultClass;
+        info.isRootNode = isRootNode;
         
         result = findExistingObject(dataNode, rootObject, info);
         
@@ -515,51 +602,6 @@ public class XObjXMLDecoder
         return result;
     }
     
-    public function decodePart(xml:Object, result:Object, resultClass:Class=null, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):*
-    {
-        if (!xml)
-            return null;
-        if (xml is XMLList)
-            xml = (xml as XMLList)[0];
-        
-        return xobj::actualDecodeXML(xml as XML, resultClass, result, false, info);
-    }
-
-    public function decodeArray(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
-    {
-        if (xml is XMLList)
-            xml = (xml as XMLList)[0];
-        if (result == null)
-            result = [];
-        
-        if (!info)
-        {
-            info = new XObjDecoderInfo();
-        }
-        
-        info.resultClass = resultClass;
-        info.memberClass = memberClass;
-
-        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
-    }
-    
-    public function decodeCollection(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
-    {
-        if (xml is XMLList)
-            xml = (xml as XMLList)[0];
-        if (result == null)
-            result = new ArrayCollection();
-        
-        if (!info)
-        {
-            info = new XObjDecoderInfo();
-        }
-        
-        info.resultClass = resultClass;
-        info.memberClass = memberClass;
-        
-        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
-    }
     
     private function decodeReflectively(dataNode:XML, result:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
     {
@@ -1502,7 +1544,7 @@ public class XObjXMLDecoder
     }
     
     
-    private function findExistingObject(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
+    private function findExistingObjectOLD(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
     {
         var result:Object;
         var existingObj:Object;
@@ -1548,6 +1590,55 @@ public class XObjXMLDecoder
         {
             // use if if we have it
             result = existingObj;
+        }
+        
+        return result;
+    }
+    
+    private function findExistingObject(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
+    {
+        var result:Object;
+        var existingObj:Object;
+        
+        // does the node have an id? If so, we may already know this object
+        // for example, doing a GET into a previously fetched instance
+        info.resultID = getIDAttr(dataNode);
+        var resultID:String = info.resultID;
+        
+        // see whether we already have an object with this ID
+        if (resultID)
+        {
+            existingObj = objectFactory.getObjectForId(resultID);
+        }
+        
+        if (existingObj)  // always use the existing object
+        {
+            if (info.isRootNode && rootObject && rootObject != existingObj)
+            {
+                // root nodes are special. We're forcibly decoding into
+                // an object we were given for the purpose
+                // existingObject doesn't match is a corner-case
+                // that we have to tolerate for now due to the need for
+                // type-swizzling by some legacy code
+                result = rootObject;
+                // update id cache to new object
+                objectFactory.trackObjectById(result, resultID);
+            }
+            else
+            {
+                // use if if we have it
+                result = existingObj;
+            }
+        }
+        else
+        {
+            if (rootObject)
+            {
+                result = rootObject;
+               
+                // track the new object
+                objectFactory.trackObjectById(result, resultID);
+            }
         }
         
         return result;
