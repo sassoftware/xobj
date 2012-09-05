@@ -650,10 +650,17 @@ public class XObjXMLEncoder
                         if ((attr.propname == "id" || attr.propname == "href")
                             && !attrSource[attr.propname])
                             continue;
-                        if ("value" in attr)
+                        
+                        // changed the order of this if...else due to
+                        // https://issues.rpath.com/browse/RCE-903
+                        if (attrSource.hasOwnProperty(attr.propname))
+                            attributes[name] = attrSource[attr.propname];
+                        else if ("value" in attr)
                             attributes[name] = attr['value'];
                         else
-                            attributes[name] = attrSource[attr.propname];
+                        {
+                            // do nothing. ignore attempt
+                        }
                     }
                     catch (e:ReferenceError)
                     {

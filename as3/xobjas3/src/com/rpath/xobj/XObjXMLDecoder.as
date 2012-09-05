@@ -1333,6 +1333,10 @@ public class XObjXMLDecoder
         attr.qname = qname;
         attr.propname = name;
         // also pull attr value
+        // TODO: Why the heck are we preserving the orig value in ALL cases?
+        // see the Xobj Decode where it tries to infer this based on exception
+        // setting the result.attribute value
+        // see https://issues.rpath.com/browse/RCE-903
         if (node.attributes[name])
             attr.value = node.attributes[name];
         return attr;
