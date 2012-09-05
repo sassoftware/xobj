@@ -1,11 +1,11 @@
 package tests.models
 {
-import com.rpath.xobj.IXObjSerializing;
-import com.rpath.xobj.XObjDecoderInfo;
-import com.rpath.xobj.XObjXMLDecoder;
+import mx.collections.ArrayCollection;
+
+ActionModel;  //force stupid linker
 
 [Bindable]
-public dynamic class ProductImage implements IXObjSerializing
+public dynamic class ProductImage
 {
     public function ProductImage()
     {
@@ -14,14 +14,10 @@ public dynamic class ProductImage implements IXObjSerializing
     
     public var id:String;
     
-    //public static const decoderClass:Class = ProductImageDecoder;
-    private var _decoder:ProductImageDecoder = new ProductImageDecoder();
+    public static const decoderClass:Class = ProductImageDecoder;
     
-    // self-decoding
-    public function decodeIntoObject(xobj:XObjXMLDecoder, xml:XML, object:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
-    {
-        return _decoder.decodeIntoObject(xobj, xml,object,info,isArray,isCollection,shouldMakeBindable);
-    }
+    [ElementType(ActionModel)]
+    public var actions:ArrayCollection;
     
 }
 }
