@@ -23,7 +23,7 @@ public class XObjDecoderGenerator
      * decoder impls using this class
      */
     public static var generateClasses:Boolean = false;
-
+    
     /** stashTypeInfo builds up an index of all types, and all properties
      * so that we can consider code-generation of decoding classes
      */
@@ -73,7 +73,7 @@ public class XObjDecoderGenerator
             s.push("import com.rpath.xobj.XObjDecoderInfo;");
             s.push("import com.rpath.xobj.XObjXMLDecoder;");
             s.push("import com.verveguy.rest.RESThref;");
-
+            
             s.push("public class "+ cname +"Decoder extends XObjDecoder");
             s.push("{");
             s.push("");
@@ -101,7 +101,7 @@ public class XObjDecoderGenerator
                     var op:String = "m."+t.propName;
                     
                     var tname:String = XObjUtils.getUnqualfiedClassName(XObjUtils.getClassByName(t.typeName));
-
+                    
                     s.push("        if ("+xe+".length() > 0)");
                     if (t.isArray)
                     {
@@ -115,7 +115,10 @@ public class XObjDecoderGenerator
                     }
                     else if (t.isSimpleType)
                     {
-                        s.push("            "+op+" = "+xe+";");
+                        if (tname == "Boolean")
+                            s.push("            "+op+" = isTrue("+xe+");");
+                        else
+                            s.push("            "+op+" = "+xe+";");
                     }
                     else
                     {
