@@ -21,5 +21,7 @@ public final class XObjDecoderInfo
     public var resultTypeName:String;
     public var isSpecifiedType:Boolean;
     public var isNullObject:Boolean;
+    public var isSimpleType:Boolean;
+    
 }
 }

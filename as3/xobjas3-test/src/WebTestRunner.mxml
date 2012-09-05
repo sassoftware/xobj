@@ -22,6 +22,7 @@
     
     <mx:Script>
     <![CDATA[
+        import com.rpath.xobj.XObjDecoderGenerator;
         
         private var startTime:Number;
         
@@ -29,6 +30,8 @@
         {
             var suites:Array = TestSuites.suites();
             startTime = getTimer();
+            
+            XObjDecoderGenerator.generateClasses = true;
             
             testRunner.startTests(suites);
             
@@ -38,6 +41,8 @@
         private function handleTestsComplete(event:Event):void
         {
             trace("Total time for 1 runs: "+ (getTimer() - startTime) + " ms");
+            
+            XObjDecoderGenerator.dumpClasses();
         }
         
     ]]>

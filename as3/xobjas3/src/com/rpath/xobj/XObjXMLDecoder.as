@@ -68,18 +68,7 @@ use namespace xobj;
  * between elements and attributes present in the XML so that subsequent re-encoding
  * of the object graph will preserve those characteristics.
  * 
- * The objects created can be of any ActionScript type, provided that they are 
- * dynamic. The dynamic requirement is due to two key behaviors of this decoder
- * 
- * 1/ Any elements and attributes encountered in the XML will be added as dyanmic
- * properties to the unmarshalled instances
- * 
- * 2/ The preservation of namespaces, element ordering and attributes requires
- * the addition of an XObjMetadata structure for each unmarshalled instance.
- * 
- * Further work could be done to eliminate this requirement by requiring any Type
- * mapped to support an IXObj interface that would provide methods for metadata
- * maintenance and the addition of properties.
+ * The objects created can be of any ActionScript type.
  * 
  * As the decoder walks the XML, elements are mapped to AS3 Types via a typeMapping
  * dictionary. This dictionary is passed into the constructor of this class
@@ -105,6 +94,7 @@ use namespace xobj;
 
 public class XObjXMLDecoder
 {
+    public static var useStaticDecoders:Boolean = true;
     
     public var typeMap:* = {};
     
@@ -313,8 +303,8 @@ public class XObjXMLDecoder
      */
     
     xobj function actualDecodeXML(dataNode:XML, expectedResultClass:Class = null, 
-                                    rootObject:* = null, isRootNode:Boolean = false, 
-                                    info:XObjDecoderInfo=null):Object
+                                  rootObject:* = null, isRootNode:Boolean = false, 
+                                  info:XObjDecoderInfo=null):Object
     {
         var result:*;
         var shouldMakeBindable:Boolean = false;
@@ -451,7 +441,7 @@ public class XObjXMLDecoder
         }
         
         // Decode the part
-        result = decodePart(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+        result = decodeInto(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
         
         // so did we actually do anything to the object?
         if (info.isNullObject && !isRootNode)
@@ -494,43 +484,81 @@ public class XObjXMLDecoder
     }
     
     
-    public function decodePart(dataNode:XML, result:Object, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):Object
+    xobj function decodeInto(xml:Object, result:Object, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):Object
     {
-        if (!dataNode)
+        if (!xml)
             return null;
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
         
-        var decoder:IXObjSerializing = objectFactory.getDecoderForObject(result);
-        if (decoder)
+        var useStatics:Boolean = XObjXMLDecoder.useStaticDecoders;
+        
+        if (result == null)
+            useStatics = false;  // TODO: allow caller to pass in class...
+        
+        if (useStatics)
         {
-            result = decoder.decodeIntoObject(this, dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+            var decoder:IXObjSerializing = objectFactory.getDecoderForObject(result);
+            if (decoder == null)
+                useStatics = false;
+        }
+        
+        if (useStatics)
+        {
+            result = decoder.decodeIntoObject(this, (xml as XML), result, info, isArray, isCollection, shouldMakeBindable);
         }
         else
         {
-            result = decodeReflectively(dataNode, result, info, isArray, isCollection, shouldMakeBindable);
+            result = decodeReflectively((xml as XML), result, info, isArray, isCollection, shouldMakeBindable);
         }
         
         return result;
     }
     
-    
-    public function decodeArray(xml:Object, result:Object=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    public function decodePart(xml:Object, result:Object, resultClass:Class=null, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):*
+    {
+        if (!xml)
+            return null;
+        if (xml is XMLList)
+            xml = (xml as XMLList)[0];
+        
+        return xobj::actualDecodeXML(xml as XML, resultClass, result, false, info);
+    }
+
+    public function decodeArray(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
     {
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
         if (result == null)
             result = [];
         
-        return decodePart(xml as XML, result, info, true, false, shouldMakeBindable);
+        if (!info)
+        {
+            info = new XObjDecoderInfo();
+        }
+        
+        info.resultClass = resultClass;
+        info.memberClass = memberClass;
+
+        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
     }
     
-    public function decodeCollection(xml:XML, result:Object=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):Object
+    public function decodeCollection(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
     {
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
         if (result == null)
             result = new ArrayCollection();
         
-        return decodePart(xml as XML, result, info, false, true, shouldMakeBindable);
+        if (!info)
+        {
+            info = new XObjDecoderInfo();
+        }
+        
+        info.resultClass = resultClass;
+        info.memberClass = memberClass;
+        
+        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
     }
     
     private function decodeReflectively(dataNode:XML, result:Object, info:XObjDecoderInfo, isArray:Boolean, isCollection:Boolean, shouldMakeBindable:Boolean):Object
@@ -548,6 +576,7 @@ public class XObjXMLDecoder
         
         // track whether we actually have any values at all
         info.isNullObject = true;
+        info.isSimpleType = true;
         
         // OK. Now we're ready to decode some actual data!
         if ((children.length() == 1) && (children[0].nodeKind() == "text"))
@@ -686,6 +715,7 @@ public class XObjXMLDecoder
                     
                     // look up characteristics of the result.propertyName type
                     typeInfo = XObjUtils.typeInfoForProperty(result, info.resultTypeName, propertyName);
+                    
                     partClass = typeInfo.type;
                     partClassName = typeInfo.typeName;
                     propertyIsArray = typeInfo.isArray;
@@ -932,6 +962,24 @@ public class XObjXMLDecoder
                             // result.setPropertyIsEnumerable(propertyName, false);
                         }        
                     }
+                    
+                    if (XObjDecoderGenerator.generateClasses && partObj != null)
+                    {
+                        // Stash everything we know for debug/class gen
+                        var sinfo:XObjTypeInfo = new XObjTypeInfo();
+                        sinfo.holderClassName = XObjUtils.getClassName(result);
+                        sinfo.isAttribute = false;
+                        sinfo.isSimpleType = partInfo ? partInfo.isSimpleType : false;
+                        sinfo.isArray = propertyIsArray;
+                        sinfo.isCollection = propertyIsCollection;
+                        sinfo.arrayElementClass = partInfo.memberClass;
+                        sinfo.propName = propertyName;
+                        sinfo.typeName = partClassName ? partClassName : XObjUtils.getClassName(partObj);
+                        sinfo.isMember = isMember;
+                        sinfo.isDynamic = typeInfo.isDynamic;
+                        sinfo.seen = true;
+                        XObjDecoderGenerator.recordPropertyInfo(sinfo);
+                    }
                 }
             }
             else if (children.length() > 0 && (result is XML))
@@ -1054,6 +1102,22 @@ public class XObjXMLDecoder
                     trace("Failed to set attribute "+attrName+"("+attrValue+") on "+ info.resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
                 }
             }
+            
+            if (XObjDecoderGenerator.generateClasses)
+            {
+                // Stash everything we know for debug/class gen
+                sinfo = new XObjTypeInfo();
+                sinfo.holderClass = XObjUtils.getClass(result);
+                sinfo.holderClassName = XObjUtils.getClassName(result);
+                sinfo.propName = attrName;
+                sinfo.type = XObjUtils.getClass(attrValue);
+                sinfo.typeName = XObjUtils.getClassName(attrValue);
+                sinfo.isSimpleType = true;
+                sinfo.seen = true;
+                sinfo.isAttribute = true;
+                sinfo.isDynamic = false; // TODO
+                XObjDecoderGenerator.recordPropertyInfo(sinfo);
+            }
         }
         
         // finally, did we build a new untyped object with a single property named 'item'
@@ -1084,6 +1148,9 @@ public class XObjXMLDecoder
         // stash the order of elements on the result as hidden metadata
         if (elementSet.length > 0)
             XObjMetadata.setElements(result, elementSet);
+        
+        // note our final disposition
+        info.isSimpleType = isSimpleType;
         
         return result;
     }
@@ -1433,7 +1500,7 @@ public class XObjXMLDecoder
         
         return false;
     }
-
+    
     
     private function findExistingObject(dataNode:XML, rootObject:Object, info:XObjDecoderInfo):Object
     {

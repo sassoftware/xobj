@@ -39,10 +39,10 @@ public class XObjUtils
      * @private
      */ 
     private static var CLASS_INFO_CACHE:Object = {};
-
+    
     /** getNCName stripts any preceeding foo: portion off a name
-    * TODO: decide whether this is now redundant
-    */
+     * TODO: decide whether this is now redundant
+     */
     
     public static function getNCName(name:String):String
     {
@@ -78,7 +78,7 @@ public class XObjUtils
         var elementTag:String = XObjUtils.getNCName(qname.localName);
         
         node.setName(elementTag);
-
+        
         if (qname.ns)
         {
             node.setNamespace(qname.ns);
@@ -117,6 +117,18 @@ public class XObjUtils
         var className:String = (obj == null) ? null : getQualifiedClassName(obj);
         
         className = className.replace( /::/, "." );
+        return className;
+    }
+    
+    public static function getUnqualfiedClassName(obj:*):String
+    {
+        var className:String = (obj == null) ? null : getQualifiedClassName(obj);
+        
+        var bits:Array = className.split(/::/);
+        if (bits.length > 1)
+            className = bits[1];
+        else
+            className = bits[0];
         return className;
     }
     
@@ -271,7 +283,6 @@ public class XObjUtils
         var isArray:Boolean = false;
         var typeInfo:XObjTypeInfo;
         var shouldCache:Boolean = true;
-        var isDynamic:Boolean;
         
         if (className == "Object" || className == "mx.utils::ObjectProxy")
             return new XObjTypeInfo();
@@ -290,9 +301,12 @@ public class XObjUtils
         
         typeInfo = typePropertyCache[propertyCacheKey];
         
-        if (typeInfo == null)
+        if (typeInfo == null) // new or dynamic (we don't cache dynamics)
         {
             typeInfo = new XObjTypeInfo();
+            
+            typeInfo.holderClass = XObjUtils.getClass(object);
+            typeInfo.holderClassName = className;
             
             // go look it up (expensive)
             // very important to use the instance object here, not the classname
@@ -303,13 +317,13 @@ public class XObjUtils
             
             if (typeDescInfo.@isDynamic == 'true')
             {
-                isDynamic = true;
+                typeInfo.isDynamic = true;
             }
             
             var accessorList:XMLList = typeDescInfo..accessor.(@name == propName);
             
             if (accessorList.length() > 0)
-                typeInfo.typeName = accessorList[0].@type.toString().replace( /::/, "." );
+                typeInfo.typeName = (accessorList[0].@type.toString() as String).replace( /::/, "." );
             
             if (!typeInfo.typeName)
             {    
@@ -335,7 +349,7 @@ public class XObjUtils
                             // must be dynamic property or simply an error (no such property)
                             typeInfo.typeName = XObjUtils.getClassName(val);
                             // don't cache if dynamic
-                            if (isDynamic)
+                            if (typeInfo.isDynamic)
                                 shouldCache = false;
                         }
                     }
@@ -366,7 +380,7 @@ public class XObjUtils
             
             typeInfo.isArray = isTypeArray(typeInfo.typeName);
             typeInfo.isCollection = isTypeCollection(typeInfo.typeName);
-
+            
             if (arrayElementType)
             {
                 typeInfo.arrayElementTypeName = arrayElementType;
@@ -404,6 +418,8 @@ public class XObjUtils
             {
                 typeInfo.isMember = (object as IXObjCollection).isElementMember(propName);
             }
+            
+            typeInfo.propName = propName;
             
             // cache the result for next time
             if (shouldCache)
@@ -979,7 +995,7 @@ public class XObjUtils
     public static function isByReference(obj:Object):Boolean
     {
         return ((obj is IXObjReference) && (obj as IXObjReference).isByReference)
-            || (("isByReference" in obj) && obj["isByReference"]);
+        || (("isByReference" in obj) && obj["isByReference"]);
     }
     
     public static function isElementMember(obj:Object, propName:String):Boolean

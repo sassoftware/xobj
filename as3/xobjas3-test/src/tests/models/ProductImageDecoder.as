@@ -56,7 +56,7 @@ public class ProductImageDecoder extends XObjDecoder
         image.status = xml.status;
         image.statusMessage = xml.statusMessage;
         
-        image.files = xobj.decodeArray(xml.files);
+        image.files = xobj.decodeArray(xml.files, image.files);
         
         info.isNullObject = false;
         
