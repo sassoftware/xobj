@@ -653,7 +653,11 @@ public class XObjXMLEncoder
                         
                         // changed the order of this if...else due to
                         // https://issues.rpath.com/browse/RCE-903
-                        if (attrSource.hasOwnProperty(attr.propname))
+                        // Also note we can't set the attribute value to a non string.
+                        // It is sane to check for this anyway, but it also is a hack 
+                        // to fix https://issues.rpath.com/browse/RCE-952.  Read 
+                        // that issue before changing this!
+                        if (attrSource.hasOwnProperty(attr.propname) && (attrSource[attr.propname] is String))
                             attributes[name] = attrSource[attr.propname];
                         else if ("value" in attr)
                             attributes[name] = attr['value'];
