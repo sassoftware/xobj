@@ -352,7 +352,7 @@ public class XObjXMLEncoder
         
         if (typeType == XObjXMLEncoder.XML_TYPE)
         {
-            myElement = (obj as XML).copy();
+            myElement = new XML(obj);
             parentNode.appendChild(myElement);
             return myElement;
         }
@@ -361,9 +361,12 @@ public class XObjXMLEncoder
         
         if (referenceOnly || recursionMap[obj])
         {
-            if (recursionMap[obj])
-                trace("recursive encode");
-            
+            // only encode the attrs of the object in the case of repeated
+            // encoding. This is basicaly a "ref" object
+            // and avoid endless recursive descent in self-referencing
+            // model graphs. NOTE: this does not preclude duplicate encodings
+            // of a multiply referenced object. Just recursive ones
+
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
@@ -530,6 +533,7 @@ public class XObjXMLEncoder
         var attributes:Array = [];
         var attrList:Array = [];
         var attrSource:Object = obj;
+        var meta:XObjMetadata;
         
         var useMeta:Boolean = ("attributes" in obj);
         
@@ -537,7 +541,8 @@ public class XObjXMLEncoder
             attrSource = obj.attributes;
         
         // get them from the metadata structure
-        attrList = XObjMetadata.getMetadata(obj).attributes;
+        meta = XObjMetadata.getMetadata(obj);
+        attrList = meta.attributes;
         
         // always encode ID and HREF as attributes if they are defined on the 
         // object at all
@@ -632,14 +637,20 @@ public class XObjXMLEncoder
                         if (idOnly && attr.propname != "id" && attr.propname != "href")
                             continue;
                         
-                        // don't encode null id or href
-                        if ((attr.propname == "id" || attr.propname == "href")
-                            && !attrSource[attr.propname])
-                            continue;
+                        var val:*;
+                        
                         if ("value" in attr)
-                            attributes.push({name: name, value: attr['value']});
+                            val = attr['value'];
+                        else if (attrSource.hasOwnProperty(attr.propname))
+                            val = attrSource[attr.propname];
                         else
-                            attributes.push({name: name, value: attrSource[attr.propname]});
+                            val = null;
+
+                        // don't encode null id or href
+                        if (!val && (attr.propname == "id" || attr.propname == "href"))
+                            continue;
+                           
+                        attributes.push({name: name, value: val});
                     }
                     catch (e:ReferenceError)
                     {
@@ -653,6 +664,8 @@ public class XObjXMLEncoder
                 node.@[attrObj.name] = attrObj.value;
             }
             
+            if (meta && meta.isList)
+                node.@list = "true";
 
         }
         
