@@ -546,14 +546,17 @@ public class XObjXMLEncoder
         var attributes:Object = {};
         var attrList:Array = [];
         var attrSource:Object = obj;
+        var meta:XObjMetadata;
         
         var useMeta:Boolean = ("attributes" in obj);
         
         if (useMeta)
             attrSource = obj.attributes;
         
+        meta = XObjMetadata.getMetadata(obj);
+            
         // get them from the metadata structure
-        attrList = XObjMetadata.getMetadata(obj).attributes;
+        attrList = meta.attributes;
         
         // always encode ID and HREF as attributes if they are defined on the 
         // object at all
@@ -653,11 +656,7 @@ public class XObjXMLEncoder
                         
                         // changed the order of this if...else due to
                         // https://issues.rpath.com/browse/RCE-903
-                        // Also note we can't set the attribute value to a non string.
-                        // It is sane to check for this anyway, but it also is a hack 
-                        // to fix https://issues.rpath.com/browse/RCE-952.  Read 
-                        // that issue before changing this!
-                        if (attrSource.hasOwnProperty(attr.propname) && (attrSource[attr.propname] is String))
+                        if (attrSource.hasOwnProperty(attr.propname))
                             attributes[name] = attrSource[attr.propname];
                         else if ("value" in attr)
                             attributes[name] = attr['value'];
@@ -671,6 +670,11 @@ public class XObjXMLEncoder
                     }
                 }
                 
+                // handle list attr specially 
+                // fix for https://issues.rpath.com/browse/RCE-952
+                if (meta && meta.isList)
+                    attributes["list"] = "true";
+
                 node.attributes = attributes;
                 
                 count++;

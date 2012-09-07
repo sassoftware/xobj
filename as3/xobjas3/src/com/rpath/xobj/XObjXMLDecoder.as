@@ -933,60 +933,69 @@ public class XObjXMLDecoder
             
             isNullObject = false;
             
-            var attrObj:* = decodeAttrName(attribute, dataNode);
-            
-            // track the list of attrs so we can decode them later
-            attributeSet.push(attrObj);
-            
-            var attrName:String = attrObj.propname;
-            var attrValue:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
-            
-            if (makeAttributesMeta)
+            if (attribute == "list")
             {
-                try
-                {
-                    if (!("attributes" in result))
-                        result.attributes = {};
-                    result.attributes[attrName] = attrValue;
-                }
-                catch (e:Error)
-                {
-                    // probably not a dynamic class. Stash on global tracking dict...
-                    if (attrValue)
-                        attrObj.value = attrValue;
-                    XObjMetadata.addAttribute(result, attrObj);
-                }
+                // special handling of this attribute
+                meta = XObjMetadata.getMetadata(result);
+                meta.isList = true;
             }
             else
             {
-                try
+                var attrObj:* = decodeAttrName(attribute, dataNode);
+                
+                // track the list of attrs so we can decode them later
+                attributeSet.push(attrObj);
+                
+                var attrName:String = attrObj.propname;
+                var attrValue:* = XObjXMLDecoder.simpleType(attributes[attribute], resultClass);
+                
+                if (makeAttributesMeta)
                 {
-                    result[attrName] = attrValue;
-                    if (isArray)
+                    try
                     {
-                        // TODO: figure out the clean way to do this. namespaces?
-                        //result.setPropertyIsEnumerable(attrName, false);
+                        if (!("attributes" in result))
+                            result.attributes = {};
+                        result.attributes[attrName] = attrValue;
                     }
-                }
-                catch (e:TypeError)
-                {
-                    if ((result[attrName] is IXObjHref)
-                        && (attrValue is String))
+                    catch (e:Error)
                     {
-                        result[attrName].id = attrValue;
-                    }
-                    else 
-                    {
-                        // Prob not a dynamic class. Stash on global tracking dict...
+                        // probably not a dynamic class. Stash on global tracking dict...
                         if (attrValue)
                             attrObj.value = attrValue;
                         XObjMetadata.addAttribute(result, attrObj);
                     }
                 }
-                catch (e:Error)
+                else
                 {
-                    //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
-                    trace("Failed to set attribute "+attrName+"("+attrValue+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    try
+                    {
+                        result[attrName] = attrValue;
+                        if (isArray)
+                        {
+                            // TODO: figure out the clean way to do this. namespaces?
+                            //result.setPropertyIsEnumerable(attrName, false);
+                        }
+                    }
+                    catch (e:TypeError)
+                    {
+                        if ((result[attrName] is IXObjHref)
+                            && (attrValue is String))
+                        {
+                            result[attrName].id = attrValue;
+                        }
+                        else 
+                        {
+                            // Prob not a dynamic class. Stash on global tracking dict...
+                            if (attrValue)
+                                attrObj.value = attrValue;
+                            XObjMetadata.addAttribute(result, attrObj);
+                        }
+                    }
+                    catch (e:Error)
+                    {
+                        //throw new Error("Failed to set attribute "+attrName+"("+attr+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                        trace("Failed to set attribute "+attrName+"("+attrValue+") on "+resultTypeName+". Check that class is dynamic or attribute name is spelled correctly");
+                    }
                 }
             }
         }

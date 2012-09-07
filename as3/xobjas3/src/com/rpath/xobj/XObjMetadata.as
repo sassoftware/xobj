@@ -23,6 +23,8 @@ public class XObjMetadata
     //public var namespaces:Array;
     public var arrayEntryTag:String;  // tag to encode array element with...
     
+    public var isList:Boolean; //special handling for the list="true" marker
+    
     public static const METADATA_PROPERTY:String = "_xobj";
     
     private static var _meta:Dictionary = new Dictionary(true);
