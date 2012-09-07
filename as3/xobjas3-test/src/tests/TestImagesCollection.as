@@ -34,19 +34,23 @@ public class TestImagesCollection extends TestBase
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("images is object", o.images is ImagesCollection);
-        assertTrue("images is array collection", o.images.image is ArrayCollection);
+        assertTrue("images is array collection", o.images[0] is ProductImage);
         
         var index:int = 0;
-        for (index = 0; index < o.images.image.length; index++)
+        for (index = 0; index < o.images.length; index++)
         {
-            var image:ProductImage = o.images.image[index];
+            var image:ProductImage = o.images[index];
             assertTrue("image id is right", image.imageId == index);
-            index++;
         }
-
+        
+        // now re-encode and cross check
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({images:ImagesCollection, image:ProductImage});
+        var xmlOutput:XMLDocument = typedEncoder.encodeObject(o.images, null, "top");
+        assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
+        
     }
-
-
+    
+    
     
 }
 }
