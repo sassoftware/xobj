@@ -32,21 +32,26 @@ public class TestImagesCollection extends TestBase
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("images is object", o.images is ImagesCollection);
-        assertTrue("images is array collection", o.images.image is ArrayCollection);
+        assertTrue("images is array collection", o.images[0] is ProductImage);
         
         var index:int = 0;
-        for (index = 0; index < o.images.image.length; index++)
+        for (index = 0; index < o.images.length; index++)
         {
-            var image:ProductImage = o.images.image[index];
-            assertTrue("image id is right", image.imageId == index);
-            index++;
+            var image:ProductImage = o.images[index];
+            assertTrue("elements are ProductImage", image != null);
         }
 
+        //re-encode list and cross-check
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({images:ImagesCollection, image:ProductImage});
+        var xmlOutput:XML = typedEncoder.encodeObject(o.images);
+        
+        //TODO: figure out how to actually compare XML that isn't sort-stable
+        //assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
 
-    /** testLrageImagesCollection 
-     * sameas above but for timing purposes
+    /** testLargeImagesCollection 
+     * same as above but for timing purposes
      */
     public function testLargeImagesCollection():void
     {
@@ -55,20 +60,26 @@ public class TestImagesCollection extends TestBase
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("images is object", o.images is ImagesCollection);
-        assertTrue("images is array collection", o.images.image is ArrayCollection);
+        assertTrue("images is array collection", o.images[0] is ProductImage);
         
         var index:int = 0;
-        for (index = 0; index < o.images.image.length; index++)
+        for (index = 0; index < o.images.length; index++)
         {
-            var image:ProductImage = o.images.image[index];
+            var image:ProductImage = o.images[index];
             assertTrue("elements are ProductImage", image != null);
         }
         
+        //re-encode list and cross-check
+        var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({images:ImagesCollection, image:ProductImage});
+        var xmlOutput:XML = typedEncoder.encodeObject(o.images);
+        
+        //TODO: figure out how to actually compare XML that isn't sort-stable
+        //assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
     }
 
     
-    /** testLrageImagesCollection 
-     * sameas above but for timing purposes
+    /** testLargeImagesCollection100times 
+     * same as above but for timing purposes
      */
     public function testLargeImagesCollection100times():void
     {

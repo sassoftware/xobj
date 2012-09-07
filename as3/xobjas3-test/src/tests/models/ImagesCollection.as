@@ -3,9 +3,7 @@ package tests.models
 import mx.collections.ArrayCollection;
 
 [Bindable]
-public dynamic class ImagesCollection 
+public dynamic class ImagesCollection extends ArrayCollection
 {
-    [ArrayElementType("tests.models.ProductImage")]
-    public var image:ArrayCollection = new ArrayCollection();
 }
 }
