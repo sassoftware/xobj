@@ -43,6 +43,31 @@ public class XObjDecoderGenerator
         props[typeInfo.propName] = typeInfo;
     }
     
+    public static function getPropertyInfo(holderClassName:String, propName:String):XObjTypeInfo
+    {
+        if (!holderClassName || !propName || (propName == "launching_user"))
+            trace("darn!");
+        
+        var props:Dictionary = _typeInfoByClassName[holderClassName];
+        if (!props)
+        {
+            props = new Dictionary();
+            _typeInfoByClassName[holderClassName] = props;
+        }
+
+        var result:XObjTypeInfo;
+        
+        result = props[propName];
+        if (!result)
+        {
+            result = new XObjTypeInfo();
+            result.propName = propName;
+            result.holderClassName = holderClassName;
+            props[propName] = result;
+        }
+        
+        return result;
+    }
     
     private static function getKeys(d:Dictionary):Array
     {
@@ -59,8 +84,11 @@ public class XObjDecoderGenerator
     public static function dumpClasses():void
     {
         var s:Array = [];
+        var classes:Array = getKeys(_typeInfoByClassName);
         
-        for (var c:* in _typeInfoByClassName)
+        classes.sort();
+
+        for each (var c:* in classes)
         {
             if (c == null)
                 continue;
@@ -124,16 +152,19 @@ public class XObjDecoderGenerator
                     
                     var tname:String = XObjUtils.getUnqualfiedClassName(XObjUtils.getClassByName(t.typeName));
                     
+                    if (!tname)
+                        tname = "null";
+                    
                     s.push("        if ("+xe+".length() > 0)");
                     if (t.isArray)
                     {
                         s.push("            "+op+" = xobj.decodeArray("+xe+", "+op+
-                            ", "+t.arrayElementClass+");");
+                            ", "+tname+", "+t.arrayElementTypeName+");");
                     }
                     else if (t.isCollection)
                     {
                         s.push("            "+op+" = xobj.decodeCollection("+xe+", "+op+
-                            ", "+t.arrayElementClass+");");
+                            ", "+tname+", "+t.arrayElementTypeName+");");
                     }
                     else if (t.isSimpleType)
                     {

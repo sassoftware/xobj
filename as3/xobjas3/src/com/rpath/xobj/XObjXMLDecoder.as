@@ -193,12 +193,25 @@ public class XObjXMLDecoder
     
     public function decodePart(xml:Object, result:Object, resultClass:Class=null, info:XObjDecoderInfo=null, isArray:Boolean=false, isCollection:Boolean=false, shouldMakeBindable:Boolean=false):*
     {
+        var newResult:Object;
+        
         if (!xml)
             return null;
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
         
-        return xobj::actualDecodeXML(xml as XML, resultClass, result, false, info);
+        newResult = xobj::actualDecodeXML(xml as XML, resultClass, result, false, info);
+        
+        // handle case where we just want a pointer (href)
+        // NOTE :requires receiving object to have pre-allocated an href instance
+        if ((result is IXObjHref) && !(newResult is IXObjHref))
+        {
+            // point at actual object instead
+            (result as IXObjHref).href = getIDProperty(newResult);
+            newResult = result; // and return href instead
+        }
+        
+        return newResult;
     }
     
     /** decodeArray() allows for a static decoder to request that one of its
@@ -207,6 +220,8 @@ public class XObjXMLDecoder
 
     public function decodeArray(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
     {
+        var newResult:Object;
+
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
         
@@ -217,8 +232,9 @@ public class XObjXMLDecoder
         
         info.resultClass = resultClass;
         info.memberClass = memberClass;
-        
-        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+        // info.isArray = true; // TODO: need decode to honor this
+        newResult = xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+        return newResult;
     }
     
     /** decodeCollection() allows a static decoder to request the xobj machinery
@@ -228,6 +244,8 @@ public class XObjXMLDecoder
     
     public function decodeCollection(xml:Object, result:Object=null, resultClass:Class=null, memberClass:Class=null, info:XObjDecoderInfo=null, shouldMakeBindable:Boolean=false):*
     {
+        var newResult:Object;
+
         if (xml is XMLList)
             xml = (xml as XMLList)[0];
         
@@ -238,8 +256,9 @@ public class XObjXMLDecoder
         
         info.resultClass = resultClass;
         info.memberClass = memberClass;
-        
-        return xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+        // info.isCollection = true; // TODO: need decode to honor this
+        newResult = xobj::actualDecodeXML(xml as XML, info.resultClass, result, false, info);
+        return newResult;
     }
     
     
@@ -1009,14 +1028,13 @@ public class XObjXMLDecoder
                     if (XObjDecoderGenerator.generateClasses && partObj != null)
                     {
                         // Stash everything we know for debug/class gen
-                        var sinfo:XObjTypeInfo = new XObjTypeInfo();
-                        sinfo.holderClassName = XObjUtils.getClassName(result);
+                        var sinfo:XObjTypeInfo = XObjDecoderGenerator.getPropertyInfo(info.resultTypeName, propertyName);
                         sinfo.isAttribute = false;
                         sinfo.isSimpleType = partInfo ? partInfo.isSimpleType : false;
                         sinfo.isArray = propertyIsArray;
                         sinfo.isCollection = propertyIsCollection;
                         sinfo.arrayElementClass = partInfo.memberClass;
-                        sinfo.propName = propertyName;
+                        sinfo.elementTag = elementName;
                         sinfo.typeName = partClassName ? partClassName : XObjUtils.getClassName(partObj);
                         sinfo.isMember = isMember;
                         sinfo.isDynamic = typeInfo.isDynamic;
@@ -1160,10 +1178,7 @@ public class XObjXMLDecoder
                 if (XObjDecoderGenerator.generateClasses)
                 {
                     // Stash everything we know for debug/class gen
-                    sinfo = new XObjTypeInfo();
-                    sinfo.holderClass = XObjUtils.getClass(result);
-                    sinfo.holderClassName = XObjUtils.getClassName(result);
-                    sinfo.propName = attrName;
+                    sinfo = XObjDecoderGenerator.getPropertyInfo(info.resultTypeName, attrName);
                     sinfo.type = XObjUtils.getClass(attrValue);
                     sinfo.typeName = XObjUtils.getClassName(attrValue);
                     sinfo.isSimpleType = true;

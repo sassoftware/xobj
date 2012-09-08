@@ -124,6 +124,9 @@ public class XObjUtils
     {
         var className:String = (obj == null) ? null : getQualifiedClassName(obj);
         
+        if (!className)
+            return className;
+        
         var bits:Array = className.split(/::/);
         if (bits.length > 1)
             className = bits[1];
@@ -303,10 +306,11 @@ public class XObjUtils
         
         if (typeInfo == null) // new or dynamic (we don't cache dynamics)
         {
-            typeInfo = new XObjTypeInfo();
-            
-            typeInfo.holderClass = XObjUtils.getClass(object);
-            typeInfo.holderClassName = className;
+            // get one we can keep...
+            typeInfo = XObjDecoderGenerator.getPropertyInfo(className, propName);
+            //typeInfo = new XObjTypeInfo();
+            //typeInfo.holderClass = XObjUtils.getClass(object);
+            //typeInfo.holderClassName = className;
             
             // go look it up (expensive)
             // very important to use the instance object here, not the classname

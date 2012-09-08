@@ -19,10 +19,11 @@ public class XObjTypeInfo
         super();
     }
     
-    public var holderClass:Class;
+    //public var holderClass:Class;
     public var holderClassName:String;
     
     public var propName:String;
+    public var elementTag:String;
     public var type:Class;
     public var typeName:String;
     public var isSimpleType:Boolean;
