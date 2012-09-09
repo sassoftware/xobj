@@ -663,12 +663,11 @@ public class XObjXMLEncoder
             {
                 node.@[attrObj.name] = attrObj.value;
             }
-            
-            if (meta && meta.isList)
-                node.@list = "true";
-
         }
         
+        if (meta && meta.isList)
+            node.@list = "true";
+
         return attrNames;
     }
     
