@@ -669,18 +669,23 @@ public class XObjXMLEncoder
                     {
                     }
                 }
-                
-                // handle list attr specially 
-                // fix for https://issues.rpath.com/browse/RCE-952
-                if (meta && meta.isList)
-                    attributes["list"] = "true";
 
                 node.attributes = attributes;
-                
+
                 count++;
             }
         }
+
         
+        // handle list attr specially. Need to do this outside loop above since there
+        // may be no other attributes after all...
+        // fix for https://issues.rpath.com/browse/RCE-952
+        if (meta && meta.isList)
+        {
+            attributes["list"] = "true";
+            node.attributes = attributes;
+        }
+
         return attrNames;
     }
     
