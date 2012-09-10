@@ -165,7 +165,7 @@ public class XObjXMLEncoder
         }
         
     }
-
+    
     //--------------------------------------------------------------------------
     //
     //  Methods
@@ -200,13 +200,13 @@ public class XObjXMLEncoder
             if (!tag)
                 tag = tagForType(obj);
         }
-
+        
         // handle untyped objects
         if (!tag)
         {
             tag = defaultTag;
         }
-
+        
         recursionMap = new Dictionary(true);
         
         // allow for a root object marked byReference only
@@ -366,13 +366,13 @@ public class XObjXMLEncoder
             // and avoid endless recursive descent in self-referencing
             // model graphs. NOTE: this does not preclude duplicate encodings
             // of a multiply referenced object. Just recursive ones
-
+            
             // link us into the heirarchy so that namespaces
             // will be resolved up the chain correctly
             parentNode.appendChild(myElement);
             setAttributes(myElement, obj, true);
             myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
-       }
+        }
         else if (typeType == XObjXMLEncoder.OBJECT_TYPE)
         {
             // track anything we're actually encoding
@@ -486,7 +486,7 @@ public class XObjXMLEncoder
         }
         else // must be simple type
         {
-             // Simple types fall through to here
+            // Simple types fall through to here
             var valueString:String;
             
             if (typeType == XObjXMLEncoder.DATE_TYPE)
@@ -651,7 +651,7 @@ public class XObjXMLEncoder
                             continue;
                            
                         attributes.push({name: name, value: val});
-                    }
+                        }
                     catch (e:ReferenceError)
                     {
                     }
@@ -662,9 +662,12 @@ public class XObjXMLEncoder
             for each (var attrObj:Object in attributes)
             {
                 node.@[attrObj.name] = attrObj.value;
-            }
         }
-        
+        }
+
+        // handle list attr specially. Need to do this outside loop above since there
+        // may be no other attributes after all...
+        // fix for https://issues.rpath.com/browse/RCE-952
         if (meta && meta.isList)
             node.@list = "true";
 
