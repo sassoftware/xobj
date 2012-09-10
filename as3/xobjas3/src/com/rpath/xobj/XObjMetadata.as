@@ -23,8 +23,7 @@ public class XObjMetadata
     //public var namespaces:Array;
     public var arrayEntryTag:String;  // tag to encode array element with...
     public var rootQName:XObjQName; // tag for this element itself
-    public var isList:Boolean;  // means list="true" attribute present on XML
-    
+
     public var isList:Boolean; //special handling for the list="true" marker
     
     public static const METADATA_PROPERTY:String = "_xobj";

@@ -45,9 +45,6 @@ public class XObjDecoderGenerator
     
     public static function getPropertyInfo(holderClassName:String, propName:String):XObjTypeInfo
     {
-        if (!holderClassName || !propName || (propName == "launching_user"))
-            trace("darn!");
-        
         var props:Dictionary = _typeInfoByClassName[holderClassName];
         if (!props)
         {
