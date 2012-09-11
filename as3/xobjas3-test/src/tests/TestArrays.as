@@ -126,8 +126,69 @@ public class TestArrays extends TestBase
 
     }
 
+    private var arrayTestRepeated:XML = 
+        <top dyn1="foo" dyn2="bar">
+          <dyn3>baz</dyn3>
+          <simple>simple</simple>
+          <middle>
+            <tag>1</tag>
+          </middle>
+          <bottom tag="2">
+          </bottom>
+            <testableObject someVal="a string value 1">
+                <someNumber>2.3</someNumber>
+            </testableObject>
+            <testableObject>
+                <someVal>a string value 2</someVal>
+                <someNumber>3.4</someNumber>
+            </testableObject>
+        </top>
+    
+    
+    /** testRepeatedArray tests for elements nested under a grouping node
+    * 
+    * each of the <testableObject> elements above should end up as a member of 
+    * an array called testableObject:Array
+    * 
+    * Note: to make this work, we have to provide a BIG HINT to Xobj that
+    * the <testableObject> element is a TestableObject and NOT the array itself
+    * because the property name in our result object *must match* the element tag
+     */
+    
+    public function testRepeatedArray():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithNestedArray, testableObject: TestableObject});
+        var xmlInput:XML = new XML(arrayTestRepeated);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("Top is type Object", o.top is TopWithNestedArray);
+        assertTrue("top has dynamic property 1 from attribute", o.top.dyn1 == "foo");
+        assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
+        assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
+        
+        var t:TopWithNestedArray;
+        
+        t = o.top;
+        
+        assertTrue("top has array of TestableObjects from metadata marker", t.testableObject is Array);
+        
+        assertTrue("array of testables is correct length", t.testableObject.length == 2);
+        
+        var index:int = 0;
+        
+        for each (var item:* in t.testableObject)
+        {
+            assertTrue(item is TestableObject);
+            
+            var testable:TestableObject = item as TestableObject;
+            
+            assertTrue(testable.someVal == testValues[index]);
+            index++;
+        }
+        
+    }
 
-    private var arrayTest2:XML = 
+    private var arrayNestedTest:XML = 
         <top dyn1="foo" dyn2="bar">
           <dyn3>baz</dyn3>
           <simple>simple</simple>
@@ -150,25 +211,14 @@ public class TestArrays extends TestBase
     
     /** testNestedArray tests for elements nested under a grouping node
     * 
-    * This does NOT yet work, since we have no way to disambiguate
-    * whether a tree means "object with a single property that is an array"
-    * or "array nested in a grouping alias element"
-    * 
     * In the example above, <testableArray> is really an alias for the array
-    * of testableObjects. The un-nested form works fine, but does require the
-    * parent object property to be called testableObject as well, which can be 
-    * confusing
-    * 
-    * THIS DOES NOT WORK YET
+    * of testableObjects.
     */
     
     public function testNestedArray():void
     {
-        // THIS DOESN'T WORK YET
-        return;
-        
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithNestedArray});
-        var xmlInput:XMLList = new XMLList(arrayTest2);
+        var xmlInput:XML = new XML(arrayNestedTest);
         var o:* = typedDecoder.decodeXML(xmlInput);
         
         assertTrue("Top is type Object", o.top is TopWithNestedArray);
@@ -198,6 +248,63 @@ public class TestArrays extends TestBase
 
     }
 
+    private var testListMarkerXML:XML = 
+        <top dyn1="foo" dyn2="bar">
+          <dyn3>baz</dyn3>
+          <simple>simple</simple>
+          <middle>
+            <tag>1</tag>
+          </middle>
+          <bottom tag="2">
+          </bottom>
+          <testableDynamicArray list="true">
+            <testableObject someVal="a string value 1">
+                <someNumber>2.3</someNumber>
+            </testableObject>
+          </testableDynamicArray>
+        </top>
+    
+    
+    /** testNestedArray tests for elements nested under a grouping node
+     * 
+     * In the example above, <testableArray> is really an alias for the array
+     * of testableObjects.
+     */
+    
+    public function testListMarker():void
+    {
+        var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({top:TopWithNestedArray, testableObject: TestableObject});
+        var xmlInput:XML = new XML(testListMarkerXML);
+        var o:* = typedDecoder.decodeXML(xmlInput);
+        
+        assertTrue("Top is type Object", o.top is TopWithNestedArray);
+        assertTrue("top has dynamic property 1 from attribute", o.top.dyn1 == "foo");
+        assertTrue("top has dynamic property 2 from attribute", o.top.dyn2 == "bar");
+        assertTrue("top has dynamic property 3 from element", o.top.dyn3 == "baz");
+        
+        var t:TopWithNestedArray;
+        
+        t = o.top;
+        
+        assertTrue("top has array of TestableObjects from metadata marker", t.testableDynamicArray is XObjArrayCollection);
+        
+        assertTrue("array of testables is correct length", t.testableDynamicArray.length == 1);
+        
+        var index:int = 0;
+        
+        for each (var item:* in t.testableDynamicArray)
+        {
+            assertTrue(item is TestableObject);
+            
+            var testable:TestableObject = item as TestableObject;
+            
+            assertTrue(testable.someVal == testValues[index]);
+            index++;
+        }
+        
+    }
+
+    
 
 }
 }

@@ -59,7 +59,7 @@ public class TestImagesCollection extends TestBase
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({images:ImagesCollection, image:ProductImage});
         var xmlInput:XML = new XML(testData.large_imagecollection);
         var o:* = typedDecoder.decodeXML(xmlInput);
-    
+        
         assertTrue("images is object", o.images is ImagesCollection);
         assertTrue("images is array collection", o.images[0] is ProductImage);
         
@@ -68,7 +68,7 @@ public class TestImagesCollection extends TestBase
         {
             var image:ProductImage = o.images[index];
             assertTrue("elements are ProductImage", image != null);
-}
+        }
         
         //re-encode list and cross-check
         var typedEncoder:XObjXMLEncoder = new XObjXMLEncoder({images:ImagesCollection, image:ProductImage});
@@ -76,13 +76,13 @@ public class TestImagesCollection extends TestBase
         
         //TODO: figure out how to actually compare XML that isn't sort-stable
         //assertTrue("encode matches input", compareXML(xmlOutput, xmlInput));
-}
-
+    }
+    
     
     /** testLargeImagesCollection100times 
      * same as above but for timing purposes
      */
-    public function testLargeImagesCollection100times():void
+    /*public function testLargeImagesCollection100times():void
     {
         var typedDecoder:XObjXMLDecoder = new XObjXMLDecoder({images:ImagesCollection, image:ProductImage});
         var xmlInput:XML = new XML(testData.large_imagecollection);
@@ -92,8 +92,8 @@ public class TestImagesCollection extends TestBase
         {
             var o:* = typedDecoder.decodeXML(xmlInput);
         }
-    }
-
+    }*/
+    
     
 }
 }

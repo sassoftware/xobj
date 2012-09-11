@@ -714,7 +714,7 @@ public class XObjXMLDecoder
                     var typeInfo:XObjTypeInfo = null;
                     var partClass:Class = null;
                     var partClassName:String = null;
-                    var nextCollClass:Class = null;
+                    var nextCollClass:Class;
                     var isMember:Boolean;
                     //var partID:String
                     var partQName:XObjQName;
@@ -794,7 +794,7 @@ public class XObjXMLDecoder
                     {
                         var existing:* = result[propertyName];
                         
-                        if (!(existing == undefined))
+                        if (!(existing == null))
                         {
                             // we do not want to reuse simple objects
                             if ((existing is Object)
@@ -949,7 +949,7 @@ public class XObjXMLDecoder
                             // 'jump' the partClass to be the element type
                             // of this nested array...
                             partClass = nextCollClass;
-                            nextCollClass = null;
+                            //nextCollClass = null;
                             partObj = null; // force new instance to be created
                         }
                     }
