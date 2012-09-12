@@ -146,7 +146,7 @@ public class XObjXMLEncoder
     //--------------------------------------------------------------------------
     
     
-    public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null, myXML:XML=null)
+    public function XObjXMLEncoder(typeMap:*=null, nmMap: *=null)
     {
         super();
         
@@ -237,7 +237,7 @@ public class XObjXMLEncoder
         return encodeValue(obj, q, parentNode, false, true);
     }
     
-    internal function encodeValue(obj:Object, q:*, parentNode:XML, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false):XML
+    internal function encodeValue(obj:Object, q:*, parentNode:XML, recurse:Boolean=true, referenceOnly:Boolean=false, isRoot:Boolean=false, propName:String=null):XML
     {
         var qname:XObjQName;
         
@@ -292,7 +292,7 @@ public class XObjXMLEncoder
             // unwrap XObjStrings to their naked value
             if (obj.value != null || encodeNullElements)
             {
-                newNode = encodeValue(obj.value, qname, parentNode);
+                newNode = encodeValue(obj.value, qname, parentNode,true,false,false,propName);
             }
             else
             {
@@ -306,11 +306,11 @@ public class XObjXMLEncoder
         }
         else if (isRoot)
         {
-            return internal_encodeValue(obj, qname, parentNode, true, referenceOnly);
+            return internal_encodeValue(obj, qname, parentNode, true, referenceOnly, propName);
         }
         else if (referenceOnly)
         {
-            return internal_encodeValue(obj, qname, parentNode, false, true);
+            return internal_encodeValue(obj, qname, parentNode, false, true, propName);
         }
         else if (recurse)
         {
@@ -320,11 +320,11 @@ public class XObjXMLEncoder
                 // don't recurse refs that have IDs since this means they are
                 // *by reference* uses relationships, not strict containment
                 // relationships.
-                return internal_encodeValue(obj, qname, parentNode, false);
+                return internal_encodeValue(obj, qname, parentNode, false, false, propName);
             }
             else
             {
-                return internal_encodeValue(obj, qname, parentNode);
+                return internal_encodeValue(obj, qname, parentNode, true, false, propName);
             }
         }
         else
@@ -338,7 +338,8 @@ public class XObjXMLEncoder
                                            qname:XObjQName, 
                                            parentNode:XML, 
                                            recurse:Boolean=true, 
-                                           referenceOnly:Boolean=false):XML
+                                           referenceOnly:Boolean=false,
+                                           propName:String=null):XML
     {
         var myElement:XML;
         
@@ -416,7 +417,7 @@ public class XObjXMLEncoder
                             // remove elements we've handled to speed up the next iteration
                             // makes a HUGE difference on large collections of objects
                             properties.splice(k,1);
-                            encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName));
+                            encodeValue(obj[propName], entry.qname, myElement, recurse, XObjMetadata.isPropByRef(classInfo, propName), false, propName);
                             break;
                         }
                     }
@@ -439,50 +440,72 @@ public class XObjXMLEncoder
                     continue;
                 
                 var propQName:XObjQName = new XObjQName(null, null, fieldName);
-                encodeValue(obj[fieldName], propQName, myElement, recurse, XObjMetadata.isPropByRef(classInfo, fieldName));
+                encodeValue(obj[fieldName], propQName, myElement, recurse, XObjMetadata.isPropByRef(classInfo, fieldName), false, fieldName);
             }
         }
         else if (typeType == XObjXMLEncoder.IXOBJ_COLLECTION
             || typeType == XObjXMLEncoder.ARRAY_TYPE)
         {
-            // link us into the heirarchy so that namespaces
-            // will be resolved up the chain correctly
-            parentNode.appendChild(myElement);
-            setAttributes(myElement, obj);
-            myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
+            var localName:String = "item";  //assume item unless told otherwise
             
-            // encode array elements
-            for (var j:int=0; j < obj.length; j++)
-            {
-                var localName:String = "item";  //assume item unless told otherwise
-                var member:* = obj[j];
+            //if (encodeNullElements || obj.length > 0)
+            //{
+                // link us into the heirarchy so that namespaces
+                // will be resolved up the chain correctly
+                var flatten:Boolean;
                 
-                // force use of item for local name if simpleEncoderCompatible is true
-                if (!simpleEncoderCompatible)
+                if ((obj is IXObjCollection) && obj.length > 0)
                 {
-                    // look up the right qname to use
-                    if (obj is IXObjCollection)
-                    {
-                        localName = (obj as IXObjCollection).elementTagForMember(member);
-                    }
-                    else
-                    {
-                        // do we have meta?
-                        var meta:XObjMetadata = XObjMetadata.getMetadata(obj, false);
-                        if (meta && meta.arrayEntryTag)
-                            localName = meta.arrayEntryTag;
-                        else
-                            localName = tagForType(member);
-                    }
+                    var tag:String = (obj as IXObjCollection).elementTagForMember(obj[0]);
+                    // is the element tag same as propname?
+                    if (tag == propName)
+                        flatten = true;
+                }
+                    
+                if (flatten)
+                {
+                    // hoist children
+                    myElement = parentNode;
+                }
+                else
+                {
+                    parentNode.appendChild(myElement);
+                    setAttributes(myElement, obj);
+                    myElement.setName(XObjUtils.encodeElementTag(qname, myElement));
                 }
                 
-                qname = new XObjQName(null, null, localName);
-                
-                if (XObjUtils.isByReference(obj))
-                    encodeReference(member, qname, myElement);
-                else
-                    encodeValue(member, qname, myElement, recurse);
-            }
+                // encode array elements
+                for (var j:int=0; j < obj.length; j++)
+                {
+                    var member:* = obj[j];
+                    
+                    // force use of item for local name if simpleEncoderCompatible is true
+                    if (!simpleEncoderCompatible)
+                    {
+                        // look up the right qname to use
+                        if (obj is IXObjCollection)
+                        {
+                            localName = (obj as IXObjCollection).elementTagForMember(member);
+                        }
+                        else
+                        {
+                            // do we have meta?
+                            var meta:XObjMetadata = XObjMetadata.getMetadata(obj, false);
+                            if (meta && meta.arrayEntryTag)
+                                localName = meta.arrayEntryTag;
+                            else
+                                localName = tagForType(member);
+                        }
+                    }
+                    
+                    qname = new XObjQName(null, null, localName);
+                    
+                    if (XObjUtils.isByReference(obj))
+                        encodeReference(member, qname, myElement);
+                    else
+                        encodeValue(member, qname, myElement, recurse);
+                }
+            //}
         }
         else // must be simple type
         {
