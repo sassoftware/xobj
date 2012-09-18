@@ -114,6 +114,12 @@
     	<mkdir dir="${xobj.temp.src.dir}" />
     	<antcall target="build-version"/>
     </target>
+	
+	<target name="include-resources" description="Include other resources">
+		<copy todir="${xobj.build.xml_resources.dir}">
+            <fileset dir="${xsl_resources.dir}" includes="xsd/*.xsd xsl/*.xsl templates/*.xml"/>
+        </copy>
+    </target>
     
     <target name="xobj-build" description="Build the xobj flex library">
     	
@@ -147,6 +153,7 @@
         <!-- Clean up build environment -->
         <antcall target="clean"/>
         <antcall target="init"/>
+    	<antcall target="include-resources"/>
     	
         <!-- Build the lib -->
     	<antcall target="xobj-build"/>
