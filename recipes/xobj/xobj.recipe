@@ -33,9 +33,6 @@ class XObj(PackageRecipe):
 
         # install the as3 libs
         r.Install('as3/xobjas3/bin/*.swc', '/opt/xobj/as3/lib/')
-        
-        # install the xml resources
-        r.Install('as3/xobjas3/bin/xml_resources/*', '/opt/xobj/as3/xml_resources/')
 
         # Install the python module
         r.MakeInstall()
