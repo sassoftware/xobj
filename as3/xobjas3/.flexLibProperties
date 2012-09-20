@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
-    <classEntry path="com.rpath.xobj.XObjArrayCollection"/>
-    <classEntry path="com.rpath.xobj.XObjDecoderInfo"/>
-    <classEntry path="com.rpath.xobj.XObjDecoder"/>
     <classEntry path="com.rpath.xobj.IXObjSerializing"/>
-    <classEntry path="com.rpath.xobj.xobj"/>
+    <classEntry path="com.rpath.xobj.XObjArrayCollection"/>
+    <classEntry path="com.rpath.xobj.XObjDecoder"/>
     <classEntry path="com.rpath.xobj.XObjDecoderGenerator"/>
+    <classEntry path="com.rpath.xobj.XObjDecoderInfo"/>
+    <classEntry path="com.rpath.xobj.XObjSchemaValidator"/>
+    <classEntry path="com.rpath.xobj.xobj"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="metadata.xml" sourcePath="metadata.xml"/>
