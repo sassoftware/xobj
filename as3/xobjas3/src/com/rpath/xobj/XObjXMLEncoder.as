@@ -193,7 +193,9 @@ public class XObjXMLEncoder
             // we want to make sure the type we use for root node is type of object
             if (!tag)
                 tag = meta.rootQName.localName;
-            qname = meta.rootQName;
+            // only use rootQName if non-null (someone sets nulls into this...not sure where)
+            if (meta.rootQName.localName)
+                qname = meta.rootQName;
         }
         else
         {
