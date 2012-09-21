@@ -37,7 +37,9 @@ public class XObjSchemaValidator
     
     public var schemaLoaded:Boolean;
     
-    public var errorString:String;
+    public var message:String;
+    
+    public var schemaXML:XML;
     
     public function XObjSchemaValidator(schemaUrl:String=null)
     {
@@ -62,34 +64,36 @@ public class XObjSchemaValidator
     
     private function schemaLoader_loadHandler(event:SchemaLoadEvent):void
     {
-        trace("schemaLoader_loadHandler " + event.schema);
         setXMLSchema(event.schema);
-        
     }
     
     private function schemaLoader_xmlLoadHandler(event:XMLLoadEvent):void
     {
-        trace("schemaLoader_xmlLoadHandler " + event.location);
+        message = "Loading schema " + event.location + "...";
     }
     
     private function schemaLoader_faultHandler(event:FaultEvent):void
     {
-        errorString = event.fault.toString();
+        message = event.fault.toString();
     }
     
     private function setXMLSchema(value:Schema):void
     {
         schema = value;
         
-        //Add the loaded schema to the SchemaManager
-        schemaManager.addSchema(schema);
-        
-        //Map the XSD type "example" to the ActionScript class ExampleVO
-        var schemaTypeRegistry:SchemaTypeRegistry;
-        schemaTypeRegistry = SchemaTypeRegistry.getInstance();
-        //schemaTypeRegistry.registerClass(new QName(schema.targetNamespace.uri, "example"), ExampleVO);
+        if (schema)
+        {
+            schemaXML = schema.xml;
+            
+            //Add the loaded schema to the SchemaManager
+            schemaManager.addSchema(schema);
+            
+            var schemaTypeRegistry:SchemaTypeRegistry;
+            schemaTypeRegistry = SchemaTypeRegistry.getInstance();
+        }
         
         schemaLoaded = true;
+        message = null;
     }
 }
 }
