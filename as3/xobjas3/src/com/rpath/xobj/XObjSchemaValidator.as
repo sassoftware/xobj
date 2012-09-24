@@ -40,6 +40,7 @@ public class XObjSchemaValidator
     public var message:String;
     
     public var schemaXML:XML;
+    public var schemaStr:String;
     
     public function XObjSchemaValidator(schemaUrl:String=null)
     {
@@ -84,6 +85,7 @@ public class XObjSchemaValidator
         if (schema)
         {
             schemaXML = schema.xml;
+            schemaStr = schema.xml.toString();
             
             //Add the loaded schema to the SchemaManager
             schemaManager.addSchema(schema);
