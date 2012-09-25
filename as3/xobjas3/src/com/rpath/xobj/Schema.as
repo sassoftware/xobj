@@ -17,7 +17,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-package mx.rpc.xml
+package com.rpath.xobj
 {
 
 /* <murf> need this out so it gets built [ExcludeClass]*/

@@ -6,7 +6,6 @@
     <classEntry path="com.rpath.xobj.XObjDecoder"/>
     <classEntry path="com.rpath.xobj.XObjDecoderGenerator"/>
     <classEntry path="com.rpath.xobj.XObjDecoderInfo"/>
-    <classEntry path="com.rpath.xobj.XObjSchemaValidator"/>
     <classEntry path="com.rpath.xobj.xobj"/>
   </includeClasses>
   <includeResources>
