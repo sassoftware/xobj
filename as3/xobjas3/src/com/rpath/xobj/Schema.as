@@ -141,6 +141,7 @@ public class Schema
      *  @playerversion AIR 1.1
      *  @productversion Flex 3
      */
+    [Bindable] // <murf
     public function get xml():XML
     {
         return _xml;
