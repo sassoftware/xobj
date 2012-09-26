@@ -29,6 +29,7 @@ import mx.rpc.xml.SchemaTypeRegistry;
 [Bindable]
 public class XObjSchemaLoader
 {
+    public var schemaName:String;
     public var schemaUrl:String;
     
     private var schemaManager:SchemaManager;
@@ -46,8 +47,9 @@ public class XObjSchemaLoader
     public var loadFailedHandler:Function;
     public var loadStatusHandler:Function;
     
-    public function XObjSchemaLoader(schemaUrl:String=null, loadCompleteHandler:Function=null, loadFailedHandler:Function=null, loadStatusHandler:Function=null)
+    public function XObjSchemaLoader(schemaName:String=null, schemaUrl:String=null, loadCompleteHandler:Function=null, loadFailedHandler:Function=null, loadStatusHandler:Function=null)
     {
+        this.schemaName = schemaName;
         this.schemaUrl = schemaUrl;
         this.loadCompleteHandler = loadCompleteHandler;
         this.loadFailedHandler = loadFailedHandler;
@@ -69,7 +71,7 @@ public class XObjSchemaLoader
     
     private function schemaLoader_xmlLoadHandler(event:XMLLoadEvent):void
     {
-        message = "Loading schema " + event.location + "...";
+        message = "Loading schema " + schemaName + " from " + event.location + "...";
         processStatus();
     }
     
@@ -81,7 +83,7 @@ public class XObjSchemaLoader
     
     private function schemaLoader_faultHandler(event:FaultEvent):void
     {
-        message = event.fault.faultString;
+        message = "Failed loading schema " + schemaName + " from " + schemaUrl + ": " + event.fault.faultString;
         processFailure();
     }
     
