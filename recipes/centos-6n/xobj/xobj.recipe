@@ -31,6 +31,4 @@ class XObj(TestPackageRecipe):
     def setupSource(r):
         r.addMercurialSnapshot()
         r.Make(dir='py')
-
-    def install(r):
         r.MakeInstall(dir='py')
