@@ -85,6 +85,8 @@ ifndef PYONLY
 endif
 
 as-install:
+	install -d -m0755 $(DESTDIR)$(as3dir)
+	install -m0644 bin/*.swc $(DESTDIR)$(as3dir)/
 
 as-clean:
 ifndef PYONLY

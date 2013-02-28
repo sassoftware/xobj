@@ -35,11 +35,6 @@ class XObj(PackageRecipe):
     def setup(r):
         r.addMercurialSnapshot('http://scc.eng.rpath.com/xobj/')
         r.Make()
-
-        # install the as3 libs
-        r.Install('as3/xobjas3/bin/*.swc', '/opt/xobj/as3/lib/')
-
-        # Install the python module
         r.MakeInstall()
 
         if Flags.test:
