@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # Copyright (c) SAS Institute Inc.
 #
@@ -19,8 +18,6 @@
 import os
 import types
 
-import testsuite
-testsuite.setup()
 from testrunner import testhelp
 from lxml import etree
 
@@ -1068,6 +1065,3 @@ class XobjTest(TestCase):
         d.root.collection = [ Foo1(), Foo2(), Foo3() ]
         self.failUnlessEqual(d.toxml(prettyPrint=False, xml_declaration=False),
             '<root><foo1/><foo2/><foo3/></root>')
-
-if __name__ == "__main__":
-    testsuite.main()

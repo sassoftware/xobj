@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # Copyright (c) SAS Institute Inc.
 #
@@ -20,8 +19,6 @@ import datetime
 from dateutil import tz
 import types
 
-import testsuite
-testsuite.setup()
 from lxml import etree
 
 from xobj import xobj2
@@ -1388,6 +1385,3 @@ class XobjV2Test(TestCase):
 
         xml2 = doc.toxml()
         self.assertXmlEqual(xml2, xml)
-
-if __name__ == "__main__":
-    testsuite.main()

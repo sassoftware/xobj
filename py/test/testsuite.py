@@ -16,40 +16,22 @@
 #
 
 
-import os
 import sys
-import unittest
-
-import bootstrap
-
-from testrunner import pathManager, testhelp
+from testrunner import suite
 
 
-EXCLUDED_PATHS = ['scripts/.*', 'epdb.py', 'stackutil.py', 'test/.*']
+class Suite(suite.TestSuite):
+    testsuite_module = sys.modules[__name__]
+    topLevelStrip = 0
+
+    def getCoverageDirs(self, handler, environ):
+        import xobj
+        return [xobj]
 
 
-def setup():
-    xobjPath = pathManager.addExecPath('XOBJ_PATH')
-    pathManager.addResourcePath('TEST_PATH', xobjPath + '/test')
-
-
-def main(argv=None, individual=True):
-    if argv is None:
-        argv = list(sys.argv)
-
-    from conary.lib import util
-    from conary.lib import coveragehook
-    sys.excepthook = util.genExcepthook(True, catchSIGUSR1=False)
-
-    handlerClass = testhelp.getHandlerClass(testhelp.ConaryTestSuite,
-            lambda handler, environ: os.getenv('XOBJ_PATH') + '/xobj',
-            lambda handler, environ: EXCLUDED_PATHS)
-
-    handler = handlerClass(individual=individual)
-    results = handler.main(argv)
-    return results.getExitCode()
-
+_s = Suite()
+setup = _s.setup
+main = _s.main
 
 if __name__ == '__main__':
-    setup()
-    sys.exit(main(sys.argv, individual=False))
+    _s.run()
