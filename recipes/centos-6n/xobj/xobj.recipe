@@ -29,6 +29,7 @@ class XObj(TestPackageRecipe):
     ]
 
     testDir = 'py/test'
+    pythonPath = ['%(destdir)s%(pydir)s']
 
     def setupSource(r):
         r.addMercurialSnapshot()
