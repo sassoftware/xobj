@@ -21,17 +21,23 @@ class XObj(TestPackageRecipe):
     version = '0'
 
     buildRequires = [
-        'ant',
-        'flexsdk',
         'make',
         'python-lxml',
         'python-dateutil',
     ]
+    if Arch.x86_64:
+        buildRequires += [
+            'ant',
+            'flexsdk',
+            ]
 
     testDir = 'py/test'
     pythonPath = ['%(destdir)s%(pydir)s']
 
     def setupSource(r):
         r.addMercurialSnapshot()
-        r.Make()
-        r.MakeInstall()
+        r.Make(dir='py')
+        r.MakeInstall(dir='py')
+        if Arch.x86_64:
+            r.Make(dir='as3')
+            r.MakeInstall(dir='as3py')
