@@ -40,4 +40,4 @@ class XObj(TestPackageRecipe):
         r.MakeInstall(dir='py')
         if Arch.x86_64:
             r.Make(dir='as3')
-            r.MakeInstall(dir='as3py')
+            r.MakeInstall(dir='as3')
