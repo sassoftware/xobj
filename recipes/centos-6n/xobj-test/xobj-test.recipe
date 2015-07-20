@@ -23,6 +23,7 @@ class XobjTest(TestPackageRecipe):
     Flags.coverage = True
     Flags.test = True
 
+    testDir = '.'
     testsuite = "py/test/testsuite.py"
 
     buildRequires = [
