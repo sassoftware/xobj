@@ -31,5 +31,5 @@ class XobjTest(TestPackageRecipe):
 
     def setupSource(r):
         r.addGitSnapshot()
-        r.Remove('xobj', recursive=True)
+        r.Remove('py/xobj', recursive=True)
 

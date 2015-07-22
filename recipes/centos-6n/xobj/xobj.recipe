@@ -35,6 +35,9 @@ class XObj(TestPackageRecipe):
 
     def setupSource(r):
         r.addMercurialSnapshot()
+        r.Remove('py/test', recursive=True)
+        r.Remove('as3/xobjas3-test', recursive=True)
+        r.Remove('test', recursive=True)
         r.Make(dir='py')
         r.MakeInstall(dir='py')
         if Arch.x86_64:
