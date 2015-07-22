@@ -15,8 +15,7 @@
 #
 
 
-loadSuperClass('testpackage')
-class XObj(TestPackageRecipe):
+class XObj(PackageRecipe):
     name = 'xobj'
     version = '0'
 
