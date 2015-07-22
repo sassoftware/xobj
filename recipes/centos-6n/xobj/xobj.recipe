@@ -32,7 +32,7 @@ class XObj(PackageRecipe):
 
     pythonPath = ['%(destdir)s%(pydir)s']
 
-    def setupSource(r):
+    def setup(r):
         r.addMercurialSnapshot()
         r.Remove('py/test', recursive=True)
         r.Remove('as3/xobjas3-test', recursive=True)
