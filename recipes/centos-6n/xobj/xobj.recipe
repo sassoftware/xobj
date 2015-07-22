@@ -31,7 +31,6 @@ class XObj(TestPackageRecipe):
             'flexsdk',
             ]
 
-    testDir = 'py/test'
     pythonPath = ['%(destdir)s%(pydir)s']
 
     def setupSource(r):
