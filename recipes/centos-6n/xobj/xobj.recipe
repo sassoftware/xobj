@@ -34,7 +34,7 @@ class XObj(PackageRecipe):
 
     def setup(r):
         r.addMercurialSnapshot()
-        r.Remove('py/test', recursive=True)
+        r.Remove('py/test/*test.py', recursive=True)
         r.Remove('as3/xobjas3-test', recursive=True)
         r.Remove('test', recursive=True)
         r.Make(dir='py')
